@@ -1,14 +1,9 @@
 "use client";
 
 import { BoxIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useEffect, useState } from "react";
+import AnimatedCard from "./AnimatedCard";
 
 export default function OverviewCards() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
   const cards = [
     {
       title: "Total Products",
@@ -39,17 +34,7 @@ export default function OverviewCards() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {cards.map((card, index) => (
-        <div 
-          key={index} 
-          className={`bg-white border border-gray-200 p-6 transition-all duration-700 ease-out transform ${
-            isVisible 
-              ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-8'
-          }`}
-          style={{
-            transitionDelay: `${index * 150}ms`
-          }}
-        >
+        <AnimatedCard key={index} delay={index * 150} className="bg-white border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 mb-1">{card.title}</p>
@@ -61,7 +46,7 @@ export default function OverviewCards() {
               </div>
             </div>
           </div>
-        </div>
+        </AnimatedCard>
       ))}
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArchiveIcon, DashboardIcon, PaperPlaneIcon, SymbolIcon } from "@radix-ui/react-icons";
+import { ArchiveIcon, DashboardIcon, PaperPlaneIcon, SymbolIcon, TriangleLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -30,7 +30,7 @@ export default function DashboardSidebar() {
     },
   ];
   return (
-    <nav className="flex flex-col justify-between w-66 h-screen pt-26 bg-white border-r border-gray-200 p-4 text-sm">
+    <nav className="hidden md:flex flex-col justify-between w-66 h-screen pt-26 bg-white border-r border-gray-200 p-4 text-sm sticky top-0">
       <main className="w-full flex flex-col gap-4">
         {/* sidebar header */}
         <span className="flex flex-col justify-start items-center gap-2 p-2 border border-gray-200 w-full">
@@ -66,7 +66,8 @@ export default function DashboardSidebar() {
       </main>
       {/* sidebar items */}
     <footer className="flex flex-col gap-5">
-    <button className="border border-blue-500 text-blue-500 p-3 w-full cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-150">
+    <button className="border flex items-center justify-center border-blue-500 text-blue-500 p-3 w-full cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-150">
+      <TriangleLeftIcon />
         Logout
       </button>
       <hr className="border-gray-200" />
