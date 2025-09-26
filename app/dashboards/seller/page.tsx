@@ -1,7 +1,9 @@
+import OverviewPage from "./overview/page";
+
 export default function SellerDashboardPage() {
   return (
     <div>
-      <h1>Seller Dashboard</h1>
+      <OverviewPage />
     </div>
   );
 }
