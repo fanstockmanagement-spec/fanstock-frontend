@@ -113,10 +113,10 @@ export default function DashboardHeader() {
 
           {/* sidebar items */}
           <footer className="flex flex-col gap-5 p-4">
-            <button className="border flex items-center justify-center border-[#CA425A] text-[#CA425A] p-3 w-full cursor-pointer hover:bg-[#CA425A] hover:text-white transition-colors duration-150">
+            <Link href="/" className="border flex items-center justify-center border-[#CA425A] text-[#CA425A] p-3 w-full cursor-pointer hover:bg-[#CA425A] hover:text-white transition-colors duration-150">
               <TriangleLeftIcon />
               Logout
-            </button>
+            </Link>
             <hr className="border-gray-200" />
             <span className="p-2 bg-gray-50 w-full">
               <p className="font-medium">Kagibwami Nyawe</p>
