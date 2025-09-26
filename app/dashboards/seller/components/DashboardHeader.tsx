@@ -38,7 +38,7 @@ export default function DashboardHeader() {
 
   return (
     <div className="flex flex-col text-sm">
-      <header className="flex justify-between items-center p-4 w-full h-16 bg-white border-b border-gray-200 fixed z-50">
+      <header className="flex justify-between items-center p-4 w-full h-16 bg-white/80 backdrop-blur-[3px] border-b border-gray-200 fixed z-50">
         <span className="flex items-center gap-2">
           <button
             onClick={toggleMobileSidebar}

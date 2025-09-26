@@ -23,11 +23,11 @@ export default function DashboardSidebar() {
       icon: <SymbolIcon />,
       label: "Orders",
     },
-    {
-      href: "#",
-      icon: <PaperPlaneIcon />,
-      label: "Messages",
-    },
+    // {
+    //   href: "#",
+    //   icon: <PaperPlaneIcon />,
+    //   label: "Messages",
+    // },
   ];
   return (
     <nav className="hidden md:flex flex-col justify-between w-66 h-screen pt-26 bg-white border-r border-gray-200 p-4 text-sm sticky top-0">
