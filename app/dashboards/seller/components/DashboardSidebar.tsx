@@ -53,7 +53,7 @@ export default function DashboardSidebar() {
                 href={link.href} 
                 className={`flex items-center gap-2 p-3 border transition-colors duration-150 ${
                   isActive 
-                    ? 'bg-blue-50 border-blue-200 text-blue-600' 
+                    ? 'bg-[#CA425A]/10 border-[#CA425A]/15 text-[#CA425A]' 
                     : 'bg-gray-50 border-white hover:border-gray-200'
                 }`}
               >
@@ -66,7 +66,7 @@ export default function DashboardSidebar() {
       </main>
       {/* sidebar items */}
     <footer className="flex flex-col gap-5">
-    <button className="border flex items-center justify-center border-blue-500 text-blue-500 p-3 w-full cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-150">
+    <button className="border flex items-center justify-center border-[#CA425A] text-[#CA425A] p-3 w-full cursor-pointer hover:bg-[#CA425A] hover:text-white transition-colors duration-150">
       <TriangleLeftIcon />
         Logout
       </button>
