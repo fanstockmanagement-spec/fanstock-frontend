@@ -49,7 +49,7 @@ export default function HeroPage() {
     const slide = slides[currentSlide];
 
     return (
-        <div className="relative h-screen overflow-hidden bg-black text-sm w-screen">
+        <div className="relative h-screen overflow-hidden text-sm w-screen">
             <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
 
             <button onClick={prevSlide} className="absolute left-6 top-1/2 z-20 text-white border border-white cursor-pointer rounded-full p-3 hover:text-[#CA425A] transi duration-150">
