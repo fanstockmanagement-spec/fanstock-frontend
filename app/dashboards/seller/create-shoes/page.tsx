@@ -69,12 +69,12 @@ export default function CreateShoesPage() {
                 <h1 className="text-2xl font-semibold">Create New Shoes</h1>
                 <p className="text-gray-500">Add a new product to your inventory</p>
                 <div className="flex items-center gap-2 mt-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 1 ? 'bg-[#CA425A] text-white' : 'bg-gray-200 text-gray-500'
                         }`}>
                         1
                     </div>
-                    <div className={`w-16 h-1 ${step >= 2 ? 'bg-blue-500' : 'bg-gray-200'}`}></div>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 2 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
+                    <div className={`w-16 h-1 ${step >= 2 ? 'bg-[#CA425A]' : 'bg-gray-200'}`}></div>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 2 ? 'bg-[#CA425A] text-white' : 'bg-gray-200 text-gray-500'
                         }`}>
                         2
                     </div>
@@ -99,19 +99,19 @@ export default function CreateShoesPage() {
                                         <div key={i}>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">{field.label}</label>
                                             {field.type === 'select' ? (
-                                                <select value={field.value} onChange={field.onChange} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-blue-500">
+                                                <select value={field.value} onChange={field.onChange} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]">
                                                     <option value="">Select category</option>
                                                     {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                                 </select>
                                             ) : (
-                                                <input type={field.type || 'text'} value={field.value} onChange={field.onChange} placeholder={field.placeholder} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-blue-500" />
+                                                <input type={field.type || 'text'} value={field.value} onChange={field.onChange} placeholder={field.placeholder} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]" />
                                             )}
                                         </div>
                                     ))}
                                 </div>
                                 <div className="mt-4">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                                    <textarea value={form.description} onChange={(e) => updateForm('description', e.target.value)} placeholder="Describe the shoes..." rows={4} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-blue-500" />
+                                    <textarea value={form.description} onChange={(e) => updateForm('description', e.target.value)} placeholder="Describe the shoes..." rows={4} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]" />
                                 </div>
                             </AnimatedCard>
 
@@ -122,7 +122,7 @@ export default function CreateShoesPage() {
                                     <UploadIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                                     <p className="text-gray-600 mb-2">Upload product images</p>
                                     <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" id="image-upload" />
-                                    <label htmlFor="image-upload" className="inline-flex items-center gap-2 text-white bg-blue-500 p-3 cursor-pointer  hover:bg-blue-500/90 transition-colors duration-150">
+                                    <label htmlFor="image-upload" className="inline-flex items-center gap-2 text-white bg-[#CA425A] p-3 cursor-pointer  hover:bg-[#CA425A]/90 transition-colors duration-150">
                                         <UploadIcon className="w-4 h-4 mr-2" /> Choose Files
                                     </label>
                                 </div>
@@ -160,7 +160,7 @@ export default function CreateShoesPage() {
                             <div className="bg-white border border-gray-200 p-6">
                                 <div className="flex justify-between items-center mb-4">
                                     <h2 className="text-lg font-semibold">Product Variants</h2>
-                                    <button onClick={addVariant} className="inline-flex items-center gap-2 text-white bg-blue-500 p-3 cursor-pointer  hover:bg-blue-500/90 transition-colors duration-150">
+                                    <button onClick={addVariant} className="inline-flex items-center gap-2 text-white bg-[#CA425A] p-3 cursor-pointer  hover:bg-[#CA425A]/90 transition-colors duration-150">
                                         <PlusIcon className="w-4 h-4 mr-2" /> Add Variant
                                     </button>
                                 </div>
@@ -177,12 +177,12 @@ export default function CreateShoesPage() {
                                                     <div className={i === 3 ? 'flex-1' : ''}>
                                                         <label className="block text-xs font-medium text-gray-700 mb-1">{field.label}</label>
                                                         {field.type === 'select' ? (
-                                                            <select value={variant[field.field as keyof VariantForm]} onChange={(e) => updateVariant(index, field.field as keyof VariantForm, e.target.value)} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-blue-500">
+                                                            <select value={variant[field.field as keyof VariantForm]} onChange={(e) => updateVariant(index, field.field as keyof VariantForm, e.target.value)} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]">
                                                                 <option value="">Select color</option>
                                                                 {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                                             </select>
                                                         ) : (
-                                                            <input type={field.type} value={variant[field.field as keyof VariantForm]} onChange={(e) => updateVariant(index, field.field as keyof VariantForm, e.target.value)} placeholder={field.placeholder} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-blue-500" {...(field.min && { min: field.min })} {...(field.max && { max: field.max })} {...(field.step && { step: field.step })} />
+                                                            <input type={field.type} value={variant[field.field as keyof VariantForm]} onChange={(e) => updateVariant(index, field.field as keyof VariantForm, e.target.value)} placeholder={field.placeholder} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]" {...(field.min && { min: field.min })} {...(field.max && { max: field.max })} {...(field.step && { step: field.step })} />
                                                         )}
                                                     </div>
                                                     {i === 3 && form.variants.length > 1 && (
@@ -207,7 +207,7 @@ export default function CreateShoesPage() {
                      {step === 1 ? (
                          <>
                              <button onClick={handleCancel} className="px-6 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer">Cancel</button>
-                             <button onClick={handleNext} className="flex items-center gap-2 p-3 bg-blue-500 text-white hover:bg-blue-500/90 cursor-pointer">Add Variants <TriangleRightIcon /> </button>
+                             <button onClick={handleNext} className="flex items-center gap-2 p-3 bg-[#CA425A] text-white hover:bg-[#CA425A]/90 cursor-pointer">Add Variants <TriangleRightIcon /> </button>
                          </>
                      ) : (
                          <>

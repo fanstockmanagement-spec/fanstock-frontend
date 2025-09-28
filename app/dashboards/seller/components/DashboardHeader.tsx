@@ -98,7 +98,7 @@ export default function DashboardHeader() {
                       href={link.href}
                       onClick={toggleMobileSidebar}
                       className={`flex items-center gap-3 p-3 transition-colors duration-150 ${isActive
-                        ? 'bg-blue-50 border border-blue-200 text-blue-600'
+                        ? 'bg-[#CA425A]/10 border border-[#CA425A]/15 text-[#CA425A]'
                         : 'bg-gray-50 border border-white hover:border-gray-200'
                         }`}
                     >
@@ -113,10 +113,10 @@ export default function DashboardHeader() {
 
           {/* sidebar items */}
           <footer className="flex flex-col gap-5 p-4">
-            <button className="border flex items-center justify-center border-blue-500 text-blue-500 p-3 w-full cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-150">
+            <Link href="/" className="border flex items-center justify-center border-[#CA425A] text-[#CA425A] p-3 w-full cursor-pointer hover:bg-[#CA425A] hover:text-white transition-colors duration-150">
               <TriangleLeftIcon />
               Logout
-            </button>
+            </Link>
             <hr className="border-gray-200" />
             <span className="p-2 bg-gray-50 w-full">
               <p className="font-medium">Kagibwami Nyawe</p>

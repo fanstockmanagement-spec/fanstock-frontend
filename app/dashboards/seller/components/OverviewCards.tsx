@@ -9,7 +9,7 @@ export default function OverviewCards() {
       title: "Total Products",
       value: "1,247",
       icon: <BoxIcon className="w-5 h-5" />,
-      color: "bg-blue-500",
+      color: "bg-[#CA425A]",
       bgColor: "bg-blue-50",
       textColor: "text-blue-600"
     },

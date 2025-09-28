@@ -10,7 +10,7 @@ export default function OverviewPage() {
           <h1 className="text-xl font-semibold">Welcome to dashboard!</h1>
           <p className="text-gray-400">Here you can manage your store and products</p>
         </span>
-        <Link href="/dashboards/seller/create-shoes" className="flex items-center gap-2 text-white bg-blue-500 p-3 cursor-pointer  hover:bg-blue-500/90 transition-colors duration-150">
+        <Link href="/dashboards/seller/create-shoes" className="flex items-center gap-2 text-white bg-[#CA425A] p-3 cursor-pointer  hover:bg-[#CA425A]/90 transition-colors duration-150">
           <PlusIcon />
           Add New Shoes
         </Link>
