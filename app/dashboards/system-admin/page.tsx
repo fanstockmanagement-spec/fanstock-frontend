@@ -1,7 +1,9 @@
-export default function AdminDashboardPage() {
+import OverviewPage from "./overview/page";
+
+export default function SystemAdminDashboardPage() {
   return (
     <div>
-      <h1>Admin Dashboard</h1>
+      <OverviewPage />
     </div>
   );
 }

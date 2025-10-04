@@ -1,9 +1,9 @@
 "use client";
 
 import { BoxIcon, CaretDownIcon } from "@radix-ui/react-icons";
-import NavigationBar from "../components/navigation-bar";
 import { useState } from "react";
 import ShoeCard from "../components/shoe-card";
+import { NavigationBar } from "../components/navigation-bar";
 
 export default function NewReleasesPage() {
   const [showModelBrands, setShowModelBrands] = useState(false);

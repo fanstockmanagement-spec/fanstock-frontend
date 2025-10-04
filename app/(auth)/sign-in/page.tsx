@@ -3,27 +3,28 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { EyeOpenIcon, EyeClosedIcon, Cross2Icon, TriangleRightIcon } from '@radix-ui/react-icons';
+import { useSignin } from '@/app/components/hooks/useSignin';
+import { Spinner } from '@radix-ui/themes';
 
 export default function SignInPage() {
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
+  const { register, handleSubmit, isLoading } = useSignin();
 
   return (
-    <div className=" min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center   justify-center p-4 text-sm">
-      <div className="w-full max-w-md relative ">
+    <div className=" min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4 text-sm">
+      <div className="w-full max-w-md relative rounded-lg">
         {/* close */}
-        <Link href="/" className="absolute -top-3 -right-3 bg-[#CA425A] hover:bg-[#bd3e55] p-2 rounded-full text-white transition-colors duration-200">
+        <Link href="/" className="absolute -top-3 -right-3 bg-orange-500 hover:bg-orange-500/80 p-2 rounded-full text-white transition-colors duration-200">
           <Cross2Icon />
         </Link>
 
         {/* Sign In Form */}
-        <div className="bg-white shadow-xl p-8">˝
+        <div className="bg-white shadow-xl p-8 text-sm">˝
           <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
             Sign In
           </h1>
 
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -31,8 +32,9 @@ export default function SignInPage() {
               </label>
               <input
                 type="email"
-                className="w-full bg-white p-3 border border-gray-200 focus:border-1 focus:border-[#CA425A] transition-all duration-200 outline-none"
+                className="w-full bg-white p-3 border border-gray-200 focus:border-1 focus:border-orange-500 rounded-md transition-all duration-200 outline-none"
                 placeholder="Email Address"
+                {...register('email')}
               />
             </div>
 
@@ -44,9 +46,9 @@ export default function SignInPage() {
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-3 pr-12 border border-gray-200 focus:border-1 focus:border-[#CA425A] transition-all duration-200 outline-none"
+                  className="w-full p-3 pr-12 border border-gray-200 focus:border-1 focus:border-orange-500 rounded-md transition-all duration-200 outline-none"
                   placeholder="Enter your password"
+                  {...register('password')}
                 />
                 <button
                   type="button"
@@ -69,19 +71,26 @@ export default function SignInPage() {
               </label>
               <Link
                 href="/forgot-password"
-                className="text-sm text-[#CA425A] hover:text-[#CA425A]/80 transition-colors duration-200"
+                className="text-sm text-orange-500 hover:text-orange-500/80 transition-colors duration-200"
               >
                 Forgot password?
               </Link>
             </div>
 
             {/* Sign In Button */}
-            <Link
-              href="/dashboards/seller"
-              className="w-full flex items-center justify-center gap-2 bg-[#CA425A] text-white p-3 font-semibold hover:bg-[#CA425A]/90 focus:bg-[#bd3e55] cursor-pointer transition-all duration-200"
+            <button
+              className="w-full h-12 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full text-white p-3 font-semibold hover:bg-[#CA425A]/90 focus:bg-[#bd3e55] cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+              type="submit"
             >
-              Sign In <TriangleRightIcon />
-            </Link>
+              {isLoading ?
+                  <Spinner />
+                :
+                <span className='flex items-center gap-2'>
+                  Sign In <TriangleRightIcon />
+                </span>
+              }
+            </button>
           </form>
 
           {/* Sign Up Link */}

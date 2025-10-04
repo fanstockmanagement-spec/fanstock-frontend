@@ -42,7 +42,7 @@ export function FeaturesSection() {
         <section id="features" className="relative py-20 md:py-32 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden w-full">
             {/* Subtle background decoration */}
             <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-500/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-500/5 rounded-full blur-3xl"></div>
 
             <div className="relative z-10 max-w-[92%] mx-auto px-4 md:px-8">
                 {/* Header */}
@@ -68,7 +68,7 @@ export function FeaturesSection() {
                             <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
                                 {/* Icon Side */}
                                 <div className="flex-shrink-0">
-                                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-orange-500/20 to-pink-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-orange-500/20 to-yellow-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform duration-300">
                                         {feature.icon}
                                     </div>
                                 </div>
@@ -100,7 +100,7 @@ export function FeaturesSection() {
 
                             {/* Divider line between features (except last one) */}
                             {index < features.length - 1 && (
-                                <div className="mt-12 md:mt-16 h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent"></div>
+                                <div className="mt-12 md:mt-16 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent"></div>
                             )}
                         </div>
                     ))}
@@ -108,11 +108,11 @@ export function FeaturesSection() {
 
                 {/* Bottom CTA */}
                 <div className="mt-16 md:mt-20 text-center">
-                    <div className="inline-flex flex-col items-center gap-4 p-8 bg-gradient-to-br from-orange-500/10 to-pink-500/10 border border-orange-500/30 rounded-2xl backdrop-blur-sm">
+                    <div className="inline-flex flex-col items-center gap-4 p-8 bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/30 rounded-2xl backdrop-blur-sm">
                         <p className="text-white text-lg md:text-xl font-semibold">
                             Ready to see it in action?
                         </p>
-                        <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-pink-600 transition-all duration-300 hover:scale-105 shadow-lg">
+                        <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-yellow-600 text-white font-semibold rounded-lg hover:from-purple-600 hover:to-cyan-500 transition-all duration-300 hover:scale-105 shadow-lg">
                             Start Your Free Trial
                         </button>
                         <p className="text-gray-400 text-sm">No credit card required • Set up in 5 minutes</p>

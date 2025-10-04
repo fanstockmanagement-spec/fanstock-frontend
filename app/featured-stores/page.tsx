@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { StarFilledIcon, MobileIcon, ChatBubbleIcon, EyeOpenIcon, Cross2Icon } from '@radix-ui/react-icons';
+import Image from 'next/image';
 
 export default function FeatureStores() {
     const [selectedShoe, setSelectedShoe] = useState(null);
@@ -100,14 +101,14 @@ export default function FeatureStores() {
                 {featuredStores.map((store) => (
                     <div key={store.store_id} className="relative">
                         {/* Store Header Card */}
-                        <div className="bg-gradient-to-br from-orange-500/10 to-pink-500/10 border border-orange-500/30 rounded-2xl p-6 md:p-8 mb-8 backdrop-blur-sm">
+                        <div className="bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/30 rounded-2xl p-6 md:p-8 mb-8 backdrop-blur-sm">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-3">
                                         <h2 className="text-2xl md:text-3xl font-bold text-white">
                                             {store.store_name}
                                         </h2>
-                                        <span className="px-3 py-1 bg-gradient-to-r from-orange-400 to-pink-400 text-white text-xs font-bold rounded-full">
+                                        <span className="px-3 py-1 bg-gradient-to-r from-orange-400 to-yellow-400 text-white text-xs font-bold rounded-full">
                                             FEATURED
                                         </span>
                                     </div>
@@ -126,7 +127,7 @@ export default function FeatureStores() {
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <button 
                                         onClick={() => handleContact('phone', store.phone)}
-                                        className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-pink-600 transition-all duration-300 hover:scale-105"
+                                        className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 hover:scale-105"
                                     >
                                         <MobileIcon className="w-5 h-5" />
                                         Call Now
@@ -161,7 +162,7 @@ export default function FeatureStores() {
                                             ${shoe.price_retail}
                                         </div>
                                         {shoe.stockRemaining < 10 && (
-                                            <div className="absolute top-3 left-3 px-3 py-1 bg-orange-500 rounded-full text-white text-xs font-bold">
+                                            <div className="absolute top-3 left-3 px-3 py-1 bg-cyan-500 rounded-full text-white text-xs font-bold">
                                                 Only {shoe.stockRemaining} left
                                             </div>
                                         )}
@@ -180,7 +181,7 @@ export default function FeatureStores() {
                                             <span>{shoe.sizes.length} sizes</span>
                                         </div>
 
-                                        <button className="w-full py-2 bg-gradient-to-r from-orange-500/20 to-pink-500/20 border border-orange-500/30 text-orange-400 font-semibold rounded-lg hover:bg-orange-500/30 transition-all duration-300 flex items-center justify-center gap-2">
+                                        <button className="w-full py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-500/30 text-orange-400 font-semibold rounded-lg hover:bg-cyan-500/30 transition-all duration-300 flex items-center justify-center gap-2">
                                             <EyeOpenIcon />
                                             View Details
                                         </button>
@@ -218,7 +219,7 @@ export default function FeatureStores() {
                                     <div className="grid grid-cols-4 gap-2">
                                         {selectedShoe.image_urls.map((url, idx) => (
                                             <div key={idx} className="aspect-square rounded-lg overflow-hidden bg-gray-800 cursor-pointer hover:opacity-75 transition-opacity">
-                                                <img src={url} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
+                                                <Image src={url} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
                                             </div>
                                         ))}
                                     </div>
@@ -239,7 +240,7 @@ export default function FeatureStores() {
                                         <p className="text-white font-semibold mb-3">Available Colors:</p>
                                         <div className="flex flex-wrap gap-2">
                                             {selectedShoe.colors.map((color, idx) => (
-                                                <span key={idx} className="px-4 py-2 bg-gradient-to-r from-orange-500/20 to-pink-500/20 border border-orange-500/30 text-white rounded-full text-sm">
+                                                <span key={idx} className="px-4 py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-500/30 text-white rounded-full text-sm">
                                                     {color}
                                                 </span>
                                             ))}
@@ -251,7 +252,7 @@ export default function FeatureStores() {
                                         <p className="text-white font-semibold mb-3">Available Sizes:</p>
                                         <div className="flex flex-wrap gap-2">
                                             {selectedShoe.sizes.map((size, idx) => (
-                                                <span key={idx} className="w-12 h-12 bg-white/5 border border-white/20 text-white rounded-lg text-sm flex items-center justify-center hover:bg-orange-500/20 hover:border-orange-500/50 transition-all">
+                                                <span key={idx} className="w-12 h-12 bg-white/5 border border-white/20 text-white rounded-lg text-sm flex items-center justify-center hover:bg-cyan-500/20 hover:border-orange-500/50 transition-all">
                                                     {size}
                                                 </span>
                                             ))}
@@ -259,7 +260,7 @@ export default function FeatureStores() {
                                     </div>
 
                                     {/* Stock Info */}
-                                    <div className="mb-6 p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                                    <div className="mb-6 p-4 bg-cyan-500/10 border border-orange-500/30 rounded-lg">
                                         <p className="text-gray-300 text-sm">
                                             <span className="font-semibold text-orange-400">{selectedShoe.stockRemaining} pairs</span> currently in stock at {selectedShoe.store.store_name}
                                         </p>
@@ -271,7 +272,7 @@ export default function FeatureStores() {
                                     <p className="text-gray-400 text-sm mb-3">Contact {selectedShoe.store.store_name} to purchase:</p>
                                     <button 
                                         onClick={() => handleContact('phone', selectedShoe.store.phone)}
-                                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-pink-600 transition-all duration-300"
+                                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all duration-300"
                                     >
                                         <MobileIcon className="w-5 h-5" />
                                         Call {selectedShoe.store.phone}
