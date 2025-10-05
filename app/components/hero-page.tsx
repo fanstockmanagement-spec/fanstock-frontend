@@ -14,7 +14,7 @@ export default function HeroPage() {
                         <p className="text-sm font-normal tracking-widest text-gray-300 uppercase">A Room for Sellers and Their Stocks</p>
                         <h1 className="mt-6 text-4xl font-normal text-white sm:mt-10 sm:text-5xl lg:text-6xl xl:text-8xl"><span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500">Unlimited Stock</span> Accessibility</h1>
                         <p className="max-w-lg mt-4 font-normal text-gray-400 sm:mt-8">Have been wondering where to find the stock you need? Look no further. FanStock is here to help you find the stock you need.</p>
-                        <button className="px-8 py-3 mt-10 text-white bg-black border border-gray-500 rounded-full cursor-pointer"> Start Exploring Stock </button>
+                        <button className="px-6 py-3 mt-10 text-white bg-gradient-to-r from-orange-500 to-red-500 border border-orange-500 rounded-md cursor-pointer hover:from-orange-600 hover:to-red-600 transition-all duration-200 font-medium"> Start Exploring Stock </button>
 
                             <div>
                             <div className="inline-flex items-center pt-6 mt-8 border-t border-gray-800 sm:pt-10 sm:mt-14">

@@ -118,10 +118,10 @@ export default function PricingSection() {
 
                                 {/* CTA Button */}
                                 <button 
-                                    className={`w-full py-3 px-6 rounded-full cursor-pointer text-sm transition-all duration-300 ${
+                                    className={`w-full py-3 px-6 rounded-md cursor-pointer text-sm transition-all duration-300 font-medium ${
                                         plan.highlighted
-                                            ? 'bg-orange-500 text-white hover:bg-orange-400 hover:shadow-lg hover:shadow-orange-500/30'
-                                            : 'bg-white/10 text-gray-300 border border-gray-600 hover:bg-white/20 hover:border-orange-400 hover:text-white'
+                                            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 hover:shadow-lg hover:shadow-orange-500/30'
+                                            : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 hover:text-white hover:border-orange-500'
                                     }`}
                                 >
                                     {plan.highlighted ? 'Start Premium' : 'Choose Plan'}

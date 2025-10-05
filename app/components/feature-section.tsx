@@ -112,7 +112,7 @@ export function FeaturesSection() {
                         <p className="text-white text-lg md:text-xl font-semibold">
                             Ready to see it in action?
                         </p>
-                        <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-yellow-600 text-white font-semibold rounded-lg hover:from-purple-600 hover:to-cyan-500 transition-all duration-300 hover:scale-105 shadow-lg">
+                        <button className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-md hover:from-orange-600 hover:to-red-600 transition-all duration-300 hover:scale-105 shadow-lg">
                             Start Your Free Trial
                         </button>
                         <p className="text-gray-400 text-sm">No credit card required • Set up in 5 minutes</p>
