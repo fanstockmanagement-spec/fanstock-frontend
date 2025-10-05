@@ -51,7 +51,7 @@ export const handleApiError = (
   // Handle different status codes
   const statusMessages: Record<number, string> = {
     400: errorMessage || 'Invalid request. Please check your input.',
-    401: 'Authentication failed. Please login again.',
+    401: 'User not found. Please login again.',
     403: 'You do not have permission to perform this action.',
     404: 'The requested resource was not found.',
     409: 'A record with this information already exists.',

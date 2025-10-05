@@ -1,7 +1,7 @@
 'use client';
 
 import { useUsers } from '@/app/components/hooks/useUser';
-import { TriangleLeftIcon } from '@radix-ui/react-icons';
+import { TriangleLeftIcon, TriangleRightIcon } from '@radix-ui/react-icons';
 import { Spinner } from '@radix-ui/themes';
 import { User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -39,9 +39,9 @@ export default function CreateSellerPage() {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-8 ">
+                <form onSubmit={handleSubmit} className="space-y-8 bg-white shadow-lg rounded-lg border border-gray-100">
                     {/* Personal Information */}
-                    <div className="rounded-xl shadow-sm p-6 bg-gray-50">
+                    <div className="rounded-xl p-6">
                         <div className="flex items-center gap-2 mb-6">
                             <span className='p-2 bg-orange-500/5 text-orange-500 rounded-full'>
                             <User strokeWidth={1.5} size={16} />
@@ -49,14 +49,14 @@ export default function CreateSellerPage() {
                             <h2 className="font-medium text-lg text-gray-900">Personal Information</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Full Name *
                                 </label>
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-[1px] focus:border-none focus:ring-orange-500 transition-colors"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md outline-none focus:border focus:border-orange-500 transition-colors"
                                     placeholder="Enter full name"
                                     {...register('name')}
                                 />
@@ -69,7 +69,7 @@ export default function CreateSellerPage() {
                                 </label>
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-[1px] focus:border-none focus:ring-orange-500 transition-colors"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md outline-none focus:border focus:border-orange-500 transition-colors"
                                     placeholder="Enter email address"
                                     {...register('email')}
                                 />
@@ -82,7 +82,7 @@ export default function CreateSellerPage() {
                                 </label>
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-[1px] focus:border-none focus:ring-orange-500 transition-colors"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md outline-none focus:border focus:border-orange-500 transition-colors"
                                     placeholder="Enter phone number"
                                     {...register('phoneNumber')}
                                 />
@@ -94,7 +94,7 @@ export default function CreateSellerPage() {
                                 </label>
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-[1px] focus:border-none focus:ring-orange-500 transition-colors"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md outline-none focus:border focus:border-orange-500 transition-colors"
                                     placeholder={generatePassword()}
                                     value={generatePassword()}
                                     {...register('password')}
@@ -107,10 +107,14 @@ export default function CreateSellerPage() {
                            
                             <button
                                 type="submit"
-                                className="px-8 h-[35px] w-[150px] flex items-center justify-center rounded-md cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 text-white disabled:opacity-50 transition-colors gap-2"
+                                className="px-8 h-[35px] w-[200px] flex items-center justify-center rounded-md cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 text-white disabled:opacity-50 transition-colors gap-2"
                                 disabled={isSubmit}
                             >
-                             {isSubmit ? <Spinner /> : <span>Submit Info</span>}
+
+                             {isSubmit ? <Spinner /> : 
+                             <span className='flex items-center gap-2'>Submit Info <TriangleRightIcon /></span>
+                             
+                             }
                             </button>
                         </div>
                     </div>

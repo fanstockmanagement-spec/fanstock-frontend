@@ -1,6 +1,6 @@
 'use client'
 
-import { API_ENDPOINTS, getApiUrl } from "@/utils/env";
+import { getApiUrl } from "@/utils/env";
 import { handleApiError } from "@/utils/errorHandler";
 import axios from "axios";
 import { useState, useEffect, useCallback } from "react";

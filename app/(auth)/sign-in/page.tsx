@@ -19,7 +19,7 @@ export default function SignInPage() {
         </Link>
 
         {/* Sign In Form */}
-        <div className="bg-white shadow-xl p-8 text-sm">˝
+        <div className="bg-white shadow-xl p-8 text-sm rounded-lg">˝
           <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
             Sign In
           </h1>
@@ -32,7 +32,7 @@ export default function SignInPage() {
               </label>
               <input
                 type="email"
-                className="w-full bg-white p-3 border border-gray-200 focus:border-1 focus:border-orange-500 rounded-md transition-all duration-200 outline-none"
+                className="w-full bg-white px-3 py-2 border border-gray-200 focus:border-1 focus:border-orange-500 rounded-md transition-all duration-200 outline-none"
                 placeholder="Email Address"
                 {...register('email')}
               />
@@ -46,7 +46,7 @@ export default function SignInPage() {
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="w-full p-3 pr-12 border border-gray-200 focus:border-1 focus:border-orange-500 rounded-md transition-all duration-200 outline-none"
+                  className="w-full px-3 py-2 pr-12 border border-gray-200 focus:border-1 focus:border-orange-500 rounded-md transition-all duration-200 outline-none"
                   placeholder="Enter your password"
                   {...register('password')}
                 />
@@ -61,14 +61,8 @@ export default function SignInPage() {
             </div>
 
             {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 text-[#CA425A] border-gray-300 rounded focus:ring-[#CA425A]"
-                />
-                <span className="ml-2 text-sm text-gray-600">Remember me</span>
-              </label>
+            <div className="flex items-center justify-end w-full">
+              
               <Link
                 href="/forgot-password"
                 className="text-sm text-orange-500 hover:text-orange-500/80 transition-colors duration-200"
@@ -79,7 +73,7 @@ export default function SignInPage() {
 
             {/* Sign In Button */}
             <button
-              className="w-full h-12 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full text-white p-3 font-semibold hover:bg-[#CA425A]/90 focus:bg-[#bd3e55] cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-10 rounded-md flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 font-semibold hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
               type="submit"
             >
@@ -96,10 +90,10 @@ export default function SignInPage() {
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 href="/sign-up"
-                className="text-[#CA425A] hover:text-[#CA425A]/80 transition-colors duration-200"
+                className="text-orange-500 hover:text-orange-500/80 transition-colors duration-200"
               >
                 Request Account Creation
               </Link>

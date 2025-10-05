@@ -1,6 +1,7 @@
 'use client'
 
 import { API_ENDPOINTS, getApiUrl } from "@/utils/env"
+import { handleApiError } from "@/utils/errorHandler"
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { useRouter } from "next/navigation"
@@ -17,7 +18,6 @@ const validationSchema = z.object({
 export type SignInFormData = z.infer<typeof validationSchema>;
 
 
-type userType = 'admin' | 'seller'
 
 export const useSignin = () => {
     const {
@@ -25,7 +25,6 @@ export const useSignin = () => {
         handleSubmit,
         formState: { errors, isSubmitting },
         reset,
-        setError,
     } = useForm<SignInFormData>({
         resolver: zodResolver(validationSchema),
         defaultValues: {
@@ -68,9 +67,8 @@ export const useSignin = () => {
                         router.push('/dashboards/system-admin');
                     } else if (user.userType === 'seller') {
                         router.push('/dashboards/seller');
-                    } else {
-                        // Default fallback for any other role
-                        router.push('/dashboard');
+                    } else if (user.userType === undefined) {
+                        router.push('/subscription-info');
                     }
                     reset();
                 } else {
@@ -78,16 +76,12 @@ export const useSignin = () => {
                     toast.error(responseData.message || 'Login failed');
                 }
             }
-        } catch (error: any) {
-            console.error('Sign in error:', error);
-
-            if (error.response?.status === 401) {
-                toast.error('Invalid email or password');
-            } else if (error.response?.status === 403) {
-                toast.error('Account is suspended');
-            } else {
-                toast.error('Sign in failed. Please try again.');
-            }
+        } catch (error) {
+            handleApiError(error, {
+                onAuthFailure: () => {
+                    localStorage.removeItem('token');
+                }
+            });
         } finally {
             setIsLoading(false);
         }

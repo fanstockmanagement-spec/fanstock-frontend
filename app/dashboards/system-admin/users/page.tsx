@@ -2,9 +2,11 @@
 
 import { usePaginatedData } from '@/app/components/hooks/usePagination';
 import { getApiUrl, API_ENDPOINTS } from '@/utils/env';
-import { Edit, Eye, Filter, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Edit, Eye, Filter, Search, ChevronLeft, ChevronRight, Divide } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { PlusIcon } from '@radix-ui/react-icons';
 
 
 interface User {
@@ -104,6 +106,19 @@ export default function SellersTable() {
   };
 
   return (
+ <div className="text-sm">
+     <section className="flex  flex-wrap items-center gap-4 justify-between w-full">
+        <span>
+          <h1 className="text-xl font-semibold">Available Sellers</h1>
+          <p className="text-gray-400">Manage your sellers and their accounts</p>
+        </span>
+        <Link href="/dashboards/system-admin/create-seller">
+        <button className="flex items-center gap-2 text-white bg-gradient-to-r from-orange-500 to-red-500 py-2 px-6 cursor-pointer rounded-md transition-colors duration-150">
+          <PlusIcon />
+          Add New Seller
+        </button>
+        </Link>
+      </section>
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-5 text-xs w-full mb-5">
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 w-full">
@@ -294,5 +309,6 @@ export default function SellersTable() {
         </div>
       </div>
     </div>
+ </div>
   );
 }

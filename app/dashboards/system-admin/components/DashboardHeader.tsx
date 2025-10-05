@@ -1,6 +1,6 @@
 "use client";
 
-import { DoubleArrowRightIcon, DashboardIcon, TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
+import { DoubleArrowRightIcon, TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

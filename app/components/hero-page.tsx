@@ -2,10 +2,9 @@
 
 import { TrendingUp } from 'lucide-react';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React from 'react';
 
 export default function HeroPage() {
-    const [currentSlide, setCurrentSlide] = useState(0);
 
     return (
         <section className="pt-[15rem] pb-12 bg-black sm:pb-16 lg:pb-20 xl:pb-24 text-sm">

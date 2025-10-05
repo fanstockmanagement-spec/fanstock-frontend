@@ -1,9 +1,9 @@
 "use client";
 
 import { useUsers } from "@/app/components/hooks/useUser";
-import { ArchiveIcon, DashboardIcon, SymbolIcon, TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
+import { TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@radix-ui/themes";
-import { Archive, LayoutDashboard, RefreshCw, User, Users } from "lucide-react";
+import { LayoutDashboard, User, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

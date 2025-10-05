@@ -21,7 +21,7 @@ export default function CreateShoesPage() {
     const [step, setStep] = useState(1);
     const [form, setForm] = useState(initialForm);
     const router = useRouter();
-    const updateForm = (field: string, value: any) => setForm(prev => ({ ...prev, [field]: value }));
+    const updateForm = (field: string, value: unknown) => setForm(prev => ({ ...prev, [field]: value }));
     const resetForm = () => { setStep(1); setForm(initialForm); };
     const handleCancel = () => router.back();
 
@@ -91,10 +91,10 @@ export default function CreateShoesPage() {
                                 <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {[
-                                        { label: 'Brand', value: form.brand, onChange: (e: any) => updateForm('brand', e.target.value), placeholder: 'e.g., Nike, Adidas' },
-                                        { label: 'Model', value: form.model, onChange: (e: any) => updateForm('model', e.target.value), placeholder: 'e.g., Air Max 90' },
-                                        { label: 'Category', value: form.category, onChange: (e: any) => updateForm('category', e.target.value), type: 'select', options: ['Sneakers', 'Running', 'Basketball', 'Canvas', 'Boots', 'Formal', 'Sandals'] },
-                                        { label: 'Default Price ($)', value: form.defaultPrice, onChange: (e: any) => updateForm('defaultPrice', e.target.value), type: 'number', placeholder: '120.00' }
+                                        { label: 'Brand', value: form.brand, onChange: (e: React.ChangeEvent<HTMLInputElement>) => updateForm('brand', e.target.value), placeholder: 'e.g., Nike, Adidas' },
+                                        { label: 'Model', value: form.model, onChange: (e: React.ChangeEvent<HTMLInputElement>) => updateForm('model', e.target.value), placeholder: 'e.g., Air Max 90' },
+                                        { label: 'Category', value: form.category, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => updateForm('category', e.target.value), type: 'select', options: ['Sneakers', 'Running', 'Basketball', 'Canvas', 'Boots', 'Formal', 'Sandals'] },
+                                        { label: 'Default Price ($)', value: form.defaultPrice, onChange: (e: React.ChangeEvent<HTMLInputElement>) => updateForm('defaultPrice', e.target.value), type: 'number', placeholder: '120.00' }
                                     ].map((field, i) => (
                                         <div key={i}>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">{field.label}</label>

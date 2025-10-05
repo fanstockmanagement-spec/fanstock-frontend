@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     SIGNUP: '/signup',
     LOGOUT: '/logout',
     REFRESH: '/refresh',
+    FORGOT_PASSWORD: '/forgot-password',
   },
   USER: {
     CREATE: '/create-user',
@@ -20,6 +21,8 @@ export const API_ENDPOINTS = {
     SINGLE: (id: string) => `/user/${id}`,
     PROFILE: '/profile',
     UPDATE: (id: string) => `/update-user/${id}`,
+    UPDATE_PROFILE: '/update-profile',
+    CHANGE_PASSWORD: '/change-password',
   },
   SHOES: {
     LIST: '/shoes',

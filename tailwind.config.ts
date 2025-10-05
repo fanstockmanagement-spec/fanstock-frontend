@@ -10,6 +10,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-quicksand)", "system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        quicksand: ["var(--font-quicksand)", "system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
       },
     },
   },

@@ -1,4 +1,4 @@
-import { BarChartIcon, GlobeIcon, LockClosedIcon, RocketIcon, CheckCircledIcon } from "@radix-ui/react-icons";
+import { BarChartIcon, GlobeIcon, RocketIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 
 export function FeaturesSection() {
     const features = [

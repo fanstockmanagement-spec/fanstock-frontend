@@ -1,4 +1,3 @@
-import { BarChartIcon, GlobeIcon, LightningBoltIcon, LockClosedIcon } from "@radix-ui/react-icons";
 import { ChartBar, Globe, Lightbulb, Lock } from "lucide-react";
 
 export default function ProblemsSection() {
@@ -58,10 +57,10 @@ export default function ProblemsSection() {
                         The Reality Check
                     </p>
                     <h2 className="text-4xl md:text-6xl  text-white mb-6 max-w-3xl">
-                        Running a shoe store shouldn't feel like this
+                        Running a shoe store shouldn&apos;t feel like this
                     </h2>
                     <p className="text-gray-300 max-w-2xl leading-relaxed">
-                        These aren't just problems—they're daily frustrations that hold your business back.
+                        These aren&apos;t just problems—they&apos;re daily frustrations that hold your business back.
                     </p>
                 </div>
 
@@ -108,7 +107,7 @@ export default function ProblemsSection() {
                 {/* Call to Action */}
                 <div className="mt-16 text-center w-full">
                     <p className="text-gray-300 mb-6">
-                        Sound familiar? It's time for a change.
+                        Sound familiar? It&apos;s time for a change.
                     </p>
                     <button className="px-8 py-3 bg-orange-500 text-white hover:bg-orange-400 rounded-full transition-colors cursor-pointer duration-300">
                         See How FanStock Solves This

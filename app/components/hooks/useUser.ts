@@ -38,7 +38,7 @@ export const useUsers = () => {
         register,
         handleSubmit,
         reset,
-        formState: { errors, isSubmitting },
+        formState: { errors },
         setError,
 
     } = useForm<CreateUserFormData>({
@@ -115,7 +115,7 @@ export const useUsers = () => {
 
 
             if (response.status >= 200 && response.status < 300) {
-                toast.success('Users fetched successfully')
+                // toast.success('Users fetched successfully')
             } else {
                 toast.error('Failed to fetch users')
             }
@@ -184,6 +184,7 @@ export const useUsers = () => {
         users,
         profile,
         isLoadingProfile,
+        showProfile,
         logout
     }
 }

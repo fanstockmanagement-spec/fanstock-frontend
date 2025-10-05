@@ -2,7 +2,6 @@ import React from 'react'
 import HomePage from './home-page'
 import ProblemsSection from './problem-section' 
 import PricingSection from "./pricing-section"
-import { FeaturesSection } from './feature-section'
 import Footer from './footer'
 
 const LandingPage = () => {

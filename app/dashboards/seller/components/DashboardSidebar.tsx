@@ -1,81 +1,109 @@
 "use client";
 
-import { ArchiveIcon, DashboardIcon, PaperPlaneIcon, SymbolIcon, TriangleLeftIcon } from "@radix-ui/react-icons";
+import { useUsers } from "@/app/components/hooks/useUser";
+import { TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
+import { Skeleton } from "@radix-ui/themes";
+import { Archive, LayoutDashboard, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
+  const { profile, isLoadingProfile, logout } = useUsers();
 
   const links = [
     {
       href: "/dashboards/seller",
-      icon: <DashboardIcon />,
+      icon: <LayoutDashboard strokeWidth={1.5} size={16} />,
       label: "Overview",
     },
     {
-      href: "/dashboards/seller/inventory",
-      icon: <ArchiveIcon />,
-      label: "Inventory",
+      href: "/dashboards/seller/shoes-collection",
+      icon: <Archive strokeWidth={1.5} size={16} />,
+      label: "Shoes Collection",
     },
     {
-      href: "#",
-      icon: <SymbolIcon />,
-      label: "Orders",
+      href: "/dashboards/seller/profile",
+      icon: <User strokeWidth={1.5} size={16} />,
+      label: "Profile",
     },
-    // {
-    //   href: "#",
-    //   icon: <PaperPlaneIcon />,
-    //   label: "Messages",
-    // },
   ];
+
   return (
-    <nav className="hidden md:flex flex-col justify-between w-66 h-screen pt-26 bg-white border-r border-gray-200 p-4 text-sm sticky top-0">
-      <main className="w-full flex flex-col gap-4">
-        {/* sidebar header */}
-        <span className="flex flex-col justify-start items-center gap-2 p-2 border border-gray-200 w-full">
-          <p className="font-semibold">SNEAKER NATION</p>
-          <p className="bg-green-500/10 text-green-500 rounded-full px-4 py-1 flex items-center gap-2">
-            <span className="bg-green-500 rounded-full w-2 h-2"></span>
-            Active
-          </p>
-        </span>
+    <nav className="hidden md:flex flex-col justify-between w-full md:w-66 pt-26 h-screen bg-gradient-to-b from-slate-50 to-white border-r border-slate-200 shadow-sm sticky top-0 text-sm">
+      {/* Header Section */}
+      <div className="p-6">
 
-        {/* sidebar links */}
 
-        <div className="flex flex-col gap-2 mt-5">
-          <h1 className="text-gray-500">Operations</h1>
-          {links.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link 
-                key={link.href}
-                href={link.href} 
-                className={`flex items-center gap-2 p-3 border transition-colors duration-150 ${
-                  isActive 
-                    ? 'bg-[#CA425A]/10 border-[#CA425A]/15 text-[#CA425A]' 
-                    : 'bg-gray-50 border-white hover:border-gray-200'
-                }`}
-              >
-                {link.icon}
-                <p className="flex items-center gap-2">{link.label}</p>
-              </Link>
-            );
-          })}
+        {/* Navigation Links */}
+        <div className="mt-8">
+          <h2 className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-4 px-2">
+            Operations
+          </h2>
+          <div className="space-y-2">
+            {links.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`group flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-200 ${isActive
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
+                    }`}
+                >
+                  <div className={`transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}>
+                    {link.icon}
+                  </div>
+                  <span className="font-medium">{link.label}</span>
+                  {isActive && (
+                    <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      </main>
-      {/* sidebar items */}
-    <footer className="flex flex-col gap-5">
-    <Link href="/" className="border flex items-center justify-center border-[#CA425A] text-[#CA425A] p-3 w-full cursor-pointer hover:bg-[#CA425A] hover:text-white transition-colors duration-150">
-      <TriangleLeftIcon />
-        Logout
-      </Link>
-      <hr className="border-gray-200" />
-      <span className="p-2 bg-gray-50 w-full">
-        <p className="font-medium">Kagibwami Nyawe</p>
-        <p className="text-gray-500">seller@250kicks.com</p>
-      </span>
-    </footer>
+      </div>
+
+      {/* Footer Section */}
+      <div className="p-6 space-y-4">
+        {/* Logout Button */}
+        <Link
+          href="/"
+          onClick={logout}
+          className="flex gap-2 px-4 py-2 border border-transparent rounded-md items-center justify-center bg-gray-100 hover:border hover:border-orange-500 hover:text-orange-500 transition-all duration-200"
+        >
+          <TriangleLeftIcon className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200 " />
+          <span>Logout</span>
+        </Link>
+
+        {/* User Profile Section */}
+        <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+              <PersonIcon />
+            </div>
+            <div className="flex-1 min-w-0">
+              {isLoadingProfile ? (
+                <div className="space-y-2">
+                  <Skeleton />
+                  <Skeleton />
+                </div>
+              ) : (
+                <>
+                  <p className="font-semibold text-slate-800 truncate">
+                    {profile?.name || 'Loading...'}
+                  </p>
+                  <p className="text-slate-500 text-xs truncate">
+                    {profile?.email || 'user@example.com'}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </nav>
   );
 }
