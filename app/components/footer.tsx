@@ -20,7 +20,7 @@ export default function Footer() {
     };
 
     return (
-        <footer id="contact" className="bg-black border-t border-cyan-300/20">
+        <footer id="support" className="bg-black border-t border-cyan-300/20">
             <div className="max-w-[92%] mx-auto px-4 md:px-8 py-12 md:py-16">
                 <div className="grid md:grid-cols-4 gap-8 md:gap-12 mb-8">
                     <div>

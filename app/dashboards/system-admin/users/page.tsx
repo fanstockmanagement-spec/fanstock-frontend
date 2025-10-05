@@ -2,7 +2,7 @@
 
 import { usePaginatedData } from '@/app/components/hooks/usePagination';
 import { getApiUrl, API_ENDPOINTS } from '@/utils/env';
-import { Edit, Eye, Filter, Search, ChevronLeft, ChevronRight, Divide } from 'lucide-react';
+import { Edit, Eye, Filter, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';

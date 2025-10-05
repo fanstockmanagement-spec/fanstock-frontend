@@ -22,7 +22,7 @@ export const usePaginatedData = <T>(
         totalPages: 0
     });
     const [isLoading, setIsLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState(initialParams.search || '');
+    const [searchTerm, setSearchTerm] = useState<string>(String(initialParams.search || ''));
 
     const fetchData = useCallback(async (page: number = 1, search?: string, filters: Record<string, unknown> = {}) => {
         setIsLoading(true);
@@ -60,7 +60,7 @@ export const usePaginatedData = <T>(
         } finally {
             setIsLoading(false);
         }
-    }, [endpoint, pagination.limit, pagination]);
+    }, [endpoint, pagination]);
 
     const handleSearch = (search: string) => {
         console.log('🔍 Search:', search);
@@ -70,16 +70,16 @@ export const usePaginatedData = <T>(
 
     const updateFilters = (newFilters: Record<string, unknown>) => {
         console.log('🔧 Filter:', newFilters);
-        fetchData(1, searchTerm, newFilters);
+        fetchData(1, searchTerm || undefined, newFilters);
     };
 
     const handlePageChange = (page: number) => {
-        fetchData(page, searchTerm);
+        fetchData(page, searchTerm || undefined);
     };
 
     // Initial load
     useEffect(() => {
-        fetchData(1, searchTerm);
+        fetchData(1, searchTerm || undefined);
     }, [fetchData, searchTerm]);
 
     return {

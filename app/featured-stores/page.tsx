@@ -73,7 +73,7 @@ export default function FeatureStores() {
         }
     ];
 
-    const handleContact = (type, contact) => {
+    const handleContact = (type: string, contact: string) => {
         if (type === 'phone') {
             window.location.href = `tel:${contact}`;
         } else if (type === 'whatsapp') {

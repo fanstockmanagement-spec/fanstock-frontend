@@ -90,24 +90,25 @@ export default function CreateShoesPage() {
                             <AnimatedCard delay={0}  className="bg-white border border-gray-200 p-6">
                                 <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {[
-                                        { label: 'Brand', value: form.brand, onChange: (e: React.ChangeEvent<HTMLInputElement>) => updateForm('brand', e.target.value), placeholder: 'e.g., Nike, Adidas' },
-                                        { label: 'Model', value: form.model, onChange: (e: React.ChangeEvent<HTMLInputElement>) => updateForm('model', e.target.value), placeholder: 'e.g., Air Max 90' },
-                                        { label: 'Category', value: form.category, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => updateForm('category', e.target.value), type: 'select', options: ['Sneakers', 'Running', 'Basketball', 'Canvas', 'Boots', 'Formal', 'Sandals'] },
-                                        { label: 'Default Price ($)', value: form.defaultPrice, onChange: (e: React.ChangeEvent<HTMLInputElement>) => updateForm('defaultPrice', e.target.value), type: 'number', placeholder: '120.00' }
-                                    ].map((field, i) => (
-                                        <div key={i}>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">{field.label}</label>
-                                            {field.type === 'select' ? (
-                                                <select value={field.value} onChange={field.onChange} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]">
-                                                    <option value="">Select category</option>
-                                                    {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                </select>
-                                            ) : (
-                                                <input type={field.type || 'text'} value={field.value} onChange={field.onChange} placeholder={field.placeholder} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]" />
-                                            )}
-                                        </div>
-                                    ))}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+                                        <input type="text" value={form.brand} onChange={(e) => updateForm('brand', e.target.value)} placeholder="e.g., Nike, Adidas" className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Model</label>
+                                        <input type="text" value={form.model} onChange={(e) => updateForm('model', e.target.value)} placeholder="e.g., Air Max 90" className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                        <select value={form.category} onChange={(e) => updateForm('category', e.target.value)} className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]">
+                                            <option value="">Select category</option>
+                                            {['Sneakers', 'Running', 'Basketball', 'Canvas', 'Boots', 'Formal', 'Sandals'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Default Price ($)</label>
+                                        <input type="number" value={form.defaultPrice} onChange={(e) => updateForm('defaultPrice', e.target.value)} placeholder="120.00" className="w-full p-3 border border-gray-200 focus:outline-none focus:border-1 focus:border-[#CA425A]" />
+                                    </div>
                                 </div>
                                 <div className="mt-4">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>

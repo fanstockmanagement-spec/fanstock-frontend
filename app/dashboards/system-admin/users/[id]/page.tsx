@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter, usePathname } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Calendar, Mail, Phone, User, CreditCard, Eye, Clock, CheckCircle, XCircle, Shield } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
@@ -438,7 +438,7 @@ export default function UserPage() {
 }
 
 export const EditSubscriptionModal = ({ setIsEditingSubscription, user }: { setIsEditingSubscription: (isEditingSubscription: boolean) => void } & { user: UserDetail }) => {
-  const { register, handleSubmit, reset, errors, isSubmitting, onSubmit, isUpdatingUser } = useUpdateUser();
+  const { register, handleSubmit, errors, isSubmitting, onSubmit } = useUpdateUser();
 
   return (
     <div className="fixed inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center z-50">
