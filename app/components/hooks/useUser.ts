@@ -182,7 +182,7 @@ export const useUsers = () => {
                     }
                 });
             }
-        } catch (error) {
+        } catch {
             // Even if logout fails on backend, we still logout locally
             console.log('Backend logout failed, proceeding with local logout');
         } finally {

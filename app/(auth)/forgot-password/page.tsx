@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { Cross2Icon, TriangleRightIcon } from '@radix-ui/react-icons';
 import { Spinner } from '@radix-ui/themes';
-import { usePassword } from '@/app/components/hooks/usePassword';
+import { useForgotPassword } from '@/app/components/hooks/useForgotPassword';
 
-export default function SignInPage() {
-  const { register, handleSubmit, isSubmitting } = usePassword();
+export default function ForgotPasswordPage() {
+  const { register, handleSubmit, isSubmitting, errors } = useForgotPassword();
 
   return (
     <div className=" min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4 text-sm">
@@ -37,6 +37,11 @@ export default function SignInPage() {
                 placeholder="Email Address"
                 {...register('email')}
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             {/* Sign In Button */}

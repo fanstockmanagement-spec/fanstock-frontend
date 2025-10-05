@@ -46,7 +46,7 @@ export default function DashboardHeader() {
           >
             <DoubleArrowRightIcon />
           </button>
-          <h1 className="text-xl font-semibold">250 Kicks</h1>
+          <h1 className="text-xl font-semibold">FanStock</h1>
         </span>
         <span className="flex items-center gap-2 border border-gray-300 rounded-full p-1 pr-5">
           <h1 className="bg-white rounded-full p-2 w-[40px] h-[40px] flex items-center justify-center border border-gray-300">A</h1>
