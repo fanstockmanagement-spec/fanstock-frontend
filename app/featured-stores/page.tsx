@@ -5,12 +5,15 @@ import { StarFilledIcon, MobileIcon, ChatBubbleIcon, EyeOpenIcon, Cross2Icon } f
 import Image from 'next/image';
 
 interface Shoe {
-    shoe_id: number;
-    name: string;
+    shoe_id: string;
     brand: string;
-    price: number;
-    size: number;
-    color: string;
+    model_name: string;
+    category: string;
+    stockRemaining: number;
+    colors: string[];
+    sizes: string[];
+    price_retail: string;
+    description: string;
     image_urls: string[];
 }
 
@@ -21,6 +24,7 @@ interface Store {
     location: string;
     phone: string;
     whatsapp: string;
+    featuredSubscription: boolean;
     rating: number;
     totalShoes: number;
     featured_shoes: Shoe[];
