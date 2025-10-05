@@ -13,7 +13,7 @@ export default function SellerDashboardLayout({
         <DashboardHeader />
         <div className="flex w-full">
           <DashboardSidebar />
-          <main className="flex-1 w-full h-full pt-26 px-4 min-h-screen mx-auto max-w-screen-2xl">{children}</main>
+          <main className="flex-1 h-full pt-26 px-4 min-h-screen mx-auto max-w-screen-2xl w-2/3">{children}</main>
         </div>
       </div>
     </div>

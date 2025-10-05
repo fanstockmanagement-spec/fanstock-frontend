@@ -4,6 +4,7 @@ import { usePaginatedData } from '@/app/components/hooks/usePagination';
 import { getApiUrl, API_ENDPOINTS } from '@/utils/env';
 import { Edit, Eye, Filter, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 
 
 interface User {
@@ -19,7 +20,7 @@ interface User {
 export default function SellersTable() {
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  
+  const router = useRouter();
   const {
   data: users,
   pagination,
@@ -215,7 +216,9 @@ export default function SellersTable() {
                       <button className="bg-orange-500/10 cursor-pointer p-2 w-8 h-8 flex items-center justify-center rounded-full text-orange-600 hover:text-orange-900 transition-colors">
                         <Edit strokeWidth={1.5} size={16} />
                       </button>
-                      <button className="bg-blue-500/10 cursor-pointer p-2 w-8 h-8 flex items-center justify-center rounded-full text-blue-600 hover:text-blue-900 transition-colors">
+                      <button 
+                        onClick={() => router.push(`/dashboards/system-admin/users/${user.id}`)}
+                      className="bg-blue-500/10 cursor-pointer p-2 w-8 h-8 flex items-center justify-center rounded-full text-blue-600 hover:text-blue-900 transition-colors">
                         <Eye strokeWidth={1.5} size={16} />
                       </button>
                     </div>

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod"
+import { useRouter } from "next/navigation";
 
 const validationSchema = z.object({
 
@@ -32,6 +33,7 @@ export type CreateUserFormData = z.infer<typeof validationSchema>;
 
 
 export const useUsers = () => {
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -49,17 +51,20 @@ export const useUsers = () => {
         }
     })
 
-    const [isLoading, setIsLoading] = useState(false)
+    const [isSubmit, setIsSubmit] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
     const [users, setUsers] = useState<User[]>([])
+    const [isLoadingProfile, setIsLoadingProfile] = useState(false)
+    const [profile, setProfile] = useState<User | null>(null)
     const onSubmit = async (data: CreateUserFormData) => {
 
-        setIsLoading(true)
+        setIsSubmit(true)
         try {
             const createUserUrl = getApiUrl(API_ENDPOINTS.USER.CREATE);
             const token = localStorage.getItem('token');
             if (!token) {
                 toast.error('Authentication required. Please log in to create a seller.');
-                setIsLoading(false)
+                setIsSubmit(false)
                 return
             }
             const response = await axios.post(createUserUrl, data, {
@@ -85,19 +90,19 @@ export const useUsers = () => {
                 }
             });
         } finally {
-            setIsLoading(false)
+            setIsSubmit(false)
         }
     }
 
 
     const fetchUsers = async () => {
-        setIsLoading(true)
+        setIsFetching(true)
         try {
             const usersUrl = getApiUrl(API_ENDPOINTS.USER.LIST);
             const token = localStorage.getItem('token');
             if (!token) {
                 toast.error('Authentication required. Please log in to fetch users.');
-                setIsLoading(false)
+                setIsFetching(false)
                 return
             }
             const response = await axios.get(usersUrl, {
@@ -121,23 +126,64 @@ export const useUsers = () => {
                 }
             });
         } finally {
-            setIsLoading(false)
+            setIsFetching(false)
         }
+    }
+
+  
+
+    const showProfile = async () => {
+        setIsLoadingProfile(true);
+        try {
+            const profileUrl = getApiUrl(API_ENDPOINTS.USER.PROFILE);
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast.error('Authentication required. Please log in to show profile.');
+                return
+            }
+            const response = await axios.get(profileUrl, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            setProfile(response.data.data.user)
+        } catch (error) {
+            handleApiError(error, {
+                onAuthFailure: () => {
+                    localStorage.removeItem('token');
+                }
+            });
+        } finally {
+            setIsLoadingProfile(false)
+        }
+    }
+
+
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('role');
+        router.push('/');
+        toast.success('Logged out successfully');
     }
 
     useEffect(() => {
         fetchUsers()
+        showProfile()
     }, [])
 
     return {
         register,
         handleSubmit: handleSubmit(onSubmit),
         errors,
-        isSubmitting,
+        isSubmit,
+        isFetching,
         onSubmit,
-        isLoading,
         reset,
         setError,
-        users
+        users,
+        profile,
+        isLoadingProfile,
+        logout
     }
 }

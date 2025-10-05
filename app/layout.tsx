@@ -28,7 +28,11 @@ export default function RootLayout({
         className={`${quicksand.variable} ${quicksand.className} antialiased`}
       >
         <Theme>
-          <Toaster/>
+          <Toaster 
+            toastOptions={{
+              className: "text-sm font-light"
+            }}
+          />
           <div className="font-sans">
             {children}
           </div>

@@ -17,8 +17,9 @@ export const API_ENDPOINTS = {
   USER: {
     CREATE: '/create-user',
     LIST: '/users',
+    SINGLE: (id: string) => `/user/${id}`,
     PROFILE: '/profile',
-    UPDATE: '/update',
+    UPDATE: (id: string) => `/update-user/${id}`,
   },
   SHOES: {
     LIST: '/shoes',

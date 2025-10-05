@@ -1,20 +1,29 @@
 'use client';
 
-import { useCreateUser } from '@/app/components/hooks/useUser';
-import { ArrowLeftIcon, TriangleLeftIcon } from '@radix-ui/react-icons';
+import { useUsers } from '@/app/components/hooks/useUser';
+import { TriangleLeftIcon } from '@radix-ui/react-icons';
 import { Spinner } from '@radix-ui/themes';
-import { Building, Mail, Shield, User, UserPen } from 'lucide-react';
+import { User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 
 
 export default function CreateSellerPage() {
-    const { register, handleSubmit, errors, isSubmitting, onSubmit, isLoading, reset, setError } = useCreateUser();
-    const randomPassword = "Account@123";
+    const { register, handleSubmit, errors, isSubmit } = useUsers();
+    function generatePassword() {
+        const prefix = "FanStock";
+        const date = new Date().getDate(); // e.g. 3
+        const randomNum = Math.floor(Math.random() * 1000); // random number 0-999
+        const specialChars = "!@#$%&*";
+        const randomChar = specialChars[Math.floor(Math.random() * specialChars.length)];
+      
+        return `${prefix}${date}${randomChar}${randomNum}`;
+      }
+
     const router = useRouter();
     return (
-        <div className="min-h-screen bg-gray-50 py-8 text-sm">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen py-8 text-sm">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 ">
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex flex-wrap w-full items-center gap-3 justify-between">
@@ -22,7 +31,7 @@ export default function CreateSellerPage() {
                             <h1 className="text-3xl text-gray-900">Create New Seller</h1>
                             <p className="text-gray-600 mt-1">Add a new seller to the platform</p>
                         </div>
-                        <button onClick={() => router.back()} className='flex items-center gap-2 bg-orange-500/10 text-orange-500 h-12 px-6 cursor-pointer border border-white hover:border hover:border-orange-500/90 rounded-full transition-colors duration-150'>
+                        <button onClick={() => router.back()} className='flex items-center gap-2 bg-orange-500/10 text-orange-500 h-[35px] px-6 cursor-pointer rounded-md transition-colors duration-150'>
                         <TriangleLeftIcon />
                         Back
                         </button>
@@ -30,9 +39,9 @@ export default function CreateSellerPage() {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-8">
+                <form onSubmit={handleSubmit} className="space-y-8 ">
                     {/* Personal Information */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="rounded-xl shadow-sm p-6 bg-gray-50">
                         <div className="flex items-center gap-2 mb-6">
                             <span className='p-2 bg-orange-500/5 text-orange-500 rounded-full'>
                             <User strokeWidth={1.5} size={16} />
@@ -86,9 +95,8 @@ export default function CreateSellerPage() {
                                 <input
                                     type="text"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-[1px] focus:border-none focus:ring-orange-500 transition-colors"
-                                    placeholder={randomPassword}
-                                    value={randomPassword}
-                                    readOnly
+                                    placeholder={generatePassword()}
+                                    value={generatePassword()}
                                     {...register('password')}
                                 />
                             </div>
@@ -99,10 +107,10 @@ export default function CreateSellerPage() {
                            
                             <button
                                 type="submit"
-                                className="px-8 h-12 w-[150px] flex items-center justify-center rounded-full cursor-pointer bg-orange-500 text-white hover:bg-orange-600 disabled:opacity-50 transition-colors gap-2"
-                                disabled={isLoading}
+                                className="px-8 h-[35px] w-[150px] flex items-center justify-center rounded-md cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 text-white disabled:opacity-50 transition-colors gap-2"
+                                disabled={isSubmit}
                             >
-                             {isLoading ? <Spinner /> : <span>Submit Info</span>}
+                             {isSubmit ? <Spinner /> : <span>Submit Info</span>}
                             </button>
                         </div>
                     </div>

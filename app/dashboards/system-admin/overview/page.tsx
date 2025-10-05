@@ -12,7 +12,7 @@ export default function OverviewPage() {
           <p className="text-gray-400">Here you can manage your store and products</p>
         </span>
         <Link href="/dashboards/system-admin/create-seller">
-        <button className="flex items-center gap-2 text-white bg-orange-500 h-12 p-3 px-6 cursor-pointer  hover:bg-orange-500/90 rounded-full transition-colors duration-150">
+        <button className="flex items-center gap-2 text-white bg-gradient-to-r from-orange-500 to-red-500 py-2 px-6 cursor-pointer rounded-md transition-colors duration-150">
           <PlusIcon />
           Add New Seller
         </button>
