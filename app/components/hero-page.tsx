@@ -16,7 +16,7 @@ export default function HeroPage() {
                         <p className="max-w-lg mt-4 font-normal text-gray-400 sm:mt-8">Have been wondering where to find the stock you need? Look no further. FanStock is here to help you find the stock you need.</p>
                         <button className="px-6 py-3 mt-10 text-white bg-gradient-to-r from-orange-500 to-red-500 border border-orange-500 rounded-md cursor-pointer hover:from-orange-600 hover:to-red-600 transition-all duration-200 font-medium"> Start Exploring Stock </button>
 
-                            <div>
+                        <div>
                             <div className="inline-flex items-center pt-6 mt-8 border-t border-gray-800 sm:pt-10 sm:mt-14">
                                 <TrendingUp color='orange' strokeWidth={1.5} />
                                 <span className="ml-2 text-base font-normal text-white"> 42 new stock was added last week </span>
@@ -25,8 +25,8 @@ export default function HeroPage() {
                     </div>
 
                     <div className="mt-8 md:absolute md:mt-0 md:top-32 lg:top-0 md:right-0">
-                        <Image className="w-full max-w-xs mx-auto lg:max-w-lg xl:max-w-xl" src="/noise.png" alt="hero image" width={500} height={500} />
-                </div>
+                        <Image src="/hero-image.png" alt="hero image" width={500} height={500} />
+                    </div>
                 </div>
             </div>
         </section>

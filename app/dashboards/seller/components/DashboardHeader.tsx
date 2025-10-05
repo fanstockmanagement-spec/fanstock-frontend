@@ -120,7 +120,7 @@ export default function DashboardHeader() {
             <hr className="border-gray-200" />
             <span className="p-2 bg-gray-50 w-full">
               <p className="font-medium">Kagibwami Nyawe</p>
-              <p className="text-gray-500">seller@250kicks.com</p>
+              <p className="text-gray-500">seller@FanStock.com</p>
             </span>
           </footer>
         </div>
