@@ -10,7 +10,12 @@ export interface ErrorHandlerOptions {
 export interface ApiErrorMessage {
   message?: string;
   error?: string;
+  details?: string;
   errors?: Record<string, string[]>;
+  data?: {
+    message?: string;
+    error?: string;
+  };
 }
 
 /**
@@ -36,7 +41,7 @@ export const handleApiError = (
 
   const status = error.response?.status;
   const errorData: ApiErrorMessage = error.response?.data || {};
-  const errorMessage = errorData.message || errorData.error;
+  const errorMessage = errorData.message || errorData.error || errorData.details || errorData.data?.message || errorData.data?.error;
 
   // Handle validation errors (400 with field-specific errors)
   if (status === 400 && errorData.errors) {
@@ -48,17 +53,17 @@ export const handleApiError = (
     return;
   }
 
-  // Handle different status codes
+  // Handle different status codes - prioritize backend messages
   const statusMessages: Record<number, string> = {
     400: errorMessage || 'Invalid request. Please check your input.',
-    401: 'User not found. Please login again.',
-    403: 'You do not have permission to perform this action.',
-    404: 'The requested resource was not found.',
-    409: 'A record with this information already exists.',
-    422: 'Unable to process the request. Please check your input.',
-    429: 'Too many requests. Please wait a moment and try again.',
-    500: 'Server error. Please try again later.',
-    503: 'Service temporarily unavailable. Please try again later.',
+    401: errorMessage || 'Authentication failed. Please log in again.',
+    403: errorMessage || 'You do not have permission to perform this action.',
+    404: errorMessage || 'The requested resource was not found.',
+    409: errorMessage || 'A record with this information already exists.',
+    422: errorMessage || 'Unable to process the request. Please check your input.',
+    429: errorMessage || 'Too many requests. Please wait a moment and try again.',
+    500: errorMessage || 'Server error. Please try again later.',
+    503: errorMessage || 'Service temporarily unavailable. Please try again later.',
   };
 
   const message = status ? statusMessages[status] : undefined;

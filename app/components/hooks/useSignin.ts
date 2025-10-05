@@ -60,7 +60,11 @@ export const useSignin = () => {
                     localStorage.setItem('user', JSON.stringify(user));
                     localStorage.setItem('role', role);
 
-                    toast.success(`Welcome back, ${user.name || user.email}`)
+                    // Use backend welcome message if available, otherwise use dynamic message
+                    const welcomeMessage = responseData.message || 
+                                         responseData.data?.message || 
+                                         `Welcome back, ${user.name || user.email}`;
+                    toast.success(welcomeMessage);
 
                     // Redirect based on success, ignore role for now
                     if (user.userType === 'admin') {
@@ -72,8 +76,9 @@ export const useSignin = () => {
                     }
                     reset();
                 } else {
-                    // Handle unsuccessful response
-                    toast.error(responseData.message || 'Login failed');
+                    // Handle unsuccessful response - use backend message first
+                    const errorMessage = responseData.message || responseData.error || 'Login failed';
+                    toast.error(errorMessage);
                 }
             }
         } catch (error) {

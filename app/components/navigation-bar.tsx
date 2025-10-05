@@ -97,7 +97,7 @@ export function NavigationBar() {
                                 title="" 
                                 className="text-base font-normal text-gray-400 transition-all duration-200 hover:text-orange-400 relative group"
                                 onClick={(e) => handleSmoothScroll(e, link.href)}
-                            >
+                            >‰
                                 {link.label}
                                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-400 transition-all duration-200 group-hover:w-full"></span>
                             </Link>

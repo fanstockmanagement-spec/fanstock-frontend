@@ -57,6 +57,7 @@ export const useUsers = (options: UseUsersOptions = {}) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
+        // This is a client-side validation, so we keep a generic message
         toast.error('Authentication required. Please log in.');
         return;
       }
@@ -93,9 +94,10 @@ export const useUsers = (options: UseUsersOptions = {}) => {
         onAuthFailure: () => {
           localStorage.removeItem('token');
           // Optionally redirect to login
-        }
+        },
+        fallbackMessage: 'Failed to fetch users'
       });
-      setError('Failed to fetch users');
+      // Don't set hardcoded error since handleApiError will show the toast
     } finally {
       setIsLoading(false);
     }

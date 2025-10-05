@@ -63,6 +63,7 @@ export const useUsers = () => {
             const createUserUrl = getApiUrl(API_ENDPOINTS.USER.CREATE);
             const token = localStorage.getItem('token');
             if (!token) {
+                // This is a client-side validation, so we keep a generic message
                 toast.error('Authentication required. Please log in to create a seller.');
                 setIsSubmit(false)
                 return
@@ -75,10 +76,14 @@ export const useUsers = () => {
             })
 
             if (response.status >= 200 && response.status < 300) {
-                toast.success('Seller created successfully')
+                // Use backend success message if available
+                const successMessage = response.data?.message || 'Seller created successfully';
+                toast.success(successMessage);
                 reset()
             } else {
-                toast.error('Failed to create a seller')
+                // Use backend error message if available
+                const errorMessage = response.data?.message || response.data?.error || 'Failed to create a seller';
+                toast.error(errorMessage);
             }
 
         } catch (error) {
@@ -101,6 +106,7 @@ export const useUsers = () => {
             const usersUrl = getApiUrl(API_ENDPOINTS.USER.LIST);
             const token = localStorage.getItem('token');
             if (!token) {
+                // This is a client-side validation, so we keep a generic message
                 toast.error('Authentication required. Please log in to fetch users.');
                 setIsFetching(false)
                 return
@@ -115,9 +121,12 @@ export const useUsers = () => {
 
 
             if (response.status >= 200 && response.status < 300) {
+                // Success - no need to show toast for data fetching
                 // toast.success('Users fetched successfully')
             } else {
-                toast.error('Failed to fetch users')
+                // Use backend error message if available
+                const errorMessage = response.data?.message || response.data?.error || 'Failed to fetch users';
+                toast.error(errorMessage);
             }
         } catch (error) {
             handleApiError(error, {
@@ -138,6 +147,7 @@ export const useUsers = () => {
             const profileUrl = getApiUrl(API_ENDPOINTS.USER.PROFILE);
             const token = localStorage.getItem('token');
             if (!token) {
+                // This is a client-side validation, so we keep a generic message
                 toast.error('Authentication required. Please log in to show profile.');
                 return
             }
@@ -159,12 +169,29 @@ export const useUsers = () => {
     }
 
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('role');
-        router.push('/');
-        toast.success('Logged out successfully');
+    const logout = async () => {
+        try {
+            // Try to call logout endpoint if it exists
+            const logoutUrl = getApiUrl(API_ENDPOINTS.AUTH.LOGOUT);
+            const token = localStorage.getItem('token');
+            
+            if (token) {
+                await axios.post(logoutUrl, {}, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            }
+        } catch (error) {
+            // Even if logout fails on backend, we still logout locally
+            console.log('Backend logout failed, proceeding with local logout');
+        } finally {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('role');
+            router.push('/');
+            toast.success('Logged out successfully');
+        }
     }
 
     useEffect(() => {

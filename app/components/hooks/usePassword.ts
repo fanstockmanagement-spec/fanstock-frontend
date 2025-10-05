@@ -1,46 +1,102 @@
+'use client'
+
 import { API_ENDPOINTS, getApiUrl } from "@/utils/env";
-import { handleApiError } from "@/utils/errorHandler";
+import { handleApiError, setValidationErrors } from "@/utils/errorHandler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-const validationSchema = z.object({
-    email: z.string().email('Please enter a valid email address').min(1, 'Email is required'),
-})
+const changePasswordSchema = z.object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+    confirmPassword: z.string().min(1, 'Please confirm your new password'),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+});
 
-export type PasswordFormData = z.infer<typeof validationSchema>;
+export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 export const usePassword = () => {
-    const { register, handleSubmit, formState: { isSubmitting } } = useForm<PasswordFormData>({
-        resolver: zodResolver(validationSchema),
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        reset,
+        setError,
+    } = useForm<ChangePasswordFormData>({
+        resolver: zodResolver(changePasswordSchema),
         defaultValues: {
-            email: '',
-        },
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: '',
+        }
     });
 
-    const onSubmit = async (data: PasswordFormData) => {
-        console.log(data);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const onSubmit = async (data: ChangePasswordFormData) => {
+        setIsLoading(true);
+
         try {
-            const response = await axios.post(getApiUrl(API_ENDPOINTS.AUTH.FORGOT_PASSWORD), data);
-            if (response.status === 200) {
-                toast.success('Password reset email sent successfully');
-            } else {
-                toast.error('Failed to send password reset email');
+            const changePasswordUrl = getApiUrl(API_ENDPOINTS.USER.CHANGE_PASSWORD);
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                toast.error('Authentication required. Please log in to change your password.');
+                return;
             }
-        } catch (error) {
-            handleApiError(error, {
-                onAuthFailure: () => {
-                    localStorage.removeItem('token');
+
+            const response = await axios.post(changePasswordUrl, {
+                currentPassword: data.currentPassword,
+                newPassword: data.newPassword,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 }
             });
+
+            if (response.status >= 200 && response.status < 300) {
+                // Use backend success message if available, fallback to generic message
+                const successMessage = response.data?.message || 
+                                     response.data?.data?.message || 
+                                     'Password changed successfully';
+                toast.success(successMessage);
+                reset();
+            } else {
+                // Use backend error message if available
+                const errorMessage = response.data?.message || 
+                                   response.data?.error || 
+                                   response.data?.data?.message ||
+                                   'Failed to change password';
+                toast.error(errorMessage);
+            }
+
+        } catch (error) {
+            handleApiError(error, {
+                onValidationError: (errors) => setValidationErrors(errors, setError),
+                onAuthFailure: () => {
+                    localStorage.removeItem('token');
+                    toast.error('Session expired. Please log in again.');
+                },
+                fallbackMessage: 'Unable to change password. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
         }
-    }
+    };
 
     return {
         register,
         handleSubmit: handleSubmit(onSubmit),
+        errors,
         isSubmitting,
-    }
-}
+        isLoading,
+        onSubmit,
+        reset,
+    };
+};
