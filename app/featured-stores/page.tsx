@@ -4,8 +4,30 @@ import { useState } from 'react';
 import { StarFilledIcon, MobileIcon, ChatBubbleIcon, EyeOpenIcon, Cross2Icon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 
+interface Shoe {
+    shoe_id: number;
+    name: string;
+    brand: string;
+    price: number;
+    size: number;
+    color: string;
+    image_urls: string[];
+}
+
+interface Store {
+    store_id: number;
+    store_name: string;
+    owner_name: string;
+    location: string;
+    phone: string;
+    whatsapp: string;
+    rating: number;
+    totalShoes: number;
+    featured_shoes: Shoe[];
+}
+
 export default function FeatureStores() {
-    const [selectedShoe, setSelectedShoe] = useState(null);
+    const [selectedShoe, setSelectedShoe] = useState<(Shoe & { store: Store }) | null>(null);
 
     // Mock data - Replace with actual API calls
     const featuredStores = [
