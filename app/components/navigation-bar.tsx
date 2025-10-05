@@ -95,7 +95,7 @@ export function NavigationBar() {
                                 key={link.label} 
                                 href={link.href} 
                                 title="" 
-                                className="text-base font-normal text-gray-400 transition-all duration-200 hover:text-white hover:text-orange-400 relative group"
+                                className="text-base font-normal text-gray-400 transition-all duration-200 hover:text-orange-400 relative group"
                                 onClick={(e) => handleSmoothScroll(e, link.href)}
                             >
                                 {link.label}
@@ -127,7 +127,7 @@ export function NavigationBar() {
                                 key={link.label} 
                                 href={link.href} 
                                 title="" 
-                                className="block text-base font-normal text-gray-400 transition-all duration-200 hover:text-white hover:text-orange-400 py-2 px-4 rounded-lg hover:bg-gray-800/50"
+                                className="block text-base font-normal text-gray-400 transition-all duration-200  hover:text-orange-400 py-2 px-4 rounded-lg hover:bg-gray-800/50"
                                 onClick={(e) => handleSmoothScroll(e, link.href)}
                                 style={{ 
                                     animationDelay: `${index * 100}ms`,
