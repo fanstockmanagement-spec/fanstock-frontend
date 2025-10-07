@@ -26,7 +26,7 @@ export const API_ENDPOINTS = {
   },
   SHOES: {
     LIST: '/shoes',
-    CREATE: '/shoes',
+    CREATE: '/create-shoe-stock',
     UPDATE: (id: string) => `/shoes/${id}`,
     DELETE: (id: string) => `/shoes/${id}`,
   },

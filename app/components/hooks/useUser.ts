@@ -23,6 +23,7 @@ export interface User {
     name: string;
     email: string;
     phoneNumber: string;
+    isSubscriptionActive: boolean;
     createdAt: string;
     updatedAt: string;
     status: 'active' | 'inactive' | 'pending';

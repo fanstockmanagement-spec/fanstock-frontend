@@ -16,7 +16,7 @@ export default function DashboardHeader() {
       label: "Overview",
     },
     {
-      href: "/dashboards/seller/inventory",
+      href: "/dashboards/seller/all-shoes",
       icon: <ArchiveIcon />,
       label: "Inventory",
     },

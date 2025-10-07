@@ -18,7 +18,7 @@ export default function DashboardSidebar() {
       label: "Overview",
     },
     {
-      href: "/dashboards/seller/shoes-collection",
+      href: "/dashboards/seller/all-shoes",
       icon: <Archive strokeWidth={1.5} size={16} />,
       label: "Shoes Collection",
     },

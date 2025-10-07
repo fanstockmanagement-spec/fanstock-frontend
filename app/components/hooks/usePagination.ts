@@ -52,7 +52,7 @@ export const usePaginatedData = <T>(
 
             if (response.data?.success && response.data?.data) {
                 setData(response.data.data.users || []);
-                setPagination(response.data.data.pagination || pagination);
+                setPagination(prevPagination => response.data.data.pagination || prevPagination);
             }
         } catch (error) {
             console.error('❌ Error:', error);
@@ -60,7 +60,7 @@ export const usePaginatedData = <T>(
         } finally {
             setIsLoading(false);
         }
-    }, [endpoint, pagination]);
+    }, [endpoint, pagination.limit]);
 
     const handleSearch = (search: string) => {
         console.log('🔍 Search:', search);
@@ -80,7 +80,7 @@ export const usePaginatedData = <T>(
     // Initial load
     useEffect(() => {
         fetchData(1, searchTerm || undefined);
-    }, [fetchData, searchTerm]);
+    }, [fetchData]);
 
     return {
         data,

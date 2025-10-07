@@ -69,10 +69,8 @@ export const useSignin = () => {
                     // Redirect based on success, ignore role for now
                     if (user.userType === 'admin') {
                         router.push('/dashboards/system-admin');
-                    } else if (user.userType === 'seller') {
+                    } else if (user.userType === 'user') {
                         router.push('/dashboards/seller');
-                    } else if (user.userType === undefined) {
-                        router.push('/subscription-info');
                     }
                     reset();
                 } else {
