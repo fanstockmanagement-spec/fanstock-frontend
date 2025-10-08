@@ -25,7 +25,7 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: '/change-password',
   },
   SHOES: {
-    LIST: '/shoes',
+    LIST_USER_SHOES: '/user-shoes',
     CREATE: '/create-shoe-stock',
     UPDATE: (id: string) => `/shoes/${id}`,
     DELETE: (id: string) => `/shoes/${id}`,

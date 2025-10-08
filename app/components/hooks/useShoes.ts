@@ -3,7 +3,7 @@
 import { API_ENDPOINTS, getApiUrl } from "@/utils/env";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod"
@@ -43,8 +43,9 @@ export const useShoes = () => {
             images: [],
         }
     })
-   const [shoes, setShoes] = useState<ShoesFormData[]>([]);
+   const [shoes, setShoes] = useState<any[]>([]);
    const [isLoading, setIsLoading] = useState(false);
+   const [isFetching, setIsFetching] = useState(false);
    
    const onSubmit = async (data: ShoesFormData | FormData) => {
     try {
@@ -104,15 +105,50 @@ export const useShoes = () => {
     }
    }
 
+   const getShoes = async () => {
+    try {
+        setIsFetching(true);
+        const getShoesUrl = getApiUrl(API_ENDPOINTS.SHOES.LIST_USER_SHOES);
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+        
+        const response = await axios.get(getShoesUrl, { 
+            headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        
+        console.log('Shoes fetched:', response.data);
+        setShoes(response.data.data || []);
+        return response.data;
+    } catch (error: any) {
+        console.error('Error fetching shoes:', error.response?.data || error.message);
+        toast.error('Failed to fetch shoes');
+        setShoes([]);
+    } finally {
+        setIsFetching(false);
+    }
+   }
+
+
+
+   useEffect(() => {
+    getShoes();
+   }, []);
+
 
    return {
     shoes,
+    getShoes,
     register,
     handleSubmit,
     reset,
     errors,
     onSubmit,
     isSubmitting: isLoading,
+    isFetching,
     watch,
    }
 }
