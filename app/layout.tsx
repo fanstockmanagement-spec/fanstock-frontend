@@ -30,7 +30,7 @@ export default function RootLayout({
         <Theme>
           <Toaster 
             toastOptions={{
-              className: "text-sm font-light"
+              className: "text-xs font-light"
             }}
           />
           <div className="font-sans">

@@ -3,15 +3,15 @@
 import { DoubleArrowRightIcon, TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Skeleton } from "@radix-ui/themes";
-import { useUsers } from "@/app/components/hooks/useUser";
-import { LayoutDashboard, User, Users, Archive } from "lucide-react";
+import { LayoutDashboard, User, Archive } from "lucide-react";
+import { useSellerProfile } from "@/app/components/hooks/useSellerProfile";
 
 export default function DashboardHeader() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const { profile, isLoadingProfile, logout } = useUsers();
+  const { sellerProfile, isLoadingSellerProfile, logout } = useSellerProfile();
 
   const links = [
     {
@@ -34,6 +34,7 @@ export default function DashboardHeader() {
   const toggleMobileSidebar = () => {
     setIsMobileSidebarOpen(!isMobileSidebarOpen);
   };
+  const router = useRouter();
 
   return (
     <div className="flex flex-col text-sm">
@@ -45,11 +46,11 @@ export default function DashboardHeader() {
           >
             <DoubleArrowRightIcon />
           </button>
-          <h1 className="text-xl font-semibold">FanStock</h1>
+          <h1 role="button" onClick={() => router.push('/')} className="text-xl font-semibold cursor-pointer">FanStock</h1>
         </span>
         <span className="flex items-center gap-2 border border-gray-300 rounded-full p-1 pr-5">
-          <h1 className="bg-white rounded-full p-2 w-[35px] h-[35px] flex items-center justify-center border border-gray-300">{profile?.name?.charAt(0).toUpperCase()}</h1>
-          <p className="text-sm font-medium">Hello, {profile?.name || 'Loading...'}</p>
+          <h1 className="bg-white rounded-full p-2 w-[35px] h-[35px] flex items-center justify-center border border-gray-300">{sellerProfile?.name?.charAt(0).toUpperCase()}</h1>
+          <p className="text-sm font-medium">Hello, {sellerProfile?.name || 'Loading...'}</p>
         </span>
       </header>
 
@@ -126,7 +127,7 @@ export default function DashboardHeader() {
                   <PersonIcon />
                 </div>
                 <div className="flex-1 min-w-0">
-                  {isLoadingProfile ? (
+                  {isLoadingSellerProfile ? (
                     <div className="space-y-2">
                       <Skeleton />
                       <Skeleton />
@@ -134,10 +135,10 @@ export default function DashboardHeader() {
                   ) : (
                     <>
                       <p className="font-semibold text-slate-800 truncate">
-                        {profile?.name || 'Loading...'}
+                        {sellerProfile?.name || 'Loading...'}
                       </p>
                       <p className="text-slate-500 text-xs truncate">
-                        {profile?.email || 'user@example.com'}
+                        {sellerProfile?.email || 'user@example.com'}
                       </p>
                     </>
                   )}

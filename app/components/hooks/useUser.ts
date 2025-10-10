@@ -57,6 +57,7 @@ export const useUsers = () => {
     const [users, setUsers] = useState<User[]>([])
     const [isLoadingProfile, setIsLoadingProfile] = useState(false)
     const [profile, setProfile] = useState<User | null>(null)
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
     const onSubmit = async (data: CreateUserFormData) => {
 
         setIsSubmit(true)
@@ -195,9 +196,19 @@ export const useUsers = () => {
         }
     }
 
+    // Check authentication status
+    const checkAuthStatus = () => {
+        const token = localStorage.getItem('token');
+        setIsAuthenticated(!!token);
+        return !!token;
+    }
+
     useEffect(() => {
-        fetchUsers()
-        showProfile()
+        const hasToken = checkAuthStatus();
+        if (hasToken) {
+            fetchUsers()
+            showProfile()
+        }
     }, [])
 
     return {
@@ -213,6 +224,8 @@ export const useUsers = () => {
         profile,
         isLoadingProfile,
         showProfile,
-        logout
+        logout,
+        isAuthenticated,
+        checkAuthStatus
     }
 }

@@ -1,35 +1,40 @@
 "use client";
 
+import { useRecordSales } from "@/app/components/hooks/useRecordSales";
 import { useShoes } from "@/app/components/hooks/useShoes";
 import { Spinner } from "@radix-ui/themes";
-import { Eye, Edit, Trash2, Plus, BoxIcon, DollarSign, Calendar, Search, Filter, X } from 'lucide-react';
+import { Eye, Edit, Trash2, Plus, BoxIcon, DollarSign, Calendar, Search, X, XCircle, CheckCircle } from 'lucide-react';
+import Image from "next/image";
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 
-interface Shoe {
-  shoe_id: string;
+export interface Shoe {
+  shoe_id?: string;
   brand: string;
   model_name: string;
   category: string;
+  stockin: string;
   price_retail: string;
   description: string;
   colors: string[];
   sizes: string[];
-  image_urls: string[];
-  createdAt: string;
-  updatedAt: string;
+  images: string[];
+  image_urls?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export default function AllShoesPage() {
   const { shoes, isFetching } = useShoes();
-  
+  const [isRecordingSales, setIsRecordingSales] = useState(false);
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedColor, setSelectedColor] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [showFilters, setShowFilters] = useState(false);
+  // Add selected shoe state
+  const [selectedShoe, setSelectedShoe] = useState<Shoe | null>(null);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -63,12 +68,12 @@ export default function AllShoesPage() {
   // Get unique values for filters
   const uniqueCategories = useMemo(() => {
     if (!shoes) return [];
-    return [...new Set(shoes.map((shoe: Shoe) => shoe.category))];
+    return [...new Set(shoes.map((shoe) => shoe.category))];
   }, [shoes]);
 
   const uniqueColors = useMemo(() => {
     if (!shoes) return [];
-    const allColors = shoes.flatMap((shoe: Shoe) => shoe.colors);
+    const allColors = shoes.flatMap((shoe) => shoe.colors);
     return [...new Set(allColors)];
   }, [shoes]);
 
@@ -76,9 +81,9 @@ export default function AllShoesPage() {
   const filteredShoes = useMemo(() => {
     if (!shoes) return [];
 
-    let filtered = shoes.filter((shoe: Shoe) => {
+    const filtered = shoes.filter((shoe) => {
       // Search filter
-      const matchesSearch = !searchTerm || 
+      const matchesSearch = !searchTerm ||
         shoe.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
         shoe.model_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         shoe.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -98,12 +103,12 @@ export default function AllShoesPage() {
     });
 
     // Sort shoes
-    filtered.sort((a: Shoe, b: Shoe) => {
+    filtered.sort((a, b) => {
       switch (sortBy) {
         case 'newest':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return new Date((b as Shoe).createdAt || '').getTime() - new Date((a as Shoe).createdAt || '').getTime();
         case 'oldest':
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          return new Date((a as Shoe).createdAt || '').getTime() - new Date((b as Shoe).createdAt || '').getTime();
         case 'price-low':
           return parseFloat(a.price_retail) - parseFloat(b.price_retail);
         case 'price-high':
@@ -166,7 +171,7 @@ export default function AllShoesPage() {
             <div>
               <p className="text-sm font-medium text-gray-600">Categories</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {new Set(shoes?.map((shoe: Shoe) => shoe.category)).size || 0}
+                {new Set(shoes?.map((shoe) => shoe.category)).size || 0}
               </p>
             </div>
             <div className="w-10 h-10 bg-green-50 text-green-500 rounded-full flex items-center justify-center">
@@ -180,7 +185,7 @@ export default function AllShoesPage() {
             <div>
               <p className="text-sm font-medium text-gray-600">Total Value</p>
               <p className="text-2xl font-semibold text-gray-900">
-                  <span className="text-sm">RWF</span> {shoes?.reduce((total: number, shoe: Shoe) => total + parseFloat(shoe.price_retail), 0).toString() || '0'}
+                <span className="text-sm">RWF</span> {shoes?.reduce((total: number, shoe) => total + parseFloat(shoe.price_retail), 0).toString() || '0'}
               </p>
             </div>
             <div className="w-10 h-10 bg-cyan-50 text-cyan-500 rounded-full flex items-center justify-center">
@@ -191,11 +196,11 @@ export default function AllShoesPage() {
 
         <div className="bg-white p-6 border border-gray-100">
           <div className="flex items-center justify-between">
-    <div>
+            <div>
               <p className="text-sm font-medium text-gray-600">This Month</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {shoes?.filter((shoe: Shoe) => {
-                  const shoeDate = new Date(shoe.createdAt);
+                {shoes?.filter((shoe) => {
+                  const shoeDate = new Date((shoe as Shoe).createdAt || '');
                   const now = new Date();
                   return shoeDate.getMonth() === now.getMonth() && shoeDate.getFullYear() === now.getFullYear();
                 }).length || 0}
@@ -316,15 +321,18 @@ export default function AllShoesPage() {
         </div>
       ) : filteredShoes && filteredShoes.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredShoes.map((shoe: Shoe) => (
-            <div key={shoe.shoe_id} className="bg-white rounded-md border border-gray-100 hover:shadow transition-all duration-200 overflow-hidden group">
+          {filteredShoes.map((shoe, index) => (
+            <div key={(shoe as Shoe).shoe_id || `shoe-${index}`} className="bg-white rounded-md border border-gray-100 hover:shadow transition-all duration-200 overflow-hidden group">
               {/* Image */}
               <div className="relative h-38 bg-gray-100">
-                {shoe.image_urls && shoe.image_urls.length > 0 ? (
-                  <img
-                    src={shoe.image_urls[0]}
+                {((shoe as Shoe).image_urls && (shoe as Shoe).image_urls!.length > 0) || (shoe.images && shoe.images.length > 0) ? (
+                  <Image
+                    src={(shoe as Shoe).image_urls?.[0] || shoe.images[0]}
                     alt={`${shoe.brand} ${shoe.model_name}`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                    width={300}
+                    height={152}
+                    quality={90}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -344,13 +352,19 @@ export default function AllShoesPage() {
                 {/* Action Buttons */}
                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <div className="flex gap-2">
-                    <Link 
-                      href={`/dashboards/seller/all-shoes/${shoe.shoe_id}`}
+                    <Link
+                      href={`/dashboards/seller/all-shoes/${(shoe as Shoe).shoe_id || index}`}
                       className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors duration-200"
                     >
                       <Eye className="w-4 h-4 text-gray-600" />
                     </Link>
-                    <button className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors duration-200">
+                    <button
+                      onClick={() => {
+                        setSelectedShoe(shoe as Shoe); // Set the clicked shoe
+                        setIsRecordingSales(true);
+                      }}
+                      className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors duration-200"
+                    >
                       <Edit className="w-4 h-4 text-gray-600" />
                     </button>
                     <button className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors duration-200">
@@ -373,7 +387,7 @@ export default function AllShoesPage() {
                     {shoe.price_retail}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {formatDate(shoe.createdAt)}
+                    {formatDate((shoe as Shoe).createdAt || '')}
                   </span>
                 </div>
 
@@ -395,26 +409,6 @@ export default function AllShoesPage() {
                     )}
                   </div>
                 </div>
-
-                {/* Sizes */}
-                {/* <div>
-                  <p className="text-xs font-medium text-gray-700 mb-2">Sizes</p>
-                  <div className="flex flex-wrap gap-1">
-                    {shoe.sizes.slice(0, 4).map((size, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md"
-                      >
-                        {size}
-                      </span>
-                    ))}
-                    {shoe.sizes.length > 4 && (
-                      <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
-                        +{shoe.sizes.length - 4} more
-                      </span>
-                    )}
-                  </div>
-                </div> */}
               </div>
             </div>
           ))}
@@ -430,13 +424,92 @@ export default function AllShoesPage() {
           <p className="text-gray-600 mb-6">Get started by adding your first shoe to the inventory.</p>
           <Link
             href="/dashboards/seller/create-shoes"
-            className="inline-flex items-center gap-2 text-white bg-[#CA425A] px-6 py-3 rounded-lg cursor-pointer hover:bg-[#CA425A]/90 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+            className="inline-flex items-center gap-2 text-white bg-gradient-to-r from-orange-500 to-red-500 px-6 py-2 rounded-md cursor-pointer hover:bg-gradient-to-r hover:from-orange-600 hover:to-red-600 transition-all duration-200"
           >
-            <Plus className="w-5 h-5" />
+            <Plus strokeWidth={1.5} size={16} />
             Add Your First Shoe
           </Link>
         </div>
       )}
+
+      {isRecordingSales && selectedShoe && (
+        <RecordSalesModal
+          setIsRecordingSales={setIsRecordingSales}
+          shoe={selectedShoe}
+        />
+      )}
+    </div>
+  );
+}
+
+export const RecordSalesModal = ({ setIsRecordingSales, shoe }: { setIsRecordingSales: (isRecordingSales: boolean) => void } & { shoe: Shoe }) => {
+  const { register, handleSubmit, errors, isSubmitting, onSubmit } = useRecordSales({
+    shoe_id: shoe.shoe_id || '',
+    quantity_sold: 0,
+    notes: ''
+  }, () => {
+    // Close modal on successful sale recording
+    setIsRecordingSales(false);
+  });
+
+  return (
+    <div className="fixed inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center z-50">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-md space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <span className="p-2 bg-orange-500/5 text-orange-500 rounded-full"><Eye strokeWidth={1.5} size={16} /></span>
+          Record Sales
+        </h2>
+        <h1 className="text-gray-900 flex items-center gap-2 my-5">
+          Shoe Name: <span className="font-semibold bg-orange-500/5 text-orange-500 rounded-full px-4 py-1 h-8 flex items-center justify-center capitalize">
+            {shoe.brand} {shoe.model_name}
+          </span>
+        </h1>
+        <div className="space-y-3">
+          <span className="text-sm text-gray-500">Shoe ID</span>
+          <input
+            type="text"
+            className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none"
+            {...register('shoe_id')}
+            readOnly
+          />
+          {errors.shoe_id && <p className="text-red-500 text-xs">{errors.shoe_id.message}</p>}
+        </div>
+        <div className="space-y-3">
+          <span className="text-sm text-gray-500">Quantity Sold</span>
+          <input
+            type="number"
+            className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none"
+            {...register('quantity_sold', { valueAsNumber: true })}
+          />
+          {errors.quantity_sold && <p className="text-red-500 text-xs">{errors.quantity_sold.message}</p>}
+        </div>
+        <div className="space-y-3">
+          <span className="text-sm text-gray-500">Notes</span>
+          <textarea
+            rows={3}
+            className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none"
+            {...register('notes')}
+          />
+          {errors.notes && <p className="text-red-500 text-xs">{errors.notes.message}</p>}
+        </div>
+        <div className="mt-5 flex items-center justify-end gap-2">
+          <button
+            onClick={() => setIsRecordingSales(false)}
+            className="w-full flex text-black items-center justify-center gap-2 px-4 py-2 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200 transition-colors"
+          >
+            <XCircle strokeWidth={1.5} size={16} />
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full flex items-center justify-center whitespace-nowrap gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-md cursor-pointer hover:from-orange-600 hover:to-red-600 transition-colors"
+          >
+            {isSubmitting ? <Spinner /> : <CheckCircle strokeWidth={1.5} size={16} />}
+            Submit Sales
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

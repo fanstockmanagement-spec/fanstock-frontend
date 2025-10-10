@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { StarFilledIcon, MobileIcon, ChatBubbleIcon, EyeOpenIcon, Cross2Icon, TriangleLeftIcon } from '@radix-ui/react-icons';
+import { ChatBubbleIcon, EyeOpenIcon, Cross2Icon, TriangleLeftIcon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Map, Phone } from 'lucide-react';
@@ -217,10 +217,12 @@ export default function FeatureStores() {
                                     >
                                         {/* Shoe Image */}
                                         <div className="relative h-48 overflow-hidden bg-gray-100">
-                                            <img
+                                            <Image
                                                 src={shoe.image_urls[0]}
                                                 alt={`${shoe.brand} ${shoe.model_name}`}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                width={80}
+                                                height={80}
                                             />
                                             <div className="absolute top-3 right-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-md text-gray-900 text-sm font-semibold">
                                                 ${shoe.price_retail}
@@ -274,10 +276,12 @@ export default function FeatureStores() {
                             {/* Image Section */}
                             <div className="space-y-4">
                                 <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                                    <img
+                                    <Image
                                         src={selectedShoe.image_urls[0]}
                                         alt={`${selectedShoe.brand} ${selectedShoe.model_name}`}
                                         className="w-full h-full object-cover"
+                                        width={80}
+                                        height={80}
                                     />
                                 </div>
                                 {selectedShoe.image_urls.length > 1 && (

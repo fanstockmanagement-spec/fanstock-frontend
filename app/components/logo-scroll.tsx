@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 interface Logo {
   name: string;
   src: string;
@@ -29,11 +31,13 @@ export default function LogoScroll() {
               key={`first-${index}`}
               className="flex-shrink-0 w-28 h-20 flex items-center justify-center"
             >
-              <img
+              <Image
                 src={logo.src}
                 alt={logo.name}
                 className="max-w-full max-h-full object-contain transition-all duration-500 hover:scale-110"
                 loading="lazy"
+                width={80}
+                height={80}
               />
             </div>
           ))}
@@ -45,11 +49,13 @@ export default function LogoScroll() {
               key={`second-${index}`}
               className="flex-shrink-0 w-28 h-20 flex items-center justify-center"
             >
-              <img
+              <Image
                 src={logo.src}
                 alt={logo.name}
                 className="max-w-full max-h-full object-contain transition-all duration-500 hover:scale-110"
                 loading="lazy"
+                width={80}
+                height={80}
               />
             </div>
           ))}

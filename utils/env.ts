@@ -23,12 +23,14 @@ export const API_ENDPOINTS = {
     UPDATE: (id: string) => `/update-user/${id}`,
     UPDATE_PROFILE: '/update-profile',
     CHANGE_PASSWORD: '/change-password',
+    UPDATE_DISPLAY_STATUS: (id: string) => `/update-user/${id}`,
   },
   SHOES: {
     LIST_USER_SHOES: '/user-shoes',
     CREATE: '/create-shoe-stock',
     UPDATE: (id: string) => `/shoes/${id}`,
     DELETE: (id: string) => `/shoes/${id}`,
+    RECORD_SALES: '/record-sales',
   },
 } as const;
 

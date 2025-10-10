@@ -80,7 +80,7 @@ export const usePaginatedData = <T>(
     // Initial load
     useEffect(() => {
         fetchData(1, searchTerm || undefined);
-    }, [fetchData]);
+    }, [fetchData, searchTerm]);
 
     return {
         data,

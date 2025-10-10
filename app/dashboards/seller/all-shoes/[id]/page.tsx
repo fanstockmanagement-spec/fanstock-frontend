@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Edit, Trash2, Share2, Heart, ShoppingCart, Star, Calendar, Tag, Palette, Ruler, Package, DollarSign } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2,  Calendar, Palette, Ruler, Package } from 'lucide-react';
 import Link from 'next/link';
 import { API_ENDPOINTS, getApiUrl } from '@/utils/env';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { TriangleLeftIcon } from '@radix-ui/react-icons';
 import { Spinner } from '@radix-ui/themes';
+import Image from 'next/image';
 
 interface Shoe {
     shoe_id: string;
@@ -95,9 +96,12 @@ export default function SingleShoePage() {
                     toast.error('Shoe not found');
                     router.push('/dashboards/seller/all-shoes');
                 }
-            } catch (error: any) {
-                console.error('Error fetching shoe:', error);
-                toast.error('Failed to load shoe details');
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error && 'response' in error 
+                    ? (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch shoe'
+                    : 'Failed to fetch shoe';
+                console.error('Error fetching shoe:', errorMessage);
+                toast.error(errorMessage);
                 router.push('/dashboards/seller/all-shoes');
             } finally {
                 setIsLoading(false);
@@ -123,7 +127,7 @@ export default function SingleShoePage() {
             <div className="flex items-center justify-center min-h-screen text-sm">
                 <div className="text-center">
                     <h2 className="text-2xl font-semibold text-gray-900 mb-2">Shoe not found</h2>
-                    <p className="text-gray-600 mb-4">The shoe you're looking for doesn't exist.</p>
+                    <p className="text-gray-600 mb-4">The shoe you&apos;re looking for doesn&apos;t exist.</p>
                     <Link
                         href="/dashboards/seller/all-shoes"
                         className="inline-flex items-center gap-2 text-white bg-orange-500 px-6 py-2 rounded-md hover:bg-orange-600 transition-colors duration-200"
@@ -171,11 +175,16 @@ export default function SingleShoePage() {
                         {/* Main Image */}
                         <div className="aspect-square bg-white rounded-lg border border-gray-200 overflow-hidden">
                             {shoe.image_urls && shoe.image_urls.length > 0 ? (
-                                <img
+                                <div className="w-full h-full">
+                                    <Image
                                     src={shoe.image_urls[selectedImageIndex]}
                                     alt={`${shoe.brand} ${shoe.model_name}`}
                                     className="w-full h-full object-cover"
+                                    width={300}
+                                    height={300}
+                                    quality={100}
                                 />
+                                </div>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
                                     <div className="text-center">
@@ -196,10 +205,13 @@ export default function SingleShoePage() {
                                         className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden ${selectedImageIndex === index ? 'border-orange-500' : 'border-gray-200'
                                             }`}
                                     >
-                                        <img
+                                        <Image
                                             src={imageUrl}
                                             alt={`${shoe.brand} ${shoe.model_name} ${index + 1}`}
                                             className="w-full h-full object-cover"
+                                            width={300}
+                                            height={300}
+                                            quality={100}
                                         />
                                     </button>
                                 ))}

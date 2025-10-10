@@ -1,6 +1,6 @@
 "use client";
 
-import { useUsers } from "@/app/components/hooks/useUser";
+import { useSellerProfile } from "@/app/components/hooks/useSellerProfile";
 import { TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@radix-ui/themes";
 import { Archive, LayoutDashboard, User } from "lucide-react";
@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
-  const { profile, isLoadingProfile, logout } = useUsers();
+  const { sellerProfile, isLoadingSellerProfile, logout } = useSellerProfile();
 
   const links = [
     {
@@ -85,7 +85,7 @@ export default function DashboardSidebar() {
               <PersonIcon />
             </div>
             <div className="flex-1 min-w-0">
-              {isLoadingProfile ? (
+              {isLoadingSellerProfile ? (
                 <div className="space-y-2">
                   <Skeleton />
                   <Skeleton />
@@ -93,10 +93,10 @@ export default function DashboardSidebar() {
               ) : (
                 <>
                   <p className="font-semibold text-slate-800 truncate">
-                    {profile?.name || 'Loading...'}
+                    {sellerProfile?.name || 'Loading...'}
                   </p>
                   <p className="text-slate-500 text-xs truncate">
-                    {profile?.email || 'user@example.com'}
+                    {sellerProfile?.email || 'user@example.com'}
                   </p>
                 </>
               )}

@@ -3,7 +3,7 @@
 import { DoubleArrowRightIcon, TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Skeleton } from "@radix-ui/themes";
 import { useUsers } from "@/app/components/hooks/useUser";
 import { LayoutDashboard, User, Users } from "lucide-react";
@@ -12,7 +12,7 @@ export default function DashboardHeader() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const pathname = usePathname();
   const { profile, isLoadingProfile, logout } = useUsers();
-
+  const router = useRouter();
   const links = [
     {
       href: "/dashboards/system-admin",
@@ -45,7 +45,7 @@ export default function DashboardHeader() {
           >
             <DoubleArrowRightIcon />
           </button>
-          <h1 className="text-xl font-semibold">FanStock</h1>
+          <h1 role="button" onClick={() => router.push('/')} className="text-xl font-semibold cursor-pointer">FanStock</h1>
         </span>
         <span className="flex items-center gap-2 border border-gray-300 rounded-full p-1 pr-5">
           <h1 className="bg-white rounded-full p-2 w-[35px] h-[35px] flex items-center justify-center border border-gray-300">{profile?.name?.charAt(0).toUpperCase()}</h1>

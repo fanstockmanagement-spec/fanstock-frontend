@@ -12,6 +12,7 @@ import { TriangleLeftIcon } from "@radix-ui/react-icons";
 import { Spinner } from "@radix-ui/themes";
 import { useUpdateUser } from "@/app/components/hooks/useUpdateUser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUpdateDisplayStatus } from "@/app/components/hooks/useUpdateDisplayStatus";
 
 interface UserDetail {
   id: number;
@@ -42,7 +43,7 @@ export default function UserPage() {
   const [user, setUser] = useState<UserDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditingSubscription, setIsEditingSubscription] = useState(false);
-
+  const [isEditingDisplayStatus, setIsEditingDisplayStatus] = useState(false);
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -146,17 +147,17 @@ export default function UserPage() {
       <div className="mb-8 bg-gray-50 p-4 rounded-xl flex justify-between">
         <div className="flex flex-wrap items-center gap-4">
           <button
-          onClick={() => router.push('/dashboards/system-admin/users')}
+            onClick={() => router.push('/dashboards/system-admin/users')}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2 cursor-pointer"
           >
             <TriangleLeftIcon />
             <h2 className="text-md font-medium">Go back</h2>
           </button>
-          
+
         </div>
         <div>
-            <p className="text-gray-500 flex items-center gap-2">User ID: <div className="font-semibold bg-orange-500/5 text-orange-500 rounded-full px-2 py-1 w-[80px] flex items-center justify-center">{user.id}</div></p>
-          </div>
+          <p className="text-gray-500 flex items-center gap-2">User ID: <div className="font-semibold bg-orange-500/5 text-orange-500 rounded-full px-2 py-1 w-[80px] flex items-center justify-center">{user.id}</div></p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -372,6 +373,12 @@ export default function UserPage() {
                     <span className="text-sm text-gray-900 font-medium">{user.isDisplayedMonthsPayed || 'N/A'}</span>
                   </div>
                 </div>
+                <div className="mt-5 flex items-center justify-end gap-2">
+                  <button onClick={() => setIsEditingDisplayStatus(true)} className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-md cursor-pointer hover:from-orange-600 hover:to-red-600 transition-colors">
+                    <Eye strokeWidth={1.5} size={16} />
+                    Update Display Status
+                  </button>
+                </div>
               </div>
             </TabsContent>
 
@@ -433,6 +440,7 @@ export default function UserPage() {
         </div>
       </div>
       {isEditingSubscription && <EditSubscriptionModal setIsEditingSubscription={setIsEditingSubscription} user={user} />}
+      {isEditingDisplayStatus && <EditDisplayStatusModal setIsEditingDisplayStatus={setIsEditingDisplayStatus} user={user} />}
     </div>
   );
 }
@@ -477,3 +485,42 @@ export const EditSubscriptionModal = ({ setIsEditingSubscription, user }: { setI
   );
 };
 
+export const EditDisplayStatusModal = ({ setIsEditingDisplayStatus, user }: { setIsEditingDisplayStatus: (isEditingDisplayStatus: boolean) => void } & { user: UserDetail }) => {
+  const { register, handleSubmit, errors, isSubmitting, onSubmit } = useUpdateDisplayStatus();
+
+  return (
+    <div className="fixed inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center z-50">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-md">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <span className="p-2 bg-orange-500/5 text-orange-500 rounded-full"><Eye strokeWidth={1.5} size={16} /></span>
+          Update Display Status
+        </h2>
+        <h1 className="text-gray-900 flex items-center gap-2 my-5">User Name: <span className="font-semibold bg-orange-500/5 text-orange-500 rounded-full px-4 py-1 h-8 flex items-center justify-center capitalize">{user.name || <Spinner />}</span></h1>
+        <div className="space-y-3">
+          <span className="text-sm text-gray-500">Months Payed</span>
+          <input type="number" className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none" {...register('isDisplayedMonthsPayed')} />
+          {errors.isDisplayedMonthsPayed && <p className="text-red-500 text-xs">{errors.isDisplayedMonthsPayed.message}</p>}
+        </div>
+        <div className="mt-3">
+          <span className="text-sm text-gray-500">Payment Date</span>
+          <input type="date" className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none" {...register('isDisplayedStartDate')} />
+          {errors.isDisplayedStartDate && <p className="text-red-500 text-xs">{errors.isDisplayedStartDate.message}</p>}
+        </div>
+
+        <div className="mt-5 flex items-center justify-end gap-2">
+          <button onClick={() => setIsEditingDisplayStatus(false)} className="w-full flex text-black items-center justify-center gap-2 px-4 py-2 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200 transition-colors">
+            <XCircle strokeWidth={1.5} size={16} />
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full flex items-center justify-center whitespace-nowrap gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-md cursor-pointer hover:from-orange-600 hover:to-red-600 transition-colors">
+            {isSubmitting ? <Spinner /> : <Eye strokeWidth={1.5} size={16} />}
+            Update Display Status
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
