@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { TriangleLeftIcon } from '@radix-ui/react-icons';
 import { Spinner } from '@radix-ui/themes';
 import Image from 'next/image';
+import UpdateShoeForm from '../update-shoe/page';
 
 interface Shoe {
     shoe_id: string;
@@ -36,7 +37,7 @@ export default function SingleShoePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [selectedSize, setSelectedSize] = useState('');
-
+     const [isModalOpen, setIsModalOpen] = useState(false);
     const getColorClass = (color: string) => {
         const colorMap: { [key: string]: string } = {
             'black': 'bg-black',
@@ -155,10 +156,14 @@ export default function SingleShoePage() {
 
 
                     <div className="flex items-center gap-3 text-sm">
-                        <button className="flex items-center gap-2 px-4 py-2 text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-md hover:bg-orange-600 transition-colors duration-200 cursor-pointer">
-                            <Edit className="w-4 h-4" />
-                            Edit
-                        </button>
+                       
+<button 
+  onClick={() => setIsModalOpen(true)}
+  className="flex items-center gap-2 px-4 py-2 text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-md hover:bg-orange-600 transition-colors duration-200 cursor-pointer"
+>
+  <Edit className="w-4 h-4" />
+  Edit
+</button>
                         <button className="flex items-center gap-2 px-4 py-2 bg-white text-red-500 border border-red-500 rounded-md hover:bg-red-600 hover:text-white transition-colors duration-200 cursor-pointer">
                             <Trash2 className="w-4 h-4" />
                             Delete
@@ -332,7 +337,24 @@ export default function SingleShoePage() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> 
+
+          <UpdateShoeForm
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  shoeId={shoe.shoe_id}
+  initialData={{
+    brand: shoe.brand,
+    model_name: shoe.model_name,
+    category: shoe.category,
+    price_retail: shoe.price_retail,
+    description: shoe.description,
+    colors: shoe.colors,
+    sizes: shoe.sizes,
+    existingImages: shoe.image_urls,
+    stockToAdd: ''
+  }}
+/>
         </div>
     );
 }
