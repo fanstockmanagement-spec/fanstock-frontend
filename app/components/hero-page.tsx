@@ -46,24 +46,17 @@ export default function HeroPage() {
     // For 360 view, add multiple angles of the same shoe or use your own product images
     const shoeImages = [
         "vecteezy_colorful-cool-running-sneakers-mockup-vibrant-colors_47758796 (1).png", 
+    
     ];
 
-    // Combined rotation and image change effect
-    useEffect(() => {
+    // Continous rotation effect 
+ useEffect(() => {
         const rotateInterval = setInterval(() => {
-            setRotation(prev => {
-                const newRotation = prev + 2;
-                // Change image when completing 360 degree rotation
-                if (newRotation >= 360) {
-                    setCurrentIndex((prevIndex) => (prevIndex + 1) % shoeImages.length);
-                    return 0;
-                }
-                return newRotation;
-            });
+            setRotation(prev => prev + 2);
         }, 20);
 
         return () => clearInterval(rotateInterval);
-    }, [shoeImages.length]);
+    }, []);
 
     return (
         <section className="pt-[8rem] md:pt-[15rem] pb-12 bg-black sm:pb-16 lg:pb-20 xl:pb-24 text-sm overflow-hidden">
