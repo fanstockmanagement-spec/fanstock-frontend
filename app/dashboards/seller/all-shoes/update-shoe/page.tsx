@@ -213,7 +213,7 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col overflow-y-auto">
         <form onSubmit={handleSubmit} className="flex flex-col h-full text-sm">
           {/* Header */}
