@@ -5,6 +5,7 @@ import { PlusIcon, TrashIcon, UploadIcon, Cross2Icon, TriangleRightIcon, Triangl
 import { XCircle, Save } from 'lucide-react';
 import { Spinner } from '@radix-ui/themes';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 interface UpdateShoeFormProps {
   isOpen: boolean;
@@ -134,10 +135,10 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
           formDataToSend.append(key, JSON.stringify(value));
         } else if (key === 'price_retail') {
           // Send price as a properly formatted number
-          formDataToSend.append(key, parseFloat(value).toString());
+          formDataToSend.append(key, parseFloat(value as string).toString());
         } else if (key === 'stockToAdd') {
           // Send stockToAdd as number
-          formDataToSend.append(key, value);
+          formDataToSend.append(key, value as string);
         } else {
           formDataToSend.append(key, String(value));
         }
@@ -419,10 +420,12 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                               <div className={`w-full h-32 rounded-lg overflow-hidden border-2 ${
                                 imagesToDelete.includes(index) ? 'border-red-500 opacity-50' : 'border-gray-200'
                               } shadow-sm`}>
-                                <img 
+                                <Image
                                   src={imageUrl} 
                                   alt={`Product ${index + 1}`} 
                                   className="w-full h-full object-cover" 
+                                  width={128}
+                                  height={128}
                                 />
                               </div>
                               <button 
@@ -480,13 +483,15 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                       <div className="mt-6">
                         <h3 className="text-sm font-medium text-gray-700 mb-3">New Images to Upload</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {newImages.map((image, index) => (
+                          {newImages.map((image: File, index: number) => (
                             <div key={index} className="relative group">
                               <div className="w-full h-32 rounded-lg overflow-hidden border-2 border-green-500 shadow-sm">
-                                <img 
+                                <Image 
                                   src={URL.createObjectURL(image)} 
                                   alt={`New ${index + 1}`} 
                                   className="w-full h-full object-cover" 
+                                  width={128}
+                                  height={128}
                                 />
                               </div>
                               <button 

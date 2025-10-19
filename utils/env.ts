@@ -32,6 +32,9 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/shoes/${id}`,
     RECORD_SALES: '/record-sales',
   },
+  SALES_HISTORY: {
+    LIST: '/sales-history',
+  },
 } as const;
 
 export const getApiUrl = (endpoint: string): string => {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Edit, Trash2,  Calendar, Palette, Ruler, Package } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Calendar, Palette, Ruler, Package } from 'lucide-react';
 import Link from 'next/link';
 import { API_ENDPOINTS, getApiUrl } from '@/utils/env';
 import axios from 'axios';
@@ -37,7 +37,7 @@ export default function SingleShoePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [selectedSize, setSelectedSize] = useState('');
-     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const getColorClass = (color: string) => {
         const colorMap: { [key: string]: string } = {
             'black': 'bg-black',
@@ -98,7 +98,7 @@ export default function SingleShoePage() {
                     router.push('/dashboards/seller/all-shoes');
                 }
             } catch (error: unknown) {
-                const errorMessage = error instanceof Error && 'response' in error 
+                const errorMessage = error instanceof Error && 'response' in error
                     ? (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch shoe'
                     : 'Failed to fetch shoe';
                 console.error('Error fetching shoe:', errorMessage);
@@ -117,7 +117,7 @@ export default function SingleShoePage() {
     if (isLoading) {
         return (
             <div className="flex flex-col gap-3 items-center justify-center min-h-screen text-sm">
-                <Spinner className='text-orange-500 size-10'/>
+                <Spinner className='text-orange-500 size-10' />
                 <p>Loading Shoes Details...</p>
             </div>
         );
@@ -156,14 +156,14 @@ export default function SingleShoePage() {
 
 
                     <div className="flex items-center gap-3 text-sm">
-                       
-<button 
-  onClick={() => setIsModalOpen(true)}
-  className="flex items-center gap-2 px-4 py-2 text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-md hover:bg-orange-600 transition-colors duration-200 cursor-pointer"
->
-  <Edit className="w-4 h-4" />
-  Edit
-</button>
+
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-md hover:bg-orange-600 transition-colors duration-200 cursor-pointer"
+                        >
+                            <Edit className="w-4 h-4" />
+                            Edit
+                        </button>
                         <button className="flex items-center gap-2 px-4 py-2 bg-white text-red-500 border border-red-500 rounded-md hover:bg-red-600 hover:text-white transition-colors duration-200 cursor-pointer">
                             <Trash2 className="w-4 h-4" />
                             Delete
@@ -182,13 +182,13 @@ export default function SingleShoePage() {
                             {shoe.image_urls && shoe.image_urls.length > 0 ? (
                                 <div className="w-full h-full">
                                     <Image
-                                    src={shoe.image_urls[selectedImageIndex]}
-                                    alt={`${shoe.brand} ${shoe.model_name}`}
-                                    className="w-full h-full object-cover"
-                                    width={300}
-                                    height={300}
-                                    quality={100}
-                                />
+                                        src={shoe.image_urls[selectedImageIndex]}
+                                        alt={`${shoe.brand} ${shoe.model_name}`}
+                                        className="w-full h-full object-cover"
+                                        width={300}
+                                        height={300}
+                                        quality={100}
+                                    />
                                 </div>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -282,8 +282,8 @@ export default function SingleShoePage() {
                                         key={index}
                                         onClick={() => setSelectedSize(size)}
                                         className={`px-3 py-2 border rounded-md text-xs font-medium transition-colors duration-200 ${selectedSize === size
-                                                ? 'border-orange-500 bg-orange-50 text-orange-700'
-                                                : 'border-gray-200 text-gray-700 hover:border-orange-300'
+                                            ? 'border-orange-500 bg-orange-50 text-orange-700'
+                                            : 'border-gray-200 text-gray-700 hover:border-orange-300'
                                             }`}
                                     >
                                         {size}
@@ -337,24 +337,25 @@ export default function SingleShoePage() {
                         </div>
                     </div>
                 </div>
-            </div> 
+                
+            </div>
 
-          <UpdateShoeForm
-  isOpen={isModalOpen}
-  onClose={() => setIsModalOpen(false)}
-  shoeId={shoe.shoe_id}
-  initialData={{
-    brand: shoe.brand,
-    model_name: shoe.model_name,
-    category: shoe.category,
-    price_retail: shoe.price_retail,
-    description: shoe.description,
-    colors: shoe.colors,
-    sizes: shoe.sizes,
-    existingImages: shoe.image_urls,
-    stockToAdd: ''
-  }}
-/>
+            <UpdateShoeForm
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                shoeId={shoe.shoe_id}
+                initialData={{
+                    brand: shoe.brand,
+                    model_name: shoe.model_name,
+                    category: shoe.category,
+                    price_retail: shoe.price_retail,
+                    description: shoe.description,
+                    colors: shoe.colors,
+                    sizes: shoe.sizes,
+                    existingImages: shoe.image_urls,
+                    stockToAdd: ''
+                }}
+            />
         </div>
     );
 }

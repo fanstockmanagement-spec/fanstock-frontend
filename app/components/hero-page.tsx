@@ -36,16 +36,17 @@
 
 "use client";
 import { TrendingUp } from 'lucide-react';
+import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 
 export default function HeroPage() {
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex] = useState(0);
     const [rotation, setRotation] = useState(0);
     
     // Add your shoe image URLs here - use PNG images with transparent backgrounds
     // For 360 view, add multiple angles of the same shoe or use your own product images
     const shoeImages = [
-        "vecteezy_colorful-cool-running-sneakers-mockup-vibrant-colors_47758796 (1).png", 
+        "/vecteezy_colorful-cool-running-sneakers-mockup-vibrant-colors_47758796 (1).png", 
     
     ];
 
@@ -75,14 +76,16 @@ export default function HeroPage() {
                             >
                                 {/* Main Image */}
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <img 
-                                        src={shoeImages[currentIndex]} 
+                                    <Image 
+                                        src={shoeImages[0]} 
                                         alt={`Shoe ${currentIndex + 1}`}
                                         className="w-full h-full object-contain drop-shadow-2xl"
                                         style={{
                                             transform: 'translateZ(50px)',
                                             filter: 'drop-shadow(0 25px 50px rgba(249, 115, 22, 0.3))'
                                         }}
+                                        width={300}
+                                        height={300}
                                     />
                                 </div>
                                 

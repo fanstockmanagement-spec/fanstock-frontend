@@ -23,6 +23,11 @@ export default function DashboardSidebar() {
       label: "Shoes Collection",
     },
     {
+      href: "/dashboards/seller/sales-history",
+      icon: <Archive strokeWidth={1.5} size={16} />,
+      label: "Sales History",
+    },
+    {
       href: "/dashboards/seller/profile",
       icon: <User strokeWidth={1.5} size={16} />,
       label: "Profile",
