@@ -77,14 +77,7 @@ export const usePassword = () => {
             }
 
         } catch (error) {
-            handleApiError(error, {
-                onValidationError: (errors) => setValidationErrors(errors, setError),
-                onAuthFailure: () => {
-                    localStorage.removeItem('token');
-                    toast.error('Session expired. Please log in again.');
-                },
-                fallbackMessage: 'Unable to change password. Please try again.'
-            });
+            toast.error((error as Error).message);
         } finally {
             setIsLoading(false);
         }

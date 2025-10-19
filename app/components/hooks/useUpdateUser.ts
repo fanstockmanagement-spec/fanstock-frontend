@@ -62,13 +62,7 @@ const {
                 toast.error('Failed to update subscription');
             }
         } catch (error) {
-            handleApiError(error, {
-                onValidationError: (errors) => setValidationErrors(errors, setError),
-                onAuthFailure: () => {
-                    localStorage.removeItem('token');
-                    router.push('/sign-in');
-                }
-            });
+           toast.error((error as Error).message);
         } finally {
             setIsUpdatingUser(false);
         }

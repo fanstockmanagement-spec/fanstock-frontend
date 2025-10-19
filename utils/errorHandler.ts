@@ -89,7 +89,7 @@ export const handleApiError = (
 /**
  * Handles form validation errors by setting them on the form
  */
-export const setValidationErrors = <T extends Record<string, any>>(
+export const setValidationErrors = <T extends Record<string, unknown>>(
   errors: Record<string, string[]>,
   setError: (field: keyof T, error: { type: 'server'; message: string }) => void
 ) => {

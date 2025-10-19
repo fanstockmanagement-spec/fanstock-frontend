@@ -34,6 +34,9 @@ export const API_ENDPOINTS = {
   },
   SALES_HISTORY: {
     LIST: '/sales-history',
+    MONTHLY_SALES: '/monthly-sales',
+    ANNUAL_SALES: '/year-sales',
+    USER_DASHBOARD_SUMMARY: '/dashboard-summary',
   },
 } as const;
 
