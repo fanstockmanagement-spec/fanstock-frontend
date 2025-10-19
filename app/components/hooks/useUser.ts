@@ -89,13 +89,7 @@ export const useUsers = () => {
             }
 
         } catch (error) {
-            handleApiError(error, {
-                onValidationError: (errors) => setValidationErrors(errors, setError),
-                onAuthFailure: () => {
-                    // Optionally redirect to login page here
-                    console.log('Authentication failed, redirecting...');
-                }
-            });
+            toast.error((error as Error).message);
         } finally {
             setIsSubmit(false)
         }
@@ -131,11 +125,7 @@ export const useUsers = () => {
                 toast.error(errorMessage);
             }
         } catch (error) {
-            handleApiError(error, {
-                onAuthFailure: () => {
-                    localStorage.removeItem('token');
-                }
-            });
+            toast.error((error as Error).message);
         } finally {
             setIsFetching(false)
         }
@@ -160,11 +150,7 @@ export const useUsers = () => {
             })
             setProfile(response.data.data.user)
         } catch (error) {
-            handleApiError(error, {
-                onAuthFailure: () => {
-                    localStorage.removeItem('token');
-                }
-            });
+            toast.error((error as Error).message);
         } finally {
             setIsLoadingProfile(false)
         }

@@ -1,6 +1,6 @@
 import { PlusIcon } from "@radix-ui/react-icons";
-import OverviewCards from "../components/OverviewCards";
 import Link from "next/link";
+import DashboardSummary from "../components/DashboardSummary";
 
 export default function OverviewPage() {
   return (
@@ -18,7 +18,7 @@ export default function OverviewPage() {
         </Link>
       </section>
       <section className="flex flex-col gap-4 mt-10">
-        <OverviewCards />
+        <DashboardSummary />
       </section>
     </div>
   );
