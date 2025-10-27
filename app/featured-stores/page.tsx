@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { ChatBubbleIcon, EyeOpenIcon, Cross2Icon, TriangleLeftIcon, HeartIcon, Share1Icon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Phone, Filter, Grid3X3, List, Stars, Search } from 'lucide-react';
+import { Phone, Filter, Search, Store, ShoppingBag, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
 interface Shoe {
@@ -19,29 +19,42 @@ interface Shoe {
     description: string;
     image_urls: string[];
     owner: {
-        id: string;
+        id: number;
         name: string;
+        email: string;
         phoneNumber: string;
+        image?: string | null;
         location?: string;
+        daysUntilDisplayExpires?: number;
     };
     rating?: number;
     isFavorite?: boolean;
 }
 
-type SortOption = 'price-low' | 'price-high' | 'rating' | 'newest' | 'popular';
-type ViewMode = 'grid' | 'list';
+interface StoreProfile {
+    owner: {
+        id: number;
+        name: string;
+        email: string;
+        phoneNumber: string;
+        image?: string | null;
+        location?: string;
+        daysUntilDisplayExpires?: number;
+    };
+    shoes: Shoe[];
+    totalProducts: number;
+}
 
 export default function FeatureStores() {
     // State management
     const [selectedShoe, setSelectedShoe] = useState<Shoe | null>(null);
+    const [selectedStore, setSelectedStore] = useState<StoreProfile | null>(null);
     const [shoes, setShoes] = useState<Shoe[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     // UI state
     const [searchQuery, setSearchQuery] = useState('');
-    const [sortBy, setSortBy] = useState<SortOption>('popular');
-    const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [selectedBrand, setSelectedBrand] = useState<string>('all');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
@@ -68,7 +81,56 @@ export default function FeatureStores() {
         fetchData();
     }, []);
 
-    // Get unique brands and categories for filters
+    // Group shoes by store
+    const storeProfiles = useMemo(() => {
+        const storeMap = new Map<string, StoreProfile>();
+
+        shoes.forEach(shoe => {
+            const ownerId = shoe.owner.id.toString();
+
+            if (!storeMap.has(ownerId)) {
+                storeMap.set(ownerId, {
+                    owner: shoe.owner,
+                    shoes: [],
+                    totalProducts: 0
+                });
+            }
+
+            const store = storeMap.get(ownerId)!;
+            store.shoes.push(shoe);
+            store.totalProducts = store.shoes.length;
+        });
+
+        return Array.from(storeMap.values());
+    }, [shoes]);
+
+    // Filter stores based on search and filters
+    const filteredStores = useMemo(() => {
+        return storeProfiles.filter(store => {
+            // Search by store name
+            const matchesSearch = !searchQuery ||
+                store.owner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                store.shoes.some(shoe =>
+                    shoe.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    shoe.model_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    shoe.category.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+
+            // Filter by brand and category
+            const hasMatchingShoes = store.shoes.some(shoe => {
+                const matchesBrand = selectedBrand === 'all' || shoe.brand === selectedBrand;
+                const matchesCategory = selectedCategory === 'all' || shoe.category === selectedCategory;
+                const price = parseFloat(shoe.price_retail);
+                const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
+
+                return matchesBrand && matchesCategory && matchesPrice;
+            });
+
+            return matchesSearch && hasMatchingShoes;
+        });
+    }, [storeProfiles, searchQuery, selectedBrand, selectedCategory, priceRange]);
+
+    // Get brands and categories for filters
     const brands = useMemo(() => {
         const uniqueBrands = [...new Set(shoes.map(shoe => shoe.brand))];
         return uniqueBrands.sort();
@@ -78,42 +140,6 @@ export default function FeatureStores() {
         const uniqueCategories = [...new Set(shoes.map(shoe => shoe.category))];
         return uniqueCategories.sort();
     }, [shoes]);
-
-    // Filter and sort shoes
-    const filteredAndSortedShoes = useMemo(() => {
-        const filtered = shoes.filter(shoe => {
-            const matchesSearch = shoe.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                shoe.model_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                shoe.category.toLowerCase().includes(searchQuery.toLowerCase());
-
-            const matchesBrand = selectedBrand === 'all' || shoe.brand === selectedBrand;
-            const matchesCategory = selectedCategory === 'all' || shoe.category === selectedCategory;
-
-            const price = parseFloat(shoe.price_retail);
-            const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
-
-            return matchesSearch && matchesBrand && matchesCategory && matchesPrice;
-        });
-
-        // Sort shoes
-       const sortedShoes = filtered.sort((a, b) => {
-            switch (sortBy) {
-                case 'price-low':
-                    return parseFloat(a.price_retail) - parseFloat(b.price_retail);
-                case 'price-high':
-                    return parseFloat(b.price_retail) - parseFloat(a.price_retail);
-                case 'rating':
-                    return (b.rating || 0) - (a.rating || 0);
-                case 'newest':
-                    return new Date(b.shoe_id).getTime() - new Date(a.shoe_id).getTime();
-                case 'popular':
-                default:
-                    return b.stockRemaining - a.stockRemaining;
-            }
-        });
-
-        return sortedShoes;
-    }, [shoes, searchQuery, selectedBrand, selectedCategory, priceRange, sortBy]);
 
     // Toggle favorite
     const toggleFavorite = (shoeId: string) => {
@@ -128,7 +154,6 @@ export default function FeatureStores() {
         });
     };
 
-
     // Contact handlers
     const handleContact = (type: string, contact: string) => {
         if (type === 'phone') {
@@ -138,33 +163,39 @@ export default function FeatureStores() {
         }
     };
 
-    const handleShare = async (shoe: Shoe) => {
+    const handleShare = async (store: StoreProfile) => {
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: `${shoe.brand} ${shoe.model_name}`,
-                    text: `Check out this amazing shoe: ${shoe.brand} ${shoe.model_name}`,
+                    title: `${store.owner.name} - Premium Store`,
+                    text: `Check out ${store.owner.name}'s featured collection`,
                     url: window.location.href,
                 });
             } catch (err) {
                 console.log('Error sharing:', err);
             }
         } else {
-            // Fallback: copy to clipboard
-            navigator.clipboard.writeText(`${shoe.brand} ${shoe.model_name} - ${window.location.href}`);
+            navigator.clipboard.writeText(`${store.owner.name} - ${window.location.href}`);
         }
     };
 
     // Loading skeleton component
     const LoadingSkeleton = () => (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden animate-pulse">
-                    <div className="h-64 bg-gray-200"></div>
-                    <div className="p-4 space-y-3">
-                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-pulse">
+                    <div className="p-6 border-b border-gray-200">
+                        <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
                         <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 p-6">
+                        {[...Array(3)].map((_, j) => (
+                            <div key={j} className="space-y-3">
+                                <div className="h-40 bg-gray-200 rounded-lg"></div>
+                                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             ))}
@@ -202,14 +233,14 @@ export default function FeatureStores() {
                     <div className="max-w-6xl mx-auto">
                         <div className="text-center mb-8">
                             <div className="inline-flex items-center text-xs gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 backdrop-blur-sm border border-orange-500/30 rounded-full text-orange-300 font-medium mb-6">
-                                <Stars strokeWidth={1.5} size={16} />
-                                Premium Featured Collection
+                                <Store strokeWidth={1.5} size={16} />
+                                Featured Stores Collection
                             </div>
                             <h1 className="text-4xl md:text-4xl mb-4 text-white">
-                                Featured Products
+                                Featured Stores
                             </h1>
                             <p className="text-gray-300 text-sm md:text-sm max-w-2xl mx-auto leading-relaxed">
-                                Discover the finest collection of premium shoes from top-rated sellers
+                                Discover premium shoes from top-rated sellers
                             </p>
                         </div>
 
@@ -222,48 +253,27 @@ export default function FeatureStores() {
                                         <Search strokeWidth={1.5} size={16} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black" />
                                         <input
                                             type="text"
-                                            placeholder="Search by brand, model, or category..."
+                                            placeholder="Search by store name, brand, or product..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             className="w-full pl-12 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 text-sm"
                                         />
                                     </div>
 
-                                    {/* Sort and View Controls */}
-                                    <div className="flex gap-3">
-                                        <select
-                                            value={sortBy}
-                                            onChange={(e) => setSortBy(e.target.value as SortOption)}
-                                            className="px-4 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                                        >
-                                            <option value="popular">Most Popular</option>
-                                            <option value="price-low">Price: Low to High</option>
-                                            <option value="price-high">Price: High to Low</option>
-                                            <option value="rating">Highest Rated</option>
-                                            <option value="newest">Newest First</option>
-                                        </select>
-
-                                        <button
-                                            onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                                            className="px-4 py-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-md text-gray-900 hover:bg-white transition-all duration-200 flex items-center gap-2"
-                                        >
-                                            {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
-                                        </button>
-
-                                        <button
-                                            onClick={() => setShowFilters(!showFilters)}
-                                            className="px-4 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-md hover:from-orange-600 hover:to-red-600 transition-all duration-200 flex items-center gap-2"
-                                        >
-                                            <Filter className="w-4 h-4" />
-                                            Filters
-                                        </button>
-                                    </div>
+                                    {/* Filter Button */}
+                                    <button
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className="px-4 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-md hover:from-orange-600 hover:to-red-600 transition-all duration-200 flex items-center gap-2"
+                                    >
+                                        <Filter className="w-4 h-4" />
+                                        Filters
+                                    </button>
                                 </div>
 
                                 {/* Filters Panel */}
                                 {showFilters && (
                                     <div className="mt-6 pt-6 border-t border-white/20">
-                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             {/* Brand Filter */}
                                             <div>
                                                 <label className="block text-white text-sm font-medium mb-2">Brand</label>
@@ -340,22 +350,22 @@ export default function FeatureStores() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
                     <div>
                         <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                            {filteredAndSortedShoes.length} Premium Products
+                            {filteredStores.length} Featured Stores
                         </h2>
                         <p className="text-gray-600">
-                            Showing {filteredAndSortedShoes.length} of {shoes.length} featured products
+                            Discover premium collections from verified sellers
                         </p>
                     </div>
 
                     {/* Quick Stats */}
                     <div className="flex gap-6 mt-4 sm:mt-0">
                         <div className="text-center flex flex-col items-center justify-center gap-2">
-                            <div className="text-lg text-orange-600 bg-orange-500/10 rounded-md px-2 py-1">{brands.length}</div>
-                            <div className="text-xs text-gray-600">Brands</div>
+                            <div className="text-lg text-orange-600 bg-orange-500/10 rounded-md px-2 py-1">{storeProfiles.length}</div>
+                            <div className="text-xs text-gray-600">Stores</div>
                         </div>
                         <div className="text-center flex flex-col items-center justify-center gap-2">
-                            <div className="text-lg text-orange-600 bg-orange-500/10 rounded-md px-2 py-1">{categories.length}</div>
-                            <div className="text-xs text-gray-600">Categories</div>
+                            <div className="text-lg text-orange-600 bg-orange-500/10 rounded-md px-2 py-1">{brands.length}</div>
+                            <div className="text-xs text-gray-600">Brands</div>
                         </div>
                         <div className="text-center flex flex-col items-center justify-center gap-2">
                             <div className="text-lg text-orange-600 bg-orange-500/10 rounded-md px-2 py-1">
@@ -372,124 +382,127 @@ export default function FeatureStores() {
                 {/* Error State */}
                 {error && <ErrorComponent />}
 
-                {/* Products Grid */}
+                {/* Store Profiles */}
                 {!loading && !error && (
-                    <div className={viewMode === 'grid'
-                        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                        : "space-y-4"
-                    }>
-                        {filteredAndSortedShoes.map((shoe) => (
-                            <div
-                                key={shoe.shoe_id}
-                                className={`group bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer ${viewMode === 'list' ? 'flex' : ''
-                                    }`}
-                                onClick={() => setSelectedShoe(shoe)}
-                            >
-                                {/* Image Section */}
-                                <div className={`relative overflow-hidden bg-gray-100 ${viewMode === 'list' ? 'w-48 h-48' : 'h-64'
-                                    }`}>
-                                    <Image
-                                        src={shoe.image_urls[0]}
-                                        alt={`${shoe.brand} ${shoe.model_name}`}
-                                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                        fill
-                                        sizes={viewMode === 'list' ? "200px" : "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"}
-                                    />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {filteredStores.map((store) => {
+                            const displayShoes = store.shoes.slice(0, 3);
+                            return (
+                                <div
+                                    key={store.owner.id}
+                                    className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300"
+                                >
+                                    {/* Store Header */}
+                                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 border border-orange-500 text-orange-500 rounded-full flex items-center justify-center text-xl font-bold">
+                                                    {store.owner.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <h3 className="text-xl font-bold text-gray-900">{store.owner.name}</h3>
+                                                        <Image
+                                                            src="/verification_mark.jpg"
+                                                            alt="Verification Mark"
+                                                            width={20}
+                                                            height={20}
+                                                            className="w-4 h-4"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-row items-center gap-3">
+                                                        <p className="text-sm text-gray-500">{store.owner.email || 'Not Provided'}</p>
+                                                        <hr className="w-[1px] h-4 bg-gray-400" />
+                                                        <p className="text-sm text-gray-500">{store.owner.phoneNumber || 'Not Provided'}</p>
+                                                    </div>
+                                                    {store.owner.location && (
+                                                        <p className="text-xs text-gray-400 mt-1">{store.owner.location}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                    {/* Overlay Badges */}
-                                    <div className="absolute top-4 left-4 flex flex-col gap-2">
-                                        {shoe.stockRemaining < 10 && (
-                                            <span className="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg">
-                                                Only {shoe.stockRemaining} left!
-                                            </span>
+                                        {/* Store Stats */}
+                                        <div className="flex items-center gap-6 mb-4">
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                                <ShoppingBag className="w-4 h-4" />
+                                                <span className="text-sm font-medium">{store.totalProducts} Products</span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleContact('whatsapp', store.owner.phoneNumber)}
+                                                className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors duration-200 flex items-center gap-2"
+                                            >
+                                                <ChatBubbleIcon className="w-4 h-4" />
+                                                Contact
+                                            </button>
+                                        </div>
+
+                                        {/* Contact Buttons */}
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => handleContact('phone', store.owner.phoneNumber)}
+                                                className="flex-1 py-2 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-medium rounded-md hover:from-orange-600 hover:to-red-600 transition-all duration-200 flex items-center justify-center gap-2"
+                                            >
+                                                <Phone className="w-4 h-4" />
+                                                Call Now
+                                            </button>
+                                            <button
+                                                onClick={() => setSelectedStore(store)}
+                                                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors duration-200"
+                                            >
+                                                <EyeOpenIcon className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Store's Shoes (First 3) */}
+                                    <div className="p-6">
+                                        <div className="grid grid-cols-3 gap-4">
+                                            {displayShoes.map((shoe) => (
+                                                <div
+                                                    key={shoe.shoe_id}
+                                                    className="group relative cursor-pointer overflow-hidden rounded-lg bg-gray-100 aspect-square hover:scale-105 transition-transform duration-300"
+                                                    onClick={() => setSelectedShoe(shoe)}
+                                                >
+                                                    <Image
+                                                        src={shoe.image_urls[0]}
+                                                        alt={`${shoe.brand} ${shoe.model_name}`}
+                                                        className="object-cover"
+                                                        fill
+                                                        sizes="(max-width: 768px) 33vw, 150px"
+                                                    />
+
+                                                    {/* Price Badge */}
+                                                    <div className="absolute flex flex-row items-center bottom-2 left-2 right-2 px-2 py-1 bg-white/95 backdrop-blur-sm rounded text-xs font text-gray-900">
+                                                        RWF {parseInt(shoe.price_retail).toLocaleString()}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* View More Link */}
+                                        {store.shoes.length > 3 && (
+                                            <div className="mt-4 text-center">
+                                                <button
+                                                    onClick={() => setSelectedStore(store)}
+                                                    className="text-sm text-orange-600 hover:text-orange-700 font-medium"
+                                                >
+                                                    View all {store.shoes.length} products →
+                                                </button>
+                                            </div>
                                         )}
-                                        <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold rounded-full shadow-lg">
-                                            FEATURED
-                                        </span>
-                                    </div>
-
-                                    {/* Price Badge */}
-                                    <div className="absolute top-4 right-4 px-3 py-2 bg-white/95 backdrop-blur-sm rounded-xl text-gray-900 font-bold shadow-lg">
-                                        RWF {parseInt(shoe.price_retail).toLocaleString()}
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                toggleFavorite(shoe.shoe_id);
-                                            }}
-                                            className={`p-2 rounded-full backdrop-blur-sm transition-colors ${favorites.has(shoe.shoe_id)
-                                                ? 'bg-red-500 text-white'
-                                                : 'bg-white/90 text-gray-600 hover:bg-red-500 hover:text-white'
-                                                }`}
-                                        >
-                                            <HeartIcon className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleShare(shoe);
-                                            }}
-                                            className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-600 hover:bg-blue-500 hover:text-white transition-colors"
-                                        >
-                                            <Share1Icon className="w-4 h-4" />
-                                        </button>
                                     </div>
                                 </div>
-
-                                {/* Content Section */}
-                                <div className={`p-6 ${viewMode === 'list' ? 'flex-1' : ''}`}>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                                        {shoe.model_name}
-                                    </h3>
-
-                                    {/* Colors and Sizes */}
-                                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                                        <span>{shoe.colors.length} colors</span>
-                                        <span>•</span>
-                                        <span>{shoe.sizes.length} sizes</span>
-                                    </div>
-
-                                    {/* Seller Info */}
-                                    <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
-                                        <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                                            {shoe.owner.name.charAt(0)}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-gray-900">{shoe.owner.name}</p>
-                                            <p className="text-xs text-gray-500">Verified Seller</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-2">
-                                        <button className="flex-1 py-2 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-medium rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200 flex items-center justify-center gap-2">
-                                            <EyeOpenIcon className="w-4 h-4" />
-                                            View Details
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleContact('whatsapp', shoe.owner.phoneNumber);
-                                            }}
-                                            className="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200"
-                                        >
-                                            <ChatBubbleIcon className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
 
                 {/* No Results */}
-                {!loading && !error && filteredAndSortedShoes.length === 0 && (
+                {!loading && !error && filteredStores.length === 0 && (
                     <div className="text-center py-16">
                         <div className="text-gray-400 text-6xl mb-4">🔍</div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">No stores found</h3>
                         <p className="text-gray-600 mb-6">
                             Try adjusting your search criteria or filters
                         </p>
@@ -508,9 +521,102 @@ export default function FeatureStores() {
                 )}
             </div>
 
-            {/* Enhanced Shoe Detail Modal */}
+            {/* Store Detail Modal */}
+            {selectedStore && (
+                <div className="fixed inset-0 bg-black/50 h-screen w-screen backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="relative bg-white border border-gray-200 rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setSelectedStore(null)}
+                            className="absolute top-6 right-6 w-10 h-10 cursor-pointer bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 transition-all duration-200 z-10 shadow-lg"
+                        >
+                            <Cross2Icon className="w-6 h-6" />
+                        </button>
+
+                        {/* Store Header */}
+                        <div className="p-8 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 border border-orange-500 text-orange-500 rounded-full flex items-center justify-center text-xl font-bold">
+                                    {selectedStore.owner.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="text-xl font-bold text-gray-900">{selectedStore.owner.name}</h3>
+                                        <Image
+                                            src="/verification_mark.jpg"
+                                            alt="Verification Mark"
+                                            width={20}
+                                            height={20}
+                                            className="w-4 h-4"
+                                        />
+                                    </div>
+                                    <div className="flex flex-row items-center gap-3">
+                                        <p className="text-sm text-gray-500">{selectedStore.owner.email || 'Not Provided'}</p>
+                                        <hr className="w-[1px] h-4 bg-gray-400" />
+                                        <p className="text-sm text-gray-500">{selectedStore.owner.phoneNumber || 'Not Provided'}</p>
+                                    </div>
+                                    {selectedStore.owner.location && (
+                                        <p className="text-xs text-gray-400 mt-1">{selectedStore.owner.location}</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 mt-4">
+                                <button
+                                    onClick={() => handleContact('phone', selectedStore.owner.phoneNumber)}
+                                    className="flex-1 py-3 px-6 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-md hover:from-orange-600 hover:to-red-600 transition-all duration-200 flex items-center justify-center gap-2"
+                                >
+                                    <Phone className="w-5 h-5" />
+                                    Call Now
+                                </button>
+                                <button
+                                    onClick={() => handleContact('whatsapp', selectedStore.owner.phoneNumber)}
+                                    className="flex-1 py-3 px-6 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors duration-200 flex items-center justify-center gap-2"
+                                >
+                                    <ChatBubbleIcon className="w-5 h-5" />
+                                    WhatsApp
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* All Products */}
+                        <div className="p-8">
+                            <h3 className="text-xl font-bold text-gray-900 mb-6">All Products ({selectedStore.shoes.length})</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                {selectedStore.shoes.map((shoe) => (
+                                    <div
+                                        key={shoe.shoe_id}
+                                        className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
+                                        onClick={() => {
+                                            setSelectedShoe(shoe);
+                                            setSelectedStore(null);
+                                        }}
+                                    >
+                                        <div className="relative h-48 bg-gray-100">
+                                            <Image
+                                                src={shoe.image_urls[0]}
+                                                alt={`${shoe.brand} ${shoe.model_name}`}
+                                                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                fill
+                                                sizes="(max-width: 768px) 50vw, 33vw"
+                                            />
+                                        </div>
+                                        <div className="p-4">
+                                            <h4 className="font-bold text-gray-900 mb-2 line-clamp-2">{shoe.model_name}</h4>
+                                            <p className="text-sm text-gray-500">{shoe.brand}</p>
+                                            <p className="text-lg font-semibold text-gray-900"><span className="text-gray-500 text-sm">RWF </span>{parseInt(shoe.price_retail).toLocaleString()}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Shoe Detail Modal */}
             {selectedShoe && (
-                <div className="fixed inset-0 bg-white/10 h-screen w-screen backdrop-blur-md z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-black/50 h-screen w-screen backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="relative bg-white border border-gray-200 rounded-lg h-full w-full my-8 overflow-y-auto">
                         {/* Close Button */}
                         <button
@@ -548,7 +654,7 @@ export default function FeatureStores() {
 
                                         {/* Share Button */}
                                         <button
-                                            onClick={() => handleShare(selectedShoe)}
+                                            onClick={() => handleShare({ owner: selectedShoe.owner, shoes: [selectedShoe], totalProducts: 1 })}
                                             className="absolute top-4 left-4 p-3 bg-white/90 backdrop-blur-sm rounded-full text-gray-600 hover:bg-blue-500 hover:text-white transition-all duration-200"
                                         >
                                             <Share1Icon className="w-5 h-5" />
@@ -593,7 +699,7 @@ export default function FeatureStores() {
                                         </h2>
 
                                         <div className="text-2xl font-semibold text-gray-900 mb-4">
-                                            {parseInt(selectedShoe.price_retail).toLocaleString()} RWF
+                                            RWF {parseInt(selectedShoe.price_retail).toLocaleString()}
                                         </div>
                                     </div>
 
@@ -646,15 +752,30 @@ export default function FeatureStores() {
                                     <div className="mb-6 p-4 bg-gray-50 rounded-xl">
                                         <h3 className="text-lg font-semibold text-gray-900 mb-3">Seller Information</h3>
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-lg font-bold">
-                                                {selectedShoe.owner.name.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <p className="font-semibold text-gray-900">{selectedShoe.owner.name}</p>
-                                                <p className="text-sm text-gray-600">Verified Premium Seller</p>
-                                                <p className="text-sm text-gray-500">{selectedShoe.owner.location || 'Location not specified'}</p>
-                                            </div>
-                                        </div>
+                                <div className="w-12 h-12 border border-orange-500 text-orange-500 rounded-full flex items-center justify-center text-xl font-bold">
+                                    {selectedShoe.owner.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="text-xl font-bold text-gray-900">{selectedShoe.owner.name}</h3>
+                                        <Image
+                                            src="/verification_mark.jpg"
+                                            alt="Verification Mark"
+                                            width={20}
+                                            height={20}
+                                            className="w-4 h-4"
+                                        />
+                                    </div>
+                                    <div className="flex flex-row items-center gap-3">
+                                        <p className="text-sm text-gray-500">{selectedShoe.owner.email || 'Not Provided'}</p>
+                                        <hr className="w-[1px] h-4 bg-gray-400" />
+                                        <p className="text-sm text-gray-500">{selectedShoe.owner.phoneNumber || 'Not Provided'}</p>
+                                    </div>
+                                    {selectedShoe.owner.location && (
+                                        <p className="text-xs text-gray-400 mt-1">{selectedShoe.owner.location}</p>
+                                    )}
+                                </div>
+                            </div>
                                     </div>
                                 </div>
 

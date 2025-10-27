@@ -198,8 +198,8 @@ export const useCreateShoes = () => {
             const quantity = parseInt(variant.quantity);
             const price = parseFloat(variant.price);
 
-            if (size < 35 || size > 50) {
-                toast.error('Shoe size must be between 35 and 50');
+            if (size < 35 || size > 60) {
+                toast.error('Shoe size must be between 35 and 60');
                 return false;
             }
 
