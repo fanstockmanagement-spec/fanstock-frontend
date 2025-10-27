@@ -1,7 +1,6 @@
 'use client'
 
 import { API_ENDPOINTS, getApiUrl } from "@/utils/env";
-import { handleApiError, setValidationErrors } from "@/utils/errorHandler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
@@ -26,7 +25,6 @@ export const usePassword = () => {
         handleSubmit,
         formState: { errors, isSubmitting },
         reset,
-        setError,
     } = useForm<ChangePasswordFormData>({
         resolver: zodResolver(changePasswordSchema),
         defaultValues: {

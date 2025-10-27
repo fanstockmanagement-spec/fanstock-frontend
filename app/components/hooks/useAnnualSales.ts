@@ -12,10 +12,14 @@ export interface AnnualSalesData {
     };
     summary: {
         total_revenue: number;
+        total_cost: number;
+        total_profit: number;
+        profit_margin: number;
         total_units_sold: number;
         total_sales_transactions: number;
-        average_sale_value: number;
-    };
+        average_monthly_revenue: number;
+        average_monthly_profit: number;
+    },
     sales_by_shoe: Array<{
         shoe_id: string;
         brand: string;
@@ -34,6 +38,15 @@ export interface AnnualSalesData {
         revenue: number;
         units_sold: number;
         sales_count: number;
+    }>;
+    monthly_breakdown: Array<{
+        month_name: string;
+        revenue: number;
+        units_sold: number;
+        sales_count: number;
+        profit: number;
+        profit_margin: number;
+        cost: number;
     }>;
 };
 export default function useAnnualSales(year?: number) {

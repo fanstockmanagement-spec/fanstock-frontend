@@ -10,6 +10,7 @@ export interface SalesHistory {
     shoe_id: string;
     user_id: number;
     quantity_sold: number;
+    sold_for: number;
     unit_price: string;
     total_amount: string;
     sale_date: string;
@@ -24,7 +25,19 @@ export interface SalesHistory {
         brand: string;
         model_name: string;
         image_urls: string[];
+    },
+    financial_details: {
+        retail_price: number;
+        actual_selling_price: number;
+        cost_price: number;
+        profit_per_unit: number;
+        total_revenue: number;
+        total_profit: number;
+        profit_margin: number;
+        markup_from_retail: number;
+        markup_percentage: number;
     }
+   
 };
 export default function useSalesHistory() {
     const [salesHistory, setSalesHistory] = useState<SalesHistory[]>([]);

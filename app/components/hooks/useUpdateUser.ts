@@ -1,5 +1,4 @@
 import { API_ENDPOINTS, getApiUrl } from "@/utils/env";
-import { handleApiError, setValidationErrors } from "@/utils/errorHandler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
@@ -28,7 +27,6 @@ const {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-    setError,
 } = useForm<UpdateUserFormData>({
     resolver: zodResolver(validationSchema) as Resolver<UpdateUserFormData>,
     defaultValues: {

@@ -115,7 +115,7 @@ export default function SellersTable() {
                             <th className="px-6 py-3 text-left">Shoe</th>
                             <th className="px-6 py-3 text-left">Shoe Category</th>
                             <th className="px-6 py-3 text-left">Quantity Sold</th>
-                            <th className="px-6 py-3 text-left">Unit Price</th>
+                            <th className="px-6 py-3 text-left">Sold For</th>
                             <th className="px-6 py-3 text-left">Total Amount</th>
                             <th className="px-6 py-3 text-left">Sale Date</th>
                             <th className="px-6 py-3 text-left">Time</th>
@@ -140,6 +140,7 @@ export default function SellersTable() {
                                             <div className="ml-3">
                                                 <div className="text-sm font-medium text-gray-900">{sale?.shoe?.model_name}</div>
                                                 <div className="text-gray-500 text-xs">Brand: {sale?.shoe?.brand}</div>
+                                                <div className="text-gray-500 text-xs">Unit Price: {formatNumber(sale.unit_price)} RWF</div>
                                             </div>
                                         </div>
                                     </td>
@@ -150,7 +151,7 @@ export default function SellersTable() {
                                         {sale.quantity_sold}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900">
-                                        {formatNumber(sale.unit_price)} RWF
+                                        {formatNumber(sale.sold_for)} RWF
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {formatNumber(sale.total_amount)} RWF
@@ -236,9 +237,9 @@ export default function SellersTable() {
 
             {/* Modal */}
             {isModalOpen && selectedSale && (
-                <SingleSaleHistoryModal 
-                    sale={selectedSale} 
-                    isOpen={isModalOpen} 
+                <SingleSaleHistoryModal
+                    sale={selectedSale}
+                    isOpen={isModalOpen}
                     onClose={closeModal}
                     formatNumber={formatNumber}
                 />
@@ -280,17 +281,18 @@ export function SingleSaleHistoryModal({ sale, isOpen, onClose, formatNumber }: 
                         <h3 className="text-sm font-medium text-gray-900 mb-3">Shoe Information</h3>
                         <div className="flex items-start space-x-3">
                             <div className="h-10 w-10 bg-orange-500 rounded-full overflow-clip flex items-center justify-center">
-                                <Image 
-                                    src={sale?.shoe?.image_urls[0] || ''} 
-                                    alt={sale?.shoe?.brand || ''} 
-                                    className="object-cover" 
-                                    width={40} 
-                                    height={40} 
+                                <Image
+                                    src={sale?.shoe?.image_urls[0] || ''}
+                                    alt={sale?.shoe?.brand || ''}
+                                    className="object-cover w-10 h-10"
+                                    width={40}
+                                    height={40}
                                 />
                             </div>
-                            <div className="flex-1">
+                            <div className="flex-1 flex-col space-y-2">
                                 <div className="text-sm font-medium text-gray-900">{sale?.shoe?.model_name}</div>
-                                <div className="text-gray-500 text-xs mb-2">Brand: {sale?.shoe?.brand}</div>
+                                <div className="text-gray-500 text-xs">Brand: {sale?.shoe?.brand}</div>
+                                <div className="text-gray-500 text-xs">Unit Price: {formatNumber(sale.unit_price)} RWF</div>
                                 <span className="bg-orange-500/10 text-orange-500 text-xs font-medium rounded-full px-2 py-1">
                                     {sale.shoe_category}
                                 </span>
@@ -306,8 +308,8 @@ export function SingleSaleHistoryModal({ sale, isOpen, onClose, formatNumber }: 
                                 <p className="text-sm text-black">{sale.quantity_sold}</p>
                             </div>
                             <div>
-                                <label className="text-xs font-medium text-gray-500">Unit Price</label>
-                                <p className="text-sm text-black">{formatNumber(sale.unit_price)} RWF</p>
+                                <label className="text-xs font-medium text-gray-500">Sold For</label>
+                                <p className="text-sm text-black">{formatNumber(sale.sold_for)} RWF</p>
                             </div>
                         </div>
                         <div className="space-y-3">
@@ -340,6 +342,51 @@ export function SingleSaleHistoryModal({ sale, isOpen, onClose, formatNumber }: 
                                 </p>
                             </div>
                         )}
+                    </div>
+
+                    {/* Financial Details */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                        <h3 className="text-sm font-medium text-gray-900 mb-3">Financial Details</h3>
+                        <div className="flex flex-col flex-wrap gap-3 text-xs w-full">
+                            <div className='flex items-center gap-2 justify-between w-full'>
+                                <label className="text-gray-500">Retail Price:</label>
+                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.retail_price)} RWF</p>
+                            </div>
+                            <div className='flex items-center gap-2 justify-between w-full'>
+                                <label className="text-gray-500">Actual Selling Price:</label>
+                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.actual_selling_price)} RWF</p>
+                            </div>
+                            <div className='flex items-center gap-2 justify-between w-full'>
+                                <label className="text-gray-500">Cost Price:</label>
+                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.cost_price)} RWF</p>
+                            </div>
+                            <div className='flex items-center gap-2 justify-between w-full'>
+                                <label className="text-gray-500">Profit Per Unit:</label>
+                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.profit_per_unit)} RWF</p>
+                            </div>
+                            <div className='flex items-center gap-2 justify-between w-full'>
+                                <label className="text-gray-500">Total Revenue:</label>
+                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.total_revenue)} RWF</p>
+                            </div>
+                            <div className='flex items-center gap-2 justify-between w-full'>
+                                <label className="text-gray-500">Total Profit:</label>
+                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.total_profit)} RWF</p>
+                            </div>
+                            <div className='flex items-center gap-2 justify-between w-full'>
+                                <label className="text-gray-500">Profit Margin:</label>
+                                <p className="font-medium text-gray-900">{sale.financial_details.profit_margin}%</p>
+                            </div>
+                            <div className='flex items-center gap-2 justify-between w-full'>
+                                <label className="text-gray-500">Markup from Retail:</label>
+                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.markup_from_retail)} RWF</p>
+                            </div>
+                            <div className='flex items-center gap-2 justify-between w-full'>
+                                <label className="text-gray-500">Markup Percentage:</label>
+                                <p className="font-medium text-gray-900">{sale.financial_details.markup_percentage}%</p>
+                            </div>
+
+
+                        </div>
                     </div>
 
                     {/* Additional Information */}

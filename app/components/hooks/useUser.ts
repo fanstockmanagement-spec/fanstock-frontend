@@ -1,7 +1,6 @@
 'use client'
 
 import { API_ENDPOINTS, getApiUrl } from "@/utils/env";
-import { handleApiError, setValidationErrors } from "@/utils/errorHandler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -40,7 +39,6 @@ export const useUsers = () => {
         handleSubmit,
         reset,
         formState: { errors },
-        setError,
 
     } = useForm<CreateUserFormData>({
         resolver: zodResolver(validationSchema),
@@ -205,7 +203,6 @@ export const useUsers = () => {
         isFetching,
         onSubmit,
         reset,
-        setError,
         users,
         profile,
         isLoadingProfile,

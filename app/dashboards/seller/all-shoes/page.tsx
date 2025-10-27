@@ -446,6 +446,7 @@ export const RecordSalesModal = ({ setIsRecordingSales, shoe }: { setIsRecording
   const { register, handleSubmit, errors, isSubmitting, onSubmit } = useRecordSales({
     shoe_id: shoe.shoe_id || '',
     quantity_sold: 0,
+    sold_for: 0,
     notes: ''
   }, () => {
     // Close modal on successful sale recording
@@ -482,6 +483,15 @@ export const RecordSalesModal = ({ setIsRecordingSales, shoe }: { setIsRecording
             {...register('quantity_sold', { valueAsNumber: true })}
           />
           {errors.quantity_sold && <p className="text-red-500 text-xs">{errors.quantity_sold.message}</p>}
+        </div>
+        <div className="space-y-3">
+          <span className="text-sm text-gray-500">Sold For (RWF)</span>
+          <input
+            type="number"
+            className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none"
+            {...register('sold_for', { valueAsNumber: true })}
+          />
+          {errors.sold_for && <p className="text-red-500 text-xs">{errors.sold_for.message}</p>}
         </div>
         <div className="space-y-3">
           <span className="text-sm text-gray-500">Notes</span>

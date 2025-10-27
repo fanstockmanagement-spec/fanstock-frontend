@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import useMonthlySales from "@/app/components/hooks/useMontlySales";
-import { Loader, DollarSign, ShoppingCart, TrendingUp, Calendar } from 'lucide-react';
+import { Loader, ShoppingCart, TrendingUp, Calendar, Banknote } from 'lucide-react';
 
 export default function MonthlySales() {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -93,12 +93,12 @@ export default function MonthlySales() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-500">Total Revenue</p>
-                                    <p className="text-lg font-semibold text-green-600">
-                                        ${monthlySalesData.summary.total_revenue.toLocaleString()}
+                                    <p className="text-lg font-semibold">
+                                       <span className='text-xs'>RWF</span> {monthlySalesData.summary.total_revenue.toLocaleString()}
                                     </p>
                                 </div>
-                                <span className="text-green-500 bg-green-50 p-2 rounded-full">
-                                    <DollarSign strokeWidth={1.5} size={16}  />
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
+                                    <Banknote strokeWidth={1.5} size={16}  />
                                 </span>
                             </div>
                         </div>
@@ -107,11 +107,11 @@ export default function MonthlySales() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-500">Units Sold</p>
-                                    <p className="text-lg font-semibold text-blue-600">
+                                    <p className="text-lg font-semibold">
                                         {monthlySalesData.summary.total_units_sold.toLocaleString()}
                                     </p>
                                 </div>
-                                <span className="text-blue-500 bg-blue-50 p-2 rounded-full">
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
                                     <ShoppingCart strokeWidth={1.5} size={16}  />
                                 </span>
                             </div>
@@ -121,11 +121,11 @@ export default function MonthlySales() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-500">Transactions</p>
-                                    <p className="text-lg font-semibold text-purple-600">
+                                    <p className="text-lg font-semibold">
                                         {monthlySalesData.summary.total_sales_transactions}
                                     </p>
                                 </div>
-                                <span className="text-purple-500 bg-purple-50 p-2 rounded-full">
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
                                     <TrendingUp strokeWidth={1.5} size={16}  />
                                 </span>
                             </div>
@@ -135,8 +135,8 @@ export default function MonthlySales() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-500">Avg Sale Value</p>
-                                    <p className="text-lg font-semibold text-orange-600">
-                                        ${monthlySalesData.summary.average_sale_value.toLocaleString()}
+                                    <p className="text-lg font-semibold">
+                                       <span className='text-xs'>RWF</span> {monthlySalesData.summary.average_sale_value.toLocaleString()}
                                     </p>
                                 </div>
                                 <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
@@ -170,7 +170,7 @@ export default function MonthlySales() {
                                             <td className="px-4 py-3 text-sm text-gray-900">{shoe.model}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{shoe.category}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{shoe.quantity_sold}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-900">${shoe.revenue.toLocaleString()}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-900"><span className='text-xs'>RWF</span> {shoe.revenue.toLocaleString()}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{shoe.sales_count}</td>
                                         </tr>
                                     ))}
@@ -200,7 +200,7 @@ export default function MonthlySales() {
                                             <td className="px-4 py-3 text-sm text-gray-900">
                                                 {new Date(day.date).toLocaleDateString()}
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-gray-900">${day.revenue.toLocaleString()}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-900"><span className='text-xs'>RWF</span> {day.revenue.toLocaleString()}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{day.units_sold}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{day.sales_count}</td>
                                         </tr>
@@ -221,7 +221,7 @@ export default function MonthlySales() {
                                     <div key={category} className="bg-gray-50 rounded-lg p-4">
                                         <h3 className="font-semibold text-gray-800 mb-2">{category}</h3>
                                         <p className="text-sm text-gray-600">Units: {data.quantity_sold}</p>
-                                        <p className="text-sm text-gray-600">Revenue: ${data.revenue.toLocaleString()}</p>
+                                        <p className="text-sm text-gray-600">Revenue: <span className='text-xs'>RWF</span> {data.revenue.toLocaleString()}</p>
                                     </div>
                                 ))}
                             </div>

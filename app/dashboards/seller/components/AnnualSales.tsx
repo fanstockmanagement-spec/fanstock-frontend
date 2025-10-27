@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { Loader, DollarSign, ShoppingCart, TrendingUp, Calendar } from 'lucide-react';
+import { Loader, ShoppingCart, TrendingUp, Calendar, Banknote } from 'lucide-react';
 import useAnnualSales from '@/app/components/hooks/useAnnualSales';
 
 export default function AnnualSales() {
@@ -57,12 +57,12 @@ export default function AnnualSales() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-500">Total Revenue</p>
-                                    <p className="text-lg font-semibold text-green-600">
-                                        ${annualSalesData.summary?.total_revenue?.toLocaleString() || '0'}
+                                    <p className="text-lg font-semibold">
+                                       <span className='text-xs'>RWF</span> {annualSalesData.summary?.total_revenue?.toLocaleString() || '0'}
                                     </p>
                                 </div>
-                                <span className="text-green-500 bg-green-50 p-2 rounded-full">
-                                    <DollarSign strokeWidth={1.5} size={16}  />
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
+                                    <Banknote strokeWidth={1.5} size={16}  />
                                 </span>
                             </div>
                         </div>
@@ -70,12 +70,12 @@ export default function AnnualSales() {
                         <div className="bg-white border border-gray-200 p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-gray-500">Units Sold</p>
-                                    <p className="text-lg font-semibold text-blue-600">
-                                        {annualSalesData.summary?.total_units_sold?.toLocaleString() || '0'}
+                                    <p className="text-sm text-gray-500">Total Cost</p>
+                                    <p className="text-lg font-semibold">
+                                        {annualSalesData.summary?.total_cost?.toLocaleString() || 'N/A'}
                                     </p>
                                 </div>
-                                <span className="text-blue-500 bg-blue-50 p-2 rounded-full">
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
                                     <ShoppingCart strokeWidth={1.5} size={16}  />
                                 </span>
                             </div>
@@ -84,12 +84,54 @@ export default function AnnualSales() {
                         <div className="bg-white border border-gray-200 p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-gray-500">Transactions</p>
-                                    <p className="text-lg font-semibold text-purple-600">
-                                        {annualSalesData.summary?.total_sales_transactions || '0'}
+                                    <p className="text-sm text-gray-500">Total Profit</p>
+                                    <p className="text-lg font-semibold">
+                                        {annualSalesData.summary?.total_profit?.toLocaleString() || 'N/A'}
                                     </p>
                                 </div>
-                                <span className="text-purple-500 bg-purple-50 p-2 rounded-full">
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
+                                    <Banknote strokeWidth={1.5} size={16}  />
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="bg-white border border-gray-200 p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500">Profit Margin</p>
+                                    <p className="text-lg font-semibold">
+                                       {annualSalesData.summary?.profit_margin?.toLocaleString() || '0'} %
+                                    </p>
+                                </div>
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
+                                    <Calendar strokeWidth={1.5} size={16}  />
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="bg-white border border-gray-200 p-4 ">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500">Total Units Sold</p>
+                                    <p className="text-lg font-semibold">
+                                       <span className='text-xs'>RWF</span> {annualSalesData.summary?.total_units_sold?.toLocaleString() || '0'}
+                                    </p>
+                                </div>
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
+                                    <ShoppingCart strokeWidth={1.5} size={16}  />
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="bg-white border border-gray-200 p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500">Total Sales Transactions</p>
+                                    <p className="text-lg font-semibold">
+                                        {annualSalesData.summary?.total_sales_transactions?.toLocaleString() || '0'}
+                                    </p>
+                                </div>
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
                                     <TrendingUp strokeWidth={1.5} size={16}  />
                                 </span>
                             </div>
@@ -98,13 +140,27 @@ export default function AnnualSales() {
                         <div className="bg-white border border-gray-200 p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-gray-500">Avg Sale Value</p>
-                                    <p className="text-lg font-semibold text-orange-600">
-                                        ${annualSalesData.summary?.average_sale_value?.toLocaleString() || '0'}
+                                    <p className="text-sm text-gray-500">Average Monthly Revenue</p>
+                                    <p className="text-lg font-semibold">
+                                        {annualSalesData.summary?.average_monthly_revenue?.toLocaleString() || '0'}
                                     </p>
                                 </div>
                                 <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
-                                    <Calendar strokeWidth={1.5} size={16}  />
+                                    <Banknote strokeWidth={1.5} size={16}  />
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="bg-white border border-gray-200 p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500">Average Monthly Profit</p>
+                                    <p className="text-lg font-semibold">
+                                       <span className='text-xs'>RWF</span> {annualSalesData.summary?.average_monthly_profit?.toLocaleString() || '0'}
+                                    </p>
+                                </div>
+                                <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
+                                    <Banknote strokeWidth={1.5} size={16}  />
                                 </span>
                             </div>
                         </div>
@@ -134,7 +190,7 @@ export default function AnnualSales() {
                                             <td className="px-4 py-3 text-sm text-gray-900">{shoe?.model}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{shoe?.category}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{shoe?.quantity_sold}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-900">${shoe?.revenue?.toLocaleString()}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-900"><span className='text-xs'>RWF</span> {shoe?.revenue?.toLocaleString()}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{shoe?.sales_count}</td>
                                         </tr>
                                     ))}
@@ -164,7 +220,7 @@ export default function AnnualSales() {
                                             <td className="px-4 py-3 text-sm text-gray-900">
                                                 {new Date(day.date).toLocaleDateString()}
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-gray-900">${day.revenue?.toLocaleString()}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-900"><span className='text-xs'>RWF</span> {day.revenue?.toLocaleString()}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{day.units_sold}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{day.sales_count}</td>
                                         </tr>
@@ -191,7 +247,7 @@ export default function AnnualSales() {
                                     <div key={category} className="bg-gray-50 rounded-lg p-4">
                                         <h3 className="font-semibold text-gray-800 mb-2">{category}</h3>
                                         <p className="text-sm text-gray-600">Units: {data?.quantity_sold}</p>
-                                        <p className="text-sm text-gray-600">Revenue: ${data?.revenue?.toLocaleString()}</p>
+                                        <p className="text-sm text-gray-600">Revenue: <span className='text-xs'>RWF</span> {data?.revenue?.toLocaleString()}</p>
                                     </div>
                                 )) : (
                                     <div className="col-span-full text-center py-4">
