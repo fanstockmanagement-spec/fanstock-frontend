@@ -23,6 +23,7 @@ export interface DashboardSummaryData {
         shoe_id: string;
         user_id: number;
         quantity_sold: number;
+        sold_for: number;
         unit_price: string;
         total_amount: string;
         sale_date: string;

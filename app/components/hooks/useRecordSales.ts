@@ -12,12 +12,14 @@ import { z } from "zod";
 const validationSchema = z.object({
     shoe_id: z.string().min(1, 'Shoe ID is required'),
     quantity_sold: z.number().min(1, 'Quantity is required'),
+    sold_for: z.number().min(1, 'Sold for is required'),
     notes: z.string().min(1, 'Notes are required'),
 })
 
 export interface RecordSalesFormData {
     shoe_id: string;
     quantity_sold: number;
+    sold_for: number;
     notes: string;
 }
 
@@ -34,6 +36,7 @@ export const useRecordSales = (initialValues?: Partial<RecordSalesFormData>, onS
         defaultValues: {
             shoe_id: initialValues?.shoe_id || '',
             quantity_sold: initialValues?.quantity_sold || 0,
+            sold_for: initialValues?.sold_for || 0,
             notes: initialValues?.notes || '',
         }
     })
