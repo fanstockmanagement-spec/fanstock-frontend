@@ -3,7 +3,7 @@ import LandingPage from "./components/landingPage";
 
 export default function Home() {
   return (
-    <main className="items-center justify-items-center min-h-screen">
+    <main>
         <LandingPage />
     </main>
   );

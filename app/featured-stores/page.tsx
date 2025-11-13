@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { ChatBubbleIcon, EyeOpenIcon, Cross2Icon, TriangleLeftIcon, HeartIcon, Share1Icon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Phone, Filter, Search, Store, ShoppingBag, CheckCircle } from 'lucide-react';
+import { Phone, Filter, Search, Store, ShoppingBag } from 'lucide-react';
 import axios from 'axios';
 
 interface Shoe {
@@ -345,7 +345,7 @@ export default function FeatureStores() {
             </div>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+            <div className="max-w-6xl mx-auto px-4 md:px-8 py-12">
                 {/* Results Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
                     <div>

@@ -38,6 +38,11 @@ export const API_ENDPOINTS = {
     ANNUAL_SALES: '/year-sales',
     USER_DASHBOARD_SUMMARY: '/dashboard-summary',
   },
+  CONTACTS: {
+    CREATE: '/create-contact',
+    LIST: '/get-all-contacts',
+    SINGLE: (id: string) => `/single-contact/${id}`,
+  },
 } as const;
 
 export const getApiUrl = (endpoint: string): string => {
