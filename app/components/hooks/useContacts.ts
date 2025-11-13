@@ -27,7 +27,16 @@ interface Contact {
     status: string;
     read: boolean;
     contactStatus: string;
+};
+
+interface ApiError extends Error {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
 }
+
 
 
 export const useContacts = () => {
@@ -63,10 +72,9 @@ export const useContacts = () => {
             toast.success(response.data?.data?.message || response.data?.message || 'Your inquiry sent successfully');
 
             reset();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message);
-        } finally {
-            setIsLoading(false);
+        } catch (error: unknown) {
+            const apiError = error as ApiError;
+            toast.error(apiError.response?.data?.message || 'An error occurred');
         }
     };
 
@@ -88,9 +96,11 @@ export const useContacts = () => {
             // toast.success(response.data?.data?.message || response.data?.message || 'Contact Inquiries fetched successfully');
             setContacts(response.data?.data);
             reset();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message);
-        } finally {
+        } catch (error: unknown) {
+            const apiError = error as ApiError;
+            toast.error(apiError.response?.data?.message || 'Failed to fetch contacts');
+        }
+        finally {
             setIsLoading(false);
         }
     };
