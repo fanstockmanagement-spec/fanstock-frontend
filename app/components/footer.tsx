@@ -36,12 +36,12 @@ export default function Footer() {
         { icon: <TwitterLogoIcon className="w-5 h-5" />, href: "#twitter", label: "Twitter" },
         { icon: <GitHubLogoIcon className="w-5 h-5" />, href: "#github", label: "GitHub" },
         { icon: <LinkedInLogoIcon className="w-5 h-5" />, href: "#linkedin", label: "LinkedIn" },
-        { icon: <EnvelopeClosedIcon className="w-5 h-5" />, href: "mailto:contact@fanstock.com", label: "Email" }
+        { icon: <EnvelopeClosedIcon className="w-5 h-5" />, href: "mailto:fanstockmanagement@gmail.com", label: "Email" }
     ];
 
     return (
         <footer className="bg-black border-t border-gray-800/50">
-            <div className="max-w-6xl mx-auto px-4 md:px-6 py-16">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 py-16">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
                     <div className="col-span-2 lg:col-span-1">
                         <div className="flex items-center space-x-2 mb-4">

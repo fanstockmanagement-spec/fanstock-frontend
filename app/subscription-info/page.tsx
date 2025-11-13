@@ -135,10 +135,10 @@ export default function SubscriptionInfoPage() {
                 Get help via email within 24 hours
               </p>
               <a 
-                href="mailto:support@FanStock.com"
+                href="mailto:fanstockmanagement@gmail.com"
                 className="text-orange-600 hover:text-orange-700 font-medium text-sm"
               >
-                support@FanStock.com
+                fanstockmanagement@gmail.com
               </a>
             </div>
 

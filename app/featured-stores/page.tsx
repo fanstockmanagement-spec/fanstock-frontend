@@ -230,7 +230,7 @@ export default function FeatureStores() {
 
                 {/* Content */}
                 <div className="relative z-10 px-6 pt-24 pb-16">
-                    <div className="max-w-6xl mx-auto">
+                    <div className="max-w-7xl mx-auto">
                         <div className="text-center mb-8">
                             <div className="inline-flex items-center text-xs gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 backdrop-blur-sm border border-orange-500/30 rounded-full text-orange-300 font-medium mb-6">
                                 <Store strokeWidth={1.5} size={16} />
@@ -345,7 +345,7 @@ export default function FeatureStores() {
             </div>
 
             {/* Main Content */}
-            <div className="max-w-6xl mx-auto px-4 md:px-8 py-12">
+            <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
                 {/* Results Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
                     <div>

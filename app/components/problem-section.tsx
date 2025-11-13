@@ -52,7 +52,7 @@ export default function ProblemsSection() {
 
             <div className="relative z-10 w-full h-full">
                 {/* Header */}
-                <div className="mb-16 md:mb-20 mx-auto max-w-6xl px-4">
+                <div className="mb-16 md:mb-20 mx-auto max-w-7xl px-4">
                     <p className="text-orange-400 font-medium mb-3 text-sm uppercase tracking-wider">
                         The Reality Check
                     </p>
@@ -65,7 +65,7 @@ export default function ProblemsSection() {
                 </div>
 
                 {/* Problems Grid */}
-                <div className="grid md:grid-cols-2 gap-6 w-full max-w-6xl mx-auto px-4">
+                <div className="grid md:grid-cols-2 gap-6 w-full max-w-7xl mx-auto px-4">
                     {problems.map((problem, index) => (
                         <div
                             key={index}

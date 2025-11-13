@@ -10,7 +10,7 @@ export default function CookiesPolicy() {
             
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-20 mt-20">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h1 className="text-3xl md:text-4xl font-bold mb-4">Cookies Policy</h1>
                     <p className="text-lg">Last updated: November 13, 2025</p>
                 </div>
@@ -122,7 +122,7 @@ export default function CookiesPolicy() {
                                 If you have any questions about this Cookies Policy, please contact us:
                             </p>
                             <ul className="space-y-2 text-gray-600">
-                                <li>By email: <a href="mailto:privacy@fanstock.com" className="text-orange-500 hover:underline">privacy@fanstock.com</a></li>
+                                <li>By email: <a href="mailto:fanstockmanagement@gmail.com" className="text-orange-500 hover:underline">fanstockmanagement@gmail.com</a></li>
                                 <li>By visiting our <Link href="/contact-us" className="text-orange-500 hover:underline inline-flex items-center">
                                     contact page <ArrowUpRight className="w-4 h-4 ml-1" />
                                 </Link></li>
