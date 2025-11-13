@@ -48,7 +48,7 @@ export default function PricingSection() {
 
     return (
         <section id="pricing" className="py-16 md:py-24 bg-gradient-to-b from-black to-gray-900">
-            <div className="mx-auto max-w-7xl px-4 ">
+            <div className="mx-auto max-w-6xl px-4 ">
                 <div className="text-center mb-12 md:mb-16">
                     <h2 className="text-3xl md:text-5xl text-white mb-4">
                         Simple, Transparent Pricing

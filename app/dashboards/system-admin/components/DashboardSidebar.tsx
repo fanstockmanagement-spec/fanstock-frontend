@@ -3,7 +3,7 @@
 import { useUsers } from "@/app/components/hooks/useUser";
 import { TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@radix-ui/themes";
-import { LayoutDashboard, User, Users } from "lucide-react";
+import { LayoutDashboard, User, Users, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -26,6 +26,11 @@ export default function DashboardSidebar() {
       href: "/dashboards/system-admin/profile",
       icon: <User strokeWidth={1.5} size={16} />,
       label: "Profile",
+    },
+    {
+      href: "/dashboards/system-admin/inquiries",
+      icon: <MessageCircle strokeWidth={1.5} size={16} />,
+      label: "Inquiries",
     },
   ];
 

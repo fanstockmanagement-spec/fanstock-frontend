@@ -61,7 +61,7 @@ export default function HeroPage() {
 
     return (
         <section className="pt-[8rem] md:pt-[15rem] pb-12 bg-black sm:pb-16 lg:pb-20 xl:pb-24 text-sm overflow-hidden">
-            <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+            <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-6xl">
                 <div className="relative">
                     {/* 3D Rotating Image Container - Shows First on Mobile */}
                     <div className="mb-8 md:mb-0 md:absolute md:mt-0 md:top-32 lg:top-0 md:right-0 flex justify-center md:justify-end">
