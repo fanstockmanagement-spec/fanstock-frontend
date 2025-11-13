@@ -46,7 +46,7 @@ export default function Partners() {
             
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-20 mt-20">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h1 className="text-3xl md:text-4xl font-bold mb-4">Partner With Us</h1>
                     <p className="text-xl max-w-3xl mx-auto">
                         Join our partner ecosystem and grow your business with FanStock&rsquo;s innovative inventory management solutions.
@@ -56,7 +56,7 @@ export default function Partners() {
 
             {/* Why Partner Section */}
             <div className="py-16 bg-white">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Partner With FanStock?</h2>
                         <p className="text-gray-600 max-w-3xl mx-auto">
@@ -80,7 +80,7 @@ export default function Partners() {
 
             {/* Partnership Types */}
             <div className="py-16 bg-gray-50">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold text-gray-900 mb-4">Partnership Opportunities</h2>
                         <p className="text-gray-600 max-w-3xl mx-auto">
@@ -97,7 +97,7 @@ export default function Partners() {
                                 <h3 className="text-xl font-semibold mb-3">{type.title}</h3>
                                 <p className="text-gray-600 mb-6">{type.description}</p>
                                 <a 
-                                    href="mailto:contact.fanstock@gmail.com" 
+                                    href="mailto:fanstockmanagement@gmail.com" 
                                     className="text-orange-500 font-medium inline-flex items-center hover:underline"
                                 >
                                     {type.cta} <ArrowRight className="w-4 h-4 ml-2" />
@@ -117,7 +117,7 @@ export default function Partners() {
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <a 
-                            href="mailto:contact.fanstock@gmail.com" 
+                            href="mailto:fanstockmanagement@gmail.com" 
                             className="px-8 py-3 bg-white text-orange-600 font-medium rounded-lg hover:bg-gray-100 transition-colors inline-flex items-center justify-center"
                         >
                             <Mail className="w-5 h-5 mr-2" /> Email Us

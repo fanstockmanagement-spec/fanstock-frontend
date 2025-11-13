@@ -75,6 +75,8 @@ export const useContacts = () => {
         } catch (error: unknown) {
             const apiError = error as ApiError;
             toast.error(apiError.response?.data?.message || 'An error occurred');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -99,8 +101,7 @@ export const useContacts = () => {
         } catch (error: unknown) {
             const apiError = error as ApiError;
             toast.error(apiError.response?.data?.message || 'Failed to fetch contacts');
-        }
-        finally {
+        } finally {
             setIsLoading(false);
         }
     };

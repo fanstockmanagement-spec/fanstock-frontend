@@ -3,30 +3,29 @@ import { CheckIcon } from "@radix-ui/react-icons";
 export default function PricingSection() {
     const plans = [
         {
-            name: "Basic",
+            name: "Small Shops",
             price: "$5",
             period: "/month",
             description: "Perfect for small shops getting started",
             features: [
-                "Core inventory management",
-                "Stock tracking",
-                "Size-specific inventory",
-                "Basic reporting",
-                "Cloud storage"
+                "Up to 100 products",
+                "Basic inventory tracking",
+                "Size and variant management",
+                "Sales reporting",
             ],
             highlighted: false
         },
         {
-            name: "Premium",
+            name: "Large Shops",
             price: "$15",
             period: "/month",
             description: "For growing businesses that need more",
             features: [
-                "Everything in Basic",
-                "Advanced analytics",
-                "Multiple staff accounts",
-                "Priority support",
-                "Export data"
+                "Unlimited products",
+                "Advanced inventory analytics",
+                "Multi-location support",
+                "Sales and profit reporting",
+                "Priority email & chat support"
             ],
             highlighted: true
         },
@@ -36,11 +35,12 @@ export default function PricingSection() {
             period: "/month addon",
             description: "Boost your online visibility",
             features: [
-                "Public product showcase",
-                "Contact integration",
-                "Premium placement",
-                "Featured listing",
-                "SEO optimization"
+                "All features of Large Shops",
+                "Public storefront",
+                "Verification badge",
+                "Priority email & chat support",
+                "Bonus 5% discount on all products",
+                "Bulk import/export"
             ],
             highlighted: false
         }
@@ -48,7 +48,7 @@ export default function PricingSection() {
 
     return (
         <section id="pricing" className="py-16 md:py-24 bg-gradient-to-b from-black to-gray-900">
-            <div className="mx-auto max-w-6xl px-4 ">
+            <div className="mx-auto max-w-7xl px-4 ">
                 <div className="text-center mb-12 md:mb-16">
                     <h2 className="text-3xl md:text-5xl text-white mb-4">
                         Simple, Transparent Pricing
@@ -60,13 +60,12 @@ export default function PricingSection() {
 
                 <div className="grid md:grid-cols-3 gap-8 md:gap-10">
                     {plans.map((plan, index) => (
-                        <div 
+                        <div
                             key={index}
-                            className={`group relative bg-white/5 backdrop-blur-md rounded-lg border transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/10 ${
-                                plan.highlighted 
-                                    ? 'border-orange-400/50 bg-white/8' 
+                            className={`group relative bg-white/5 backdrop-blur-md rounded-lg border transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/10 ${plan.highlighted
+                                    ? 'border-orange-400/50 bg-white/8'
                                     : 'border-gray-700/50 hover:border-orange-500/30'
-                            }`}
+                                }`}
                         >
                             {/* Popular Badge */}
                             {plan.highlighted && (
@@ -74,16 +73,16 @@ export default function PricingSection() {
                                     MOST POPULAR
                                 </div>
                             )}
-                            
+
                             {/* Card Content */}
                             <div className={`relative p-8 rounded-2xl ${plan.highlighted ? 'pt-10' : ''}`}>
-                                
+
                                 {/* Header Section */}
                                 <div className="text-center mb-8">
                                     <h3 className="text-2xl text-white mb-3 group-hover:text-orange-400 transition-colors duration-300">
                                         {plan.name}
                                     </h3>
-                                    
+
                                     {/* Pricing */}
                                     <div className="mb-4">
                                         <div className="flex items-baseline justify-center gap-1">
@@ -95,7 +94,7 @@ export default function PricingSection() {
                                             </span>
                                         </div>
                                     </div>
-                                    
+
                                     {/* Description */}
                                     <p className="text-gray-300 text-sm leading-relaxed">
                                         {plan.description}
@@ -117,12 +116,11 @@ export default function PricingSection() {
                                 </div>
 
                                 {/* CTA Button */}
-                                <button 
-                                    className={`w-full py-3 px-6 rounded-md cursor-pointer text-sm transition-all duration-300 font-medium ${
-                                        plan.highlighted
+                                <button
+                                    className={`w-full py-3 px-6 rounded-md cursor-pointer text-sm transition-all duration-300 font-medium ${plan.highlighted
                                             ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 hover:shadow-lg hover:shadow-orange-500/30'
                                             : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 hover:text-white hover:border-orange-500'
-                                    }`}
+                                        }`}
                                 >
                                     {plan.highlighted ? 'Start Premium' : 'Choose Plan'}
                                 </button>

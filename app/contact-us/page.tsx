@@ -49,7 +49,7 @@ export default function ContactUs() {
             </div>
 
             {/* Main Content */}
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {/* Contact Methods */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
                     <motion.div
@@ -61,8 +61,8 @@ export default function ContactUs() {
                         </div>
                         <h3 className="text-lg font-semibold mb-2">Email Us</h3>
                         <p className="text-gray-600 mb-4">We&apos;ll get back to you within 24 hours</p>
-                        <a href="mailto:contact@fanstock.com" className="text-orange-500 hover:underline">
-                            contact.fanstock@gmail.com
+                        <a href="mailto:fanstockmanagement@gmail.com" className="text-orange-500 hover:underline">
+                            fanstockmanagement@gmail.com
                         </a>
                     </motion.div>
 

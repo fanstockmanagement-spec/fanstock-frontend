@@ -37,11 +37,11 @@ export default function Press() {
                             For immediate press inquiries, please contact:
                         </p>
                         <a 
-                            href="mailto:contact.fanstock@gmail.com" 
+                            href="mailto:fanstockmanagement@gmail.com" 
                             className="inline-flex items-center text-orange-600 hover:text-orange-700 font-medium"
                         >
                             <Mail className="w-5 h-5 mr-2" />
-                            contact.fanstock@gmail.com
+                            fanstockmanagement@gmail.com
                         </a>
                     </div>
                 </div>
