@@ -19,12 +19,22 @@ export default function MonthlyBreakDownChart() {
     // Calculate profit for each month (revenue - cost)
     // Note: Since cost isn't in the data, we'll calculate profit as revenue - (units_sold * average_cost)
     // You may need to adjust this calculation based on your actual business logic
-    const calculateProfit = (month: string) => {
+    interface MonthData {
+        month_name: string;
+        revenue: number;
+        units_sold: number;
+        sales_count: number;
+        profit: number;
+        profit_margin: number;
+        cost: number;
+    }
+
+    const calculateProfit = (month: MonthData) => {
         const averageCostPerUnit = 1000; // Adjust this based on your actual cost structure
         return month.revenue - (month.units_sold * averageCostPerUnit);
     };
 
-    const calculateProfitMargin = (month: string) => {
+    const calculateProfitMargin = (month: MonthData) => {
         if (month.revenue === 0) return 0;
         const profit = calculateProfit(month);
         return (profit / month.revenue) * 100;
@@ -159,7 +169,7 @@ export default function MonthlyBreakDownChart() {
                 position: 'left' as const,
                 beginAtZero: true,
                 ticks: {
-                    callback: function (value) {
+                    callback: function (value: number | string) {
                         if (selectedMetric === 'revenue' || selectedMetric === 'profit') {
                             return 'RWF ' + Number(value).toLocaleString();
                         }
@@ -182,7 +192,7 @@ export default function MonthlyBreakDownChart() {
                     drawOnChartArea: false,
                 },
                 ticks: {
-                    callback: function (value) {
+                    callback: function (value: number | string) {
                         if (selectedMetric === 'profit') {
                             return Number(value).toFixed(1) + '%';
                         }

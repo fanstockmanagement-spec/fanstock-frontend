@@ -110,7 +110,7 @@ export const useContacts = () => {
     };
 
     getContacts();
-    }, []);
+    }, [reset]);
 
     return {
         register,

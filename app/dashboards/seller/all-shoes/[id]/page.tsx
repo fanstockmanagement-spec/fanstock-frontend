@@ -38,6 +38,7 @@ export default function SingleShoePage() {
     const [shoe, setShoe] = useState<Shoe | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     useEffect(() => {
         const fetchShoe = async () => {
@@ -158,15 +159,15 @@ export default function SingleShoePage() {
                             <div className="w-32 h-32 bg-gray-100 rounded-lg border border-gray-200 overflow-hidden">
                                 {shoe.image_urls && shoe.image_urls.length > 0 ? (
                                     <Image
-                                        src={shoe.image_urls[0]}
-                                        alt={shoe.brand}
+                                        src={shoe.image_urls[selectedImageIndex]}
+                                        alt={`${shoe.brand} - Image ${selectedImageIndex + 1}`}
                                         className="w-full h-full object-cover"
                                         width={128}
                                         height={128}
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                        <Package className="w-8 h-8" />
+                                        <span>No Image</span>
                                     </div>
                                 )}
                             </div>
@@ -225,7 +226,7 @@ export default function SingleShoePage() {
                                         <button
                                             key={index}
                                             onClick={() => setSelectedImageIndex(index + 1)}
-                                            className="aspect-square bg-gray-100 rounded-lg border border-gray-200 overflow-hidden hover:border-orange-500 transition-colors"
+className={`aspect-square bg-gray-100 rounded-lg border overflow-hidden transition-colors ${selectedImageIndex === index + 1 ? 'border-orange-500 ring-2 ring-orange-200' : 'border-gray-200 hover:border-orange-300'}`}
                                         >
                                             <Image
                                                 src={imageUrl}

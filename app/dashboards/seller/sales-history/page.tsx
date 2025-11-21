@@ -1,31 +1,12 @@
 'use client'
 
 import { usePaginatedData } from '@/app/components/hooks/usePagination';
-import useSalesHistory from '@/app/components/hooks/useSalesHistory';
+import useSalesHistory, { SalesHistory } from '@/app/components/hooks/useSalesHistory';
+
 import { getApiUrl, API_ENDPOINTS } from '@/utils/env';
 import { Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-
-// Updated interface to match actual API response
-interface SalesHistory {
-    sale_id: number;
-    shoe_id: string;
-    shoe_brand: string;
-    shoe_image: string;
-    items_sold: {
-        size: string;
-        quantity: number;
-        sold_for: number;
-        item_total: number;
-        retail_price: number;
-        used_retail_price: boolean;
-    }[];
-    total_quantity: number;
-    total_amount: number;
-    sale_date: string;
-    notes: string | null;
-}
 
 export default function SellersTable() {
     const { salesHistory } = useSalesHistory();
@@ -152,8 +133,13 @@ export default function SellersTable() {
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <div className="h-10 w-10 bg-orange-500 rounded-full overflow-clip flex items-center justify-center text-white font-medium text-sm">
-                                                <Image src={sale.shoe_image || ''} alt={sale.shoe_brand || ''} className="object-cover w-full h-full" width={40} height={40} />
-                                            </div>
+                                                <Image
+                                                    src={sale.shoe?.image_urls?.[0] || ''}
+                                                    alt={sale.shoe_brand || ''}
+                                                    className="object-cover w-full h-full"
+                                                    width={40}
+                                                    height={40}
+                                                />                                            </div>
                                             <div className="ml-3">
                                                 <div className="text-sm font-medium text-gray-900">{sale.shoe_brand}</div>
                                                 <div className="text-gray-500 text-xs">ID: {sale.shoe_id.slice(0, 8)}...</div>
@@ -162,18 +148,13 @@ export default function SellersTable() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-wrap gap-1">
-                                            {sale.items_sold.map((item, idx) => (
-                                                <span 
-                                                    key={idx}
-                                                    className="bg-orange-500/10 text-orange-500 text-xs font-medium rounded-full px-2 py-1 whitespace-nowrap"
-                                                >
-                                                    Size {item.size} ({item.quantity})
-                                                </span>
-                                            ))}
+                                            <span className="bg-orange-500/10 text-orange-500 text-xs font-medium rounded-full px-2 py-1 whitespace-nowrap">
+                                                {sale.quantity_sold} item{sale.quantity_sold !== 1 ? 's' : ''}
+                                            </span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900 font-medium">
-                                        {sale.total_quantity}
+                                        {sale.quantity_sold}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900 font-semibold">
                                         {formatNumber(sale.total_amount)} RWF
@@ -305,14 +286,18 @@ export function SingleSaleHistoryModal({ sale, isOpen, onClose, formatNumber }: 
                     <div className="bg-gray-50 rounded-lg p-4">
                         <h3 className="text-sm font-medium text-gray-900 mb-3">Shoe Information</h3>
                         <div className="flex items-start space-x-4">
-                            <div className="h-20 w-20 bg-orange-500 rounded-lg overflow-hidden flex-shrink-0">
-                                <Image
-                                    src={sale.shoe_image}
-                                    alt={sale.shoe_brand}
-                                    className="object-cover w-full h-full"
-                                    width={80}
-                                    height={80}
-                                />
+                            <div className="h-10 w-10 bg-orange-500 rounded-full overflow-clip flex items-center justify-center text-white font-medium text-sm">
+                                {sale.shoe.image_urls?.length > 0 ? (
+                                    <Image
+                                        src={sale.shoe.image_urls[0]}
+                                        alt={sale.shoe_brand || ''}
+                                        className="object-cover w-full h-full"
+                                        width={40}
+                                        height={40}
+                                    />
+                                ) : (
+                                    <span>{sale.shoe_brand?.charAt(0) || 'N/A'}</span>
+                                )}
                             </div>
                             <div className="flex-1 space-y-2">
                                 <div className="text-base font-semibold text-gray-900">{sale.shoe_brand}</div>
@@ -323,40 +308,33 @@ export function SingleSaleHistoryModal({ sale, isOpen, onClose, formatNumber }: 
 
                     {/* Items Sold Details */}
                     <div className="bg-gray-50 rounded-lg p-4">
-                        <h3 className="text-sm font-medium text-gray-900 mb-3">Items Sold</h3>
+                        <h3 className="text-sm font-medium text-gray-900 mb-3">Sale Details</h3>
                         <div className="space-y-3">
-                            {sale.items_sold.map((item, idx) => (
-                                <div key={idx} className="bg-white p-3 rounded-lg border border-gray-200">
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500">Size</label>
-                                            <p className="text-sm font-semibold text-gray-900">{item.size}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500">Quantity</label>
-                                            <p className="text-sm font-semibold text-gray-900">{item.quantity}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500">Sold For</label>
-                                            <p className="text-sm font-semibold text-gray-900">{formatNumber(item.sold_for)} RWF</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500">Item Total</label>
-                                            <p className="text-sm font-semibold text-orange-600">{formatNumber(item.item_total)} RWF</p>
-                                        </div>
+                            <div className="bg-white p-3 rounded-lg border border-gray-200">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    <div>
+                                        <label className="text-xs font-medium text-gray-500">Quantity Sold</label>
+                                        <p className="text-sm font-semibold text-gray-900">{sale.quantity_sold}</p>
                                     </div>
-                                    <div className="mt-2 pt-2 border-t border-gray-100">
-                                        <div className="flex items-center justify-between text-xs">
-                                            <span className="text-gray-500">Retail Price: {formatNumber(item.retail_price)} RWF</span>
-                                            {item.used_retail_price && (
-                                                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
-                                                    Used Retail Price
-                                                </span>
-                                            )}
-                                        </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-gray-500">Unit Price</label>
+                                        <p className="text-sm font-semibold text-gray-900">{formatNumber(sale.unit_price)} RWF</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-gray-500">Sold For</label>
+                                        <p className="text-sm font-semibold text-gray-900">{formatNumber(sale.sold_for)} RWF</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-gray-500">Total Amount</label>
+                                        <p className="text-sm font-semibold text-orange-600">{formatNumber(sale.total_amount)} RWF</p>
                                     </div>
                                 </div>
-                            ))}
+                                <div className="mt-2 pt-2 border-t border-gray-100">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="text-gray-500">Retail Price: {formatNumber(sale.unit_price)} RWF</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -364,7 +342,7 @@ export function SingleSaleHistoryModal({ sale, isOpen, onClose, formatNumber }: 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-orange-50 p-4 rounded-lg">
                             <label className="text-xs font-medium text-orange-700">Total Quantity</label>
-                            <p className="text-2xl font-bold text-orange-600 mt-1">{sale.total_quantity}</p>
+                            <p className="text-2xl font-bold text-orange-600 mt-1">{sale.quantity_sold}</p>
                             <p className="text-xs text-orange-600 mt-1">Pairs of shoes</p>
                         </div>
                         <div className="bg-green-50 p-4 rounded-lg">
@@ -378,11 +356,11 @@ export function SingleSaleHistoryModal({ sale, isOpen, onClose, formatNumber }: 
                         <div>
                             <label className="text-xs font-medium text-gray-500">Sale Date</label>
                             <p className="text-sm text-gray-900 mt-1">
-                                {new Date(sale.sale_date).toLocaleDateString('en-US', { 
-                                    weekday: 'long', 
-                                    year: 'numeric', 
-                                    month: 'long', 
-                                    day: 'numeric' 
+                                {new Date(sale.sale_date).toLocaleDateString('en-US', {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
                                 })}
                             </p>
                         </div>

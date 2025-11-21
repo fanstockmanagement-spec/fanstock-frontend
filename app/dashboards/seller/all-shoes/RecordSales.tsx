@@ -4,6 +4,8 @@ import { Plus, ShoppingBag, X, XCircle } from "lucide-react";
 import { Shoe } from "./page";
 import { useRecordSales } from "@/app/components/hooks/useRecordSales";
 
+type ItemField = 'size' | 'quantity' | 'sold_for';
+
 
 export const RecordSalesModal = ({
     onClose,
@@ -27,20 +29,20 @@ export const RecordSalesModal = ({
         window.location.reload();
     });
 
-    const handleItemChange = (index: number, field: string, value: string | number) => {
-        const newItems = [...itemsSold];
-        const newValue = field === 'quantity' || field === 'sold_for' ? Number(value) : value;
+  const handleItemChange = (index: number, field: ItemField, value: string | number) => {
+    const newItems = [...itemsSold];
+    const newValue = field === 'quantity' || field === 'sold_for' ? Number(value) : value;
 
-        newItems[index] = {
-            ...newItems[index],
-            [field]: newValue
-        };
-
-        setItemsSold(newItems);
-
-        // Update the form state
-        setValue(`items_sold.${index}.${field}`, newValue);
+    newItems[index] = {
+        ...newItems[index],
+        [field]: newValue
     };
+
+    setItemsSold(newItems);
+
+    // Update the form state with proper type assertion
+    setValue(`items_sold.${index}.${field}` as const, newValue);
+};
 
     const addSizeItem = () => {
         setItemsSold([...itemsSold, { size: '', quantity: 1, sold_for: 0 }]);
@@ -67,8 +69,8 @@ export const RecordSalesModal = ({
                     items_sold: itemsSold.filter(item => item.size && item.quantity > 0 && item.sold_for > 0)
                 };
                 onSubmit(dataToSubmit);
-            })}  
-            className="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto">
+            })}
+                className="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">

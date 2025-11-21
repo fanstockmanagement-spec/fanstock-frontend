@@ -163,8 +163,9 @@ export default function AllShoesPage() {
               <p className="text-2xl font-semibold text-gray-900">
                 {shoes?.reduce((total, shoe) => {
                   const price = parseFloat(shoe.price_retail) || 0;
-                  const quantity = parseInt(shoe.stockRemaining || '0', 10) || 0;
-                  return total + (price * quantity);
+                  // Safely access stockRemaining with a fallback to 0 if it doesn't exist
+                  const stock = 'stockRemaining' in shoe ? parseInt(shoe.stockRemaining as string, 10) || 0 : 0;
+                  return total + (price * stock);
                 }, 0).toLocaleString('en-US', {
                   style: 'currency',
                   currency: 'RWF',
@@ -339,7 +340,7 @@ export default function AllShoesPage() {
                   <h3 className="font-semibold text-gray-900 text-md mb-1">
                     {shoe.brand}
                   </h3>
-                  <p className="text-xs text-gray-500">Remaining Stock: <span className="font-semibold">{shoe.stockRemaining} Pairs</span></p>
+                  <p className="text-xs text-gray-500">Remaining Stock: <span className="font-semibold">{'stockRemaining' in shoe ? (shoe as Shoe).stockRemaining : 0} Pairs</span></p>
                 </div>
                 <button
                   onClick={() => {
