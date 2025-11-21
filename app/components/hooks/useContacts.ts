@@ -80,7 +80,10 @@ export const useContacts = () => {
         }
     };
 
-    const getContacts = async () => {
+    
+
+    useEffect(() => {
+        const getContacts = async () => {
         setIsLoading(true);
 
         try {
@@ -106,8 +109,7 @@ export const useContacts = () => {
         }
     };
 
-    useEffect(() => {
-        getContacts();
+    getContacts();
     }, []);
 
     return {
@@ -119,6 +121,6 @@ export const useContacts = () => {
         isLoading,
         contacts,
         setContacts,
-        formState: { errors }
+        formState: { errors },
     }
 };

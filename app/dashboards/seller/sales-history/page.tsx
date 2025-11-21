@@ -1,14 +1,31 @@
 'use client'
 
 import { usePaginatedData } from '@/app/components/hooks/usePagination';
-import useSalesHistory, { SalesHistory } from '@/app/components/hooks/useSalesHistory';
+import useSalesHistory from '@/app/components/hooks/useSalesHistory';
 import { getApiUrl, API_ENDPOINTS } from '@/utils/env';
 import { Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 
-
-
+// Updated interface to match actual API response
+interface SalesHistory {
+    sale_id: number;
+    shoe_id: string;
+    shoe_brand: string;
+    shoe_image: string;
+    items_sold: {
+        size: string;
+        quantity: number;
+        sold_for: number;
+        item_total: number;
+        retail_price: number;
+        used_retail_price: boolean;
+    }[];
+    total_quantity: number;
+    total_amount: number;
+    sale_date: string;
+    notes: string | null;
+}
 
 export default function SellersTable() {
     const { salesHistory } = useSalesHistory();
@@ -31,6 +48,7 @@ export default function SellersTable() {
         setIsModalOpen(false);
         setSelectedSale(null);
     };
+
     const {
         pagination,
         isLoading,
@@ -98,7 +116,7 @@ export default function SellersTable() {
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Search sellers by name or email..."
+                            placeholder="Search by brand or shoe ID..."
                             value={searchTerm}
                             onChange={(e) => handleSearch(e.target.value)}
                             className="w-[250px] pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-1 focus:ring-orange-500 focus:border-transparent outline-none"
@@ -112,48 +130,52 @@ export default function SellersTable() {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="px-6 py-3 text-left">Shoe</th>
-                            <th className="px-6 py-3 text-left">Shoe Category</th>
-                            <th className="px-6 py-3 text-left">Quantity Sold</th>
-                            <th className="px-6 py-3 text-left">Sold For</th>
-                            <th className="px-6 py-3 text-left">Total Amount</th>
-                            <th className="px-6 py-3 text-left">Sale Date</th>
-                            <th className="px-6 py-3 text-left">Time</th>
-                            <th className="px-6 py-3 text-left">Notes</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Shoe</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sizes Sold</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Quantity</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Amount</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sale Date</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {salesHistory.length === 0 && !isLoading ? (
                             <tr>
-                                <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                                     No sales history found matching your criteria
                                 </td>
                             </tr>
                         ) : (
                             salesHistory.map((sale) => (
-                                <tr key={sale.shoe_id} className="hover:bg-gray-50 transition-colors text-xs cursor-pointer" onClick={() => handleRowClick(sale)}>
+                                <tr key={sale.sale_id} className="hover:bg-gray-50 transition-colors text-xs cursor-pointer" onClick={() => handleRowClick(sale)}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <div className="h-10 w-10 bg-orange-500 rounded-full overflow-clip flex items-center justify-center text-white font-medium text-sm">
-                                                <Image src={sale?.shoe?.image_urls[0] || ''} alt={sale?.shoe?.brand || ''} className="object-cover" width={100} height={100} />
+                                                <Image src={sale.shoe_image || ''} alt={sale.shoe_brand || ''} className="object-cover w-full h-full" width={40} height={40} />
                                             </div>
                                             <div className="ml-3">
-                                                <div className="text-sm font-medium text-gray-900">{sale?.shoe?.model_name}</div>
-                                                <div className="text-gray-500 text-xs">Brand: {sale?.shoe?.brand}</div>
-                                                <div className="text-gray-500 text-xs">Unit Price: {formatNumber(sale.unit_price)} RWF</div>
+                                                <div className="text-sm font-medium text-gray-900">{sale.shoe_brand}</div>
+                                                <div className="text-gray-500 text-xs">ID: {sale.shoe_id.slice(0, 8)}...</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-6 whitespace-nowrap text-xs text-orange-500 flex items-center justify-start">
-                                        <p className='bg-orange-500/10 text-orange-500 text-xs font-medium rounded-full px-2 py-1 whitespace-nowrap'>{sale.shoe_category}</p>
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-wrap gap-1">
+                                            {sale.items_sold.map((item, idx) => (
+                                                <span 
+                                                    key={idx}
+                                                    className="bg-orange-500/10 text-orange-500 text-xs font-medium rounded-full px-2 py-1 whitespace-nowrap"
+                                                >
+                                                    Size {item.size} ({item.quantity})
+                                                </span>
+                                            ))}
+                                        </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900">
-                                        {sale.quantity_sold}
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900 font-medium">
+                                        {sale.total_quantity}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900">
-                                        {formatNumber(sale.sold_for)} RWF
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900 font-semibold">
                                         {formatNumber(sale.total_amount)} RWF
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
@@ -162,8 +184,10 @@ export default function SellersTable() {
                                     <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
                                         {new Date(sale.sale_date).toLocaleTimeString()}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 w-[200px]">
-                                        <p className="text-xs text-gray-500 w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">{sale.notes}</p>
+                                    <td className="px-6 py-4 text-xs text-gray-500 max-w-[200px]">
+                                        <p className="text-xs text-gray-500 overflow-hidden text-ellipsis whitespace-nowrap">
+                                            {sale.notes || '-'}
+                                        </p>
                                     </td>
                                 </tr>
                             ))
@@ -259,8 +283,8 @@ export function SingleSaleHistoryModal({ sale, isOpen, onClose, formatNumber }: 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="relative bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
@@ -272,147 +296,113 @@ export function SingleSaleHistoryModal({ sale, isOpen, onClose, formatNumber }: 
                 {/* Modal Header */}
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-900">Sale Details</h2>
+                    <p className="text-xs text-gray-500 mt-1">Sale ID: {sale.sale_id}</p>
                 </div>
 
                 {/* Modal Content */}
-                <div className="px-6 py-4 space-y-4">
+                <div className="px-6 py-4 space-y-6">
                     {/* Shoe Information */}
                     <div className="bg-gray-50 rounded-lg p-4">
                         <h3 className="text-sm font-medium text-gray-900 mb-3">Shoe Information</h3>
-                        <div className="flex items-start space-x-3">
-                            <div className="h-10 w-10 bg-orange-500 rounded-full overflow-clip flex items-center justify-center">
+                        <div className="flex items-start space-x-4">
+                            <div className="h-20 w-20 bg-orange-500 rounded-lg overflow-hidden flex-shrink-0">
                                 <Image
-                                    src={sale?.shoe?.image_urls[0] || ''}
-                                    alt={sale?.shoe?.brand || ''}
-                                    className="object-cover w-10 h-10"
-                                    width={40}
-                                    height={40}
+                                    src={sale.shoe_image}
+                                    alt={sale.shoe_brand}
+                                    className="object-cover w-full h-full"
+                                    width={80}
+                                    height={80}
                                 />
                             </div>
-                            <div className="flex-1 flex-col space-y-2">
-                                <div className="text-sm font-medium text-gray-900">{sale?.shoe?.model_name}</div>
-                                <div className="text-gray-500 text-xs">Brand: {sale?.shoe?.brand}</div>
-                                <div className="text-gray-500 text-xs">Unit Price: {formatNumber(sale.unit_price)} RWF</div>
-                                <span className="bg-orange-500/10 text-orange-500 text-xs font-medium rounded-full px-2 py-1">
-                                    {sale.shoe_category}
-                                </span>
+                            <div className="flex-1 space-y-2">
+                                <div className="text-base font-semibold text-gray-900">{sale.shoe_brand}</div>
+                                <div className="text-xs text-gray-500">Shoe ID: {sale.shoe_id}</div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Sale Details */}
+                    {/* Items Sold Details */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                        <h3 className="text-sm font-medium text-gray-900 mb-3">Items Sold</h3>
+                        <div className="space-y-3">
+                            {sale.items_sold.map((item, idx) => (
+                                <div key={idx} className="bg-white p-3 rounded-lg border border-gray-200">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500">Size</label>
+                                            <p className="text-sm font-semibold text-gray-900">{item.size}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500">Quantity</label>
+                                            <p className="text-sm font-semibold text-gray-900">{item.quantity}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500">Sold For</label>
+                                            <p className="text-sm font-semibold text-gray-900">{formatNumber(item.sold_for)} RWF</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500">Item Total</label>
+                                            <p className="text-sm font-semibold text-orange-600">{formatNumber(item.item_total)} RWF</p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-2 pt-2 border-t border-gray-100">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="text-gray-500">Retail Price: {formatNumber(item.retail_price)} RWF</span>
+                                            {item.used_retail_price && (
+                                                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
+                                                    Used Retail Price
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Sale Summary */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-3">
-                            <div>
-                                <label className="text-xs font-medium text-gray-500">Quantity Sold</label>
-                                <p className="text-sm text-black">{sale.quantity_sold}</p>
-                            </div>
-                            <div>
-                                <label className="text-xs font-medium text-gray-500">Sold For</label>
-                                <p className="text-sm text-black">{formatNumber(sale.sold_for)} RWF</p>
-                            </div>
+                        <div className="bg-orange-50 p-4 rounded-lg">
+                            <label className="text-xs font-medium text-orange-700">Total Quantity</label>
+                            <p className="text-2xl font-bold text-orange-600 mt-1">{sale.total_quantity}</p>
+                            <p className="text-xs text-orange-600 mt-1">Pairs of shoes</p>
                         </div>
-                        <div className="space-y-3">
-                            <div>
-                                <label className="text-xs font-medium text-gray-500">Total Amount</label>
-                                <p className="text-sm text-black">{formatNumber(sale.total_amount)} RWF</p>
-                            </div>
-                            <div>
-                                <label className="text-xs font-medium text-gray-500">Sale Date</label>
-                                <p className="text-sm text-black">
-                                    {new Date(sale.sale_date).toLocaleDateString()}
-                                </p>
-                            </div>
+                        <div className="bg-green-50 p-4 rounded-lg">
+                            <label className="text-xs font-medium text-green-700">Total Amount</label>
+                            <p className="text-2xl font-bold text-green-600 mt-1">{formatNumber(sale.total_amount)} RWF</p>
                         </div>
                     </div>
 
-                    {/* Time and Notes */}
-                    <div className="space-y-3">
+                    {/* Date and Time */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-xs font-medium text-gray-500">Sale Date</label>
+                            <p className="text-sm text-gray-900 mt-1">
+                                {new Date(sale.sale_date).toLocaleDateString('en-US', { 
+                                    weekday: 'long', 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                })}
+                            </p>
+                        </div>
                         <div>
                             <label className="text-xs font-medium text-gray-500">Sale Time</label>
-                            <p className="text-sm text-black">
+                            <p className="text-sm text-gray-900 mt-1">
                                 {new Date(sale.sale_date).toLocaleTimeString()}
                             </p>
                         </div>
-                        {sale.notes && (
-                            <div>
-                                <label className="text-xs font-medium text-gray-500">Notes</label>
-                                <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg mt-1">
-                                    {sale.notes}
-                                </p>
-                            </div>
-                        )}
                     </div>
 
-                    {/* Financial Details */}
-                    <div className="bg-gray-50 rounded-lg p-4">
-                        <h3 className="text-sm font-medium text-gray-900 mb-3">Financial Details</h3>
-                        <div className="flex flex-col flex-wrap gap-3 text-xs w-full">
-                            <div className='flex items-center gap-2 justify-between w-full'>
-                                <label className="text-gray-500">Retail Price:</label>
-                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.retail_price)} RWF</p>
-                            </div>
-                            <div className='flex items-center gap-2 justify-between w-full'>
-                                <label className="text-gray-500">Actual Selling Price:</label>
-                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.actual_selling_price)} RWF</p>
-                            </div>
-                            <div className='flex items-center gap-2 justify-between w-full'>
-                                <label className="text-gray-500">Cost Price:</label>
-                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.cost_price)} RWF</p>
-                            </div>
-                            <div className='flex items-center gap-2 justify-between w-full'>
-                                <label className="text-gray-500">Profit Per Unit:</label>
-                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.profit_per_unit)} RWF</p>
-                            </div>
-                            <div className='flex items-center gap-2 justify-between w-full'>
-                                <label className="text-gray-500">Total Revenue:</label>
-                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.total_revenue)} RWF</p>
-                            </div>
-                            <div className='flex items-center gap-2 justify-between w-full'>
-                                <label className="text-gray-500">Total Profit:</label>
-                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.total_profit)} RWF</p>
-                            </div>
-                            <div className='flex items-center gap-2 justify-between w-full'>
-                                <label className="text-gray-500">Profit Margin:</label>
-                                <p className="font-medium text-gray-900">{sale.financial_details.profit_margin}%</p>
-                            </div>
-                            <div className='flex items-center gap-2 justify-between w-full'>
-                                <label className="text-gray-500">Markup from Retail:</label>
-                                <p className="font-medium text-gray-900">{formatNumber(sale.financial_details.markup_from_retail)} RWF</p>
-                            </div>
-                            <div className='flex items-center gap-2 justify-between w-full'>
-                                <label className="text-gray-500">Markup Percentage:</label>
-                                <p className="font-medium text-gray-900">{sale.financial_details.markup_percentage}%</p>
-                            </div>
-
-
+                    {/* Notes */}
+                    {sale.notes && (
+                        <div>
+                            <label className="text-xs font-medium text-gray-500">Notes</label>
+                            <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg mt-1">
+                                {sale.notes}
+                            </p>
                         </div>
-                    </div>
-
-                    {/* Additional Information */}
-                    <div className="bg-gray-50 rounded-lg p-4">
-                        <h3 className="text-sm font-medium text-gray-900 mb-3">Additional Information</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                            <div>
-                                <label className="text-gray-500">Sale ID</label>
-                                <p className="font-medium text-gray-900">{sale.id}</p>
-                            </div>
-                            <div>
-                                <label className="text-gray-500">Shoe ID</label>
-                                <p className="font-medium text-gray-900">{sale.shoe_id}</p>
-                            </div>
-                            <div>
-                                <label className="text-gray-500">User ID</label>
-                                <p className="font-medium text-gray-900">{sale.user_id}</p>
-                            </div>
-                            <div>
-                                <label className="text-gray-500">Created At</label>
-                                <p className="font-medium text-gray-900">
-                                    {new Date(sale.createdAt).toLocaleString()}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

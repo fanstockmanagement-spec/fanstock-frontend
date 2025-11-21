@@ -13,14 +13,11 @@ export interface MonthlySalesData {
     summary: {
         total_revenue: number;
         total_units_sold: number;
-        total_sales_transactions: number;
+        total_transactions: number;
         average_sale_value: number;
     };
-    sales_by_shoe: Array<{
-        shoe_id: string;
+    sales_by_brand: Array<{
         brand: string;
-        model: string;
-        category: string;
         quantity_sold: number;
         revenue: number;
         sales_count: number;
@@ -29,6 +26,7 @@ export interface MonthlySalesData {
         quantity_sold: number;
         revenue: number;
     }>;
+    stock_value_remaining: number;
     daily_breakdown: Array<{
         date: string;
         revenue: number;
