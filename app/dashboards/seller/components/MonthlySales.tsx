@@ -122,7 +122,7 @@ export default function MonthlySales() {
                                 <div>
                                     <p className="text-sm text-gray-500">Transactions</p>
                                     <p className="text-lg font-semibold">
-                                        {monthlySalesData.summary.total_sales_transactions}
+                                        {monthlySalesData.summary.total_transactions}
                                     </p>
                                 </div>
                                 <span className="text-orange-500 bg-orange-50 p-2 rounded-full">
@@ -144,34 +144,48 @@ export default function MonthlySales() {
                                 </span>
                             </div>
                         </div>
+
+                        <div className="bg-white border border-gray-200 p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500">Stock Value Remaining</p>
+                                    <p className="text-lg font-semibold">
+                                        <span className='text-xs'>RWF</span> {monthlySalesData.stock_value_remaining?.toLocaleString() || '0'}
+                                    </p>
+                                </div>
+                                <span className="text-blue-500 bg-blue-50 p-2 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Sales by Shoe Table */}
+                    {/* Sales by Brand Table */}
                     <div className="bg-white border border-gray-200 rounded-lg overflow-clip">
                         <div className="p-4 border-b border-gray-200">
-                            <h2 className="text-base font-medium text-gray-800">Sales by Shoe</h2>
+                            <h2 className="text-base font-medium text-gray-800">Sales by Brand</h2>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Units Sold</th>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales Count</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {monthlySalesData.sales_by_shoe.map((shoe) => (
-                                        <tr key={shoe.shoe_id}>
-                                            <td className="px-4 py-3 text-sm text-gray-900">{shoe.brand}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-900">{shoe.model}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-900">{shoe.category}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-900">{shoe.quantity_sold}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-900"><span className='text-xs'>RWF</span> {shoe.revenue.toLocaleString()}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-900">{shoe.sales_count}</td>
+                                    {monthlySalesData.sales_by_brand.map((brand, index) => (
+                                        <tr key={index}>
+                                            <td className="px-4 py-3 text-sm font-medium text-gray-900">{brand.brand}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-900">{brand.quantity_sold.toLocaleString()}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-900"><span className='text-xs'>RWF</span> {brand.revenue.toLocaleString()}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-900">{brand.sales_count}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -198,10 +212,12 @@ export default function MonthlySales() {
                                     {monthlySalesData.daily_breakdown.map((day, index) => (
                                         <tr key={index}>
                                             <td className="px-4 py-3 text-sm text-gray-900">
-                                                {new Date(day.date).toLocaleDateString()}
+                                                {new Date(day.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-gray-900"><span className='text-xs'>RWF</span> {day.revenue.toLocaleString()}</td>
-                                            <td className="px-4 py-3 text-sm text-gray-900">{day.units_sold}</td>
+                                            <td className="px-4 py-3 text-sm text-gray-900">
+                                                <span className='text-xs'>RWF</span> {day.revenue.toLocaleString()}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-900">{day.units_sold.toLocaleString()}</td>
                                             <td className="px-4 py-3 text-sm text-gray-900">{day.sales_count}</td>
                                         </tr>
                                     ))}
@@ -209,31 +225,6 @@ export default function MonthlySales() {
                             </table>
                         </div>
                     </div>
-
-                    {/* Sales by Category */}
-                    <div className="bg-white border border-gray-200 rounded-lg overflow-clip">
-                        <div className="p-4 border-b border-gray-200">
-                            <h2 className="text-base font-medium text-gray-800">Sales by Category</h2>
-                        </div>
-                        <div className="p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {Object.entries(monthlySalesData.sales_by_category).map(([category, data]) => (
-                                    <div key={category} className="bg-gray-50 rounded-lg p-4">
-                                        <h3 className="font-semibold text-gray-800 mb-2">{category}</h3>
-                                        <p className="text-sm text-gray-600">Units: {data.quantity_sold}</p>
-                                        <p className="text-sm text-gray-600">Revenue: <span className='text-xs'>RWF</span> {data.revenue.toLocaleString()}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* No Data State */}
-            {!isLoadingMonthlySales && !monthlySalesData && (
-                <div className="text-center py-8">
-                    <p className="text-gray-500">No sales data found for {months[selectedMonth - 1]?.name} {selectedYear}</p>
                 </div>
             )}
         </div>

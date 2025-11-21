@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Skeleton } from "@radix-ui/themes";
 import { useUsers } from "@/app/components/hooks/useUser";
-import { LayoutDashboard, User, Users } from "lucide-react";
+import { LayoutDashboard, MessageCircle, User, Users } from "lucide-react";
 
 export default function DashboardHeader() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -28,6 +28,11 @@ export default function DashboardHeader() {
       href: "/dashboards/system-admin/profile",
       icon: <User strokeWidth={1.5} size={16} />,
       label: "Profile",
+    },
+    {
+      href: "/dashboards/system-admin/inquiries",
+      icon: <MessageCircle strokeWidth={1.5} size={16} />,
+      label: "Inquiries",
     },
   ];
 

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import useAnnualSales from "@/app/components/hooks/useAnnualSales";
 import { PluginOptionsByType, TooltipItem, TooltipOptions } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 
 export default function MonthlyBreakDownChart() {
-    const { annualSalesData } = useAnnualSales();
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+    const { annualSalesData } = useAnnualSales(selectedYear);
     const [selectedMetric, setSelectedMetric] = useState<'revenue' | 'profit' | 'units'>('revenue');
 
     // Generate year options (current year and 4 years back)
@@ -15,15 +16,35 @@ export default function MonthlyBreakDownChart() {
     // Filter and prepare data based on selections
     const monthlyData = annualSalesData?.monthly_breakdown || [];
 
+    // Calculate profit for each month (revenue - cost)
+    // Note: Since cost isn't in the data, we'll calculate profit as revenue - (units_sold * average_cost)
+    // You may need to adjust this calculation based on your actual business logic
+    interface MonthData {
+        month_name: string;
+        revenue: number;
+        units_sold: number;
+        sales_count: number;
+        profit: number;
+        profit_margin: number;
+        cost: number;
+    }
+
+    const calculateProfit = (month: MonthData) => {
+        const averageCostPerUnit = 1000; // Adjust this based on your actual cost structure
+        return month.revenue - (month.units_sold * averageCostPerUnit);
+    };
+
+    const calculateProfitMargin = (month: MonthData) => {
+        if (month.revenue === 0) return 0;
+        const profit = calculateProfit(month);
+        return (profit / month.revenue) * 100;
+    };
+
     const getDatasets = () => {
         const baseConfig = {
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4,
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 5,
-            pointHoverRadius: 7,
+            borderWidth: 2,
+            borderRadius: 4,
+            borderSkipped: false,
         };
 
         switch (selectedMetric) {
@@ -32,29 +53,33 @@ export default function MonthlyBreakDownChart() {
                     {
                         label: 'Revenue',
                         data: monthlyData.map(month => month.revenue),
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
                         borderColor: 'rgb(59, 130, 246)',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        pointBackgroundColor: 'rgb(59, 130, 246)',
                         ...baseConfig,
                     },
-                    // Removed 'Cost' dataset because 'cost' does not exist on monthlyData type
+                    {
+                        label: 'Units Sold',
+                        data: monthlyData.map(month => month.units_sold),
+                        backgroundColor: 'rgba(249, 115, 22, 0.8)',
+                        borderColor: 'rgb(249, 115, 22)',
+                        yAxisID: 'y1',
+                        ...baseConfig,
+                    }
                 ];
             case 'profit':
                 return [
                     {
                         label: 'Profit',
-                        data: monthlyData.map(month => month.profit),
+                        data: monthlyData.map(month => calculateProfit(month)),
+                        backgroundColor: 'rgba(34, 197, 94, 0.8)',
                         borderColor: 'rgb(34, 197, 94)',
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                        pointBackgroundColor: 'rgb(34, 197, 94)',
                         ...baseConfig,
                     },
                     {
-                        label: 'Profit Margin',
-                        data: monthlyData.map(month => month.revenue - month.units_sold * 1000),
+                        label: 'Profit Margin (%)',
+                        data: monthlyData.map(month => calculateProfitMargin(month)),
+                        backgroundColor: 'rgba(168, 85, 247, 0.8)',
                         borderColor: 'rgb(168, 85, 247)',
-                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
-                        pointBackgroundColor: 'rgb(168, 85, 247)',
                         yAxisID: 'y1',
                         ...baseConfig,
                     }
@@ -64,31 +89,131 @@ export default function MonthlyBreakDownChart() {
                     {
                         label: 'Units Sold',
                         data: monthlyData.map(month => month.units_sold),
+                        backgroundColor: 'rgba(249, 115, 22, 0.8)',
                         borderColor: 'rgb(249, 115, 22)',
-                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                        pointBackgroundColor: 'rgb(249, 115, 22)',
                         ...baseConfig,
                     },
                     {
                         label: 'Sales Count',
                         data: monthlyData.map(month => month.sales_count),
+                        backgroundColor: 'rgba(236, 72, 153, 0.8)',
                         borderColor: 'rgb(236, 72, 153)',
-                        backgroundColor: 'rgba(236, 72, 153, 0.1)',
-                        pointBackgroundColor: 'rgb(236, 72, 153)',
                         yAxisID: 'y1',
                         ...baseConfig,
                     }
                 ];
+            default:
+                return [];
         }
     };
 
     const formatValue = (value: number, datasetIndex: number) => {
-        if (selectedMetric === 'revenue' || selectedMetric === 'profit') {
-            return `RWF ${value.toLocaleString()}`;
+        if (selectedMetric === 'revenue') {
+            return datasetIndex === 0
+                ? `RWF ${value.toLocaleString()}`
+                : `${value.toLocaleString()} units`;
+        } else if (selectedMetric === 'profit') {
+            return datasetIndex === 0
+                ? `RWF ${value.toLocaleString()}`
+                : `${value.toFixed(1)}%`;
         } else if (selectedMetric === 'units') {
-            return datasetIndex === 0 ? `${value.toLocaleString()} units` : `${value} sales`;
+            return datasetIndex === 0
+                ? `${value.toLocaleString()} units`
+                : `${value} sales`;
         }
         return value.toLocaleString();
+    };
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index' as const,
+            intersect: false,
+        },
+        plugins: {
+            legend: {
+                position: 'top' as const,
+                labels: {
+                    usePointStyle: true,
+                    padding: 20,
+                    font: {
+                        size: 12,
+                        weight: '500'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                titleFont: {
+                    size: 13,
+                    weight: 'bold'
+                },
+                bodyFont: {
+                    size: 12
+                },
+                callbacks: {
+                    label: function (context: TooltipItem<"bar"> & { datasetIndex: number }) {
+                        const label = context.dataset.label || '';
+                        const value = context.parsed.y || 0;
+                        return `${label}: ${formatValue(value, context.datasetIndex)}`;
+                    }
+                }
+            } as TooltipOptions<"bar">
+        } as unknown as PluginOptionsByType<"bar">,
+        scales: {
+            y: {
+                type: 'linear' as const,
+                display: true,
+                position: 'left' as const,
+                beginAtZero: true,
+                ticks: {
+                    callback: function (value: number | string) {
+                        if (selectedMetric === 'revenue' || selectedMetric === 'profit') {
+                            return 'RWF ' + Number(value).toLocaleString();
+                        }
+                        return Number(value).toLocaleString();
+                    },
+                    font: {
+                        size: 11
+                    }
+                },
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)'
+                }
+            },
+            y1: {
+                type: 'linear' as const,
+                display: true,
+                position: 'right' as const,
+                beginAtZero: true,
+                grid: {
+                    drawOnChartArea: false,
+                },
+                ticks: {
+                    callback: function (value: number | string) {
+                        if (selectedMetric === 'profit') {
+                            return Number(value).toFixed(1) + '%';
+                        }
+                        return Number(value).toLocaleString();
+                    },
+                    font: {
+                        size: 11
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    font: {
+                        size: 11
+                    }
+                }
+            }
+        }
     };
 
     return (
@@ -101,10 +226,10 @@ export default function MonthlyBreakDownChart() {
                         {/* Metric Selector */}
                         <select
                             value={selectedMetric}
-                            onChange={(e) => setSelectedMetric(e.target.value as 'revenue' | 'profit' | 'units' )}
+                            onChange={(e) => setSelectedMetric(e.target.value as 'revenue' | 'profit' | 'units')}
                             className="px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="revenue">Revenue & Cost</option>
+                            <option value="revenue">Revenue & Units</option>
                             <option value="profit">Profit & Margin</option>
                             <option value="units">Units & Sales</option>
                         </select>
@@ -119,112 +244,19 @@ export default function MonthlyBreakDownChart() {
                                 <option key={year} value={year}>{year}</option>
                             ))}
                         </select>
+
+
                     </div>
                 </div>
 
                 <div className="p-6">
                     {monthlyData.length > 0 ? (
-                        <Line
+                        <Bar
                             data={{
                                 labels: monthlyData.map(month => month.month_name),
                                 datasets: getDatasets()
                             }}
-                            options={{
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                interaction: {
-                                    mode: 'index',
-                                    intersect: false,
-                                },
-                                plugins: {
-                                    legend: {
-                                        position: 'top' as const,
-                                        labels: {
-                                            usePointStyle: true,
-                                            padding: 20,
-                                            font: {
-                                                size: 12,
-                                                weight: '500'
-                                            }
-                                        }
-                                    },
-                                    tooltip: {
-                                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                        padding: 12,
-                                        titleFont: {
-                                            size: 13,
-                                            weight: 'bold'
-                                        },
-                                        bodyFont: {
-                                            size: 12
-                                        },
-                                        callbacks: {
-                                            label: function (context: TooltipItem<"line"> & { datasetIndex: number }) {
-                                                const label = context.dataset.label || '';
-                                                const value = context.parsed.y || 0;
-
-                                                if (selectedMetric === 'profit' && context.datasetIndex === 1) {
-                                                    return `${label}: ${value.toFixed(2)}%`;
-                                                }
-
-                                                return `${label}: ${formatValue(value, context.datasetIndex)}`;
-                                            }
-                                        }
-                                    } as TooltipOptions<"line">
-                                } as unknown as PluginOptionsByType<"line">,
-                                scales: {
-                                    y: {
-                                        type: 'linear' as const,
-                                        display: true,
-                                        position: 'left' as const,
-                                        beginAtZero: true,
-                                        ticks: {
-                                            callback: function (value) {
-                                                if (selectedMetric === 'revenue' || selectedMetric === 'profit') {
-                                                    return 'RWF ' + Number(value).toLocaleString();
-                                                }
-                                                return Number(value).toLocaleString();
-                                            },
-                                            font: {
-                                                size: 11
-                                            }
-                                        },
-                                        grid: {
-                                            color: 'rgba(0, 0, 0, 0.05)'
-                                        }
-                                    },
-                                    y1: {
-                                        type: 'linear' as const,
-                                        display: true,
-                                        position: 'right' as const,
-                                        beginAtZero: true,
-                                        grid: {
-                                            drawOnChartArea: false,
-                                        },
-                                        ticks: {
-                                            callback: function (value) {
-                                                if (selectedMetric === 'profit') {
-                                                    return Number(value).toFixed(1) + '%';
-                                                }
-                                                return Number(value).toLocaleString();
-                                            },
-                                            font: {
-                                                size: 11
-                                            }
-                                        }
-                                    },
-                                    x: {
-                                        grid: {
-                                            display: false
-                                        },
-                                        ticks: {
-                                            font: {
-                                                size: 11
-                                            }
-                                        }
-                                    }
-                                }
-                            }}
+                            options={chartOptions}
                             height={320}
                         />
                     ) : (

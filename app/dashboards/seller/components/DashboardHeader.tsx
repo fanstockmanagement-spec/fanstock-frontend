@@ -5,7 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Skeleton } from "@radix-ui/themes";
-import { LayoutDashboard, User, Store, ShoppingCart, Calendar, Calendar1 } from "lucide-react";
+import { LayoutDashboard, User, Store, ShoppingCart, Calendar } from "lucide-react";
 import { useSellerProfile } from "@/app/components/hooks/useSellerProfile";
 
 export default function DashboardHeader() {
@@ -33,11 +33,6 @@ export default function DashboardHeader() {
       href: "/dashboards/seller/monthly-sales",
       icon: <Calendar strokeWidth={1.5} size={16} />,
       label: "Monthly Sales",
-    },
-    {
-      href: "/dashboards/seller/annual-sales",
-      icon: <Calendar1 strokeWidth={1.5} size={16} />,
-      label: "Annual Sales",
     },
     {
       href: "/dashboards/seller/profile",

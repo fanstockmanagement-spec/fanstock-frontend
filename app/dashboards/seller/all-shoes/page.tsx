@@ -1,12 +1,17 @@
 "use client";
 
-import { useRecordSales } from "@/app/components/hooks/useRecordSales";
 import { useShoes } from "@/app/components/hooks/useShoes";
 import { Spinner } from "@radix-ui/themes";
-import { Eye, Edit, Trash2, Plus, BoxIcon, DollarSign, Calendar, Search, X, XCircle, CheckCircle } from 'lucide-react';
+import { Eye, Trash2, Plus, BoxIcon, DollarSign, Calendar, Search, X } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
+import { RecordSalesModal } from "./RecordSales";
+
+interface SizeInventory {
+    size: string;
+    quantity: number;
+}
 
 export interface Shoe {
   shoe_id?: string;
@@ -22,6 +27,8 @@ export interface Shoe {
   image_urls?: string[];
   createdAt?: string;
   updatedAt?: string;
+  stockRemaining?: string;
+  size_inventory?: SizeInventory[];
 }
 
 export default function AllShoesPage() {
@@ -36,34 +43,6 @@ export default function AllShoesPage() {
   // Add selected shoe state
   const [selectedShoe, setSelectedShoe] = useState<Shoe | null>(null);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const getColorClass = (color: string) => {
-    const colorMap: { [key: string]: string } = {
-      'black': 'bg-black',
-      'white': 'bg-white border border-gray-300',
-      'red': 'bg-red-500',
-      'blue': 'bg-blue-500',
-      'green': 'bg-green-500',
-      'yellow': 'bg-yellow-400',
-      'orange': 'bg-orange-500',
-      'purple': 'bg-purple-500',
-      'pink': 'bg-pink-500',
-      'brown': 'bg-amber-700',
-      'gray': 'bg-gray-500',
-      'navy': 'bg-blue-800',
-      'beige': 'bg-amber-200',
-      'gold': 'bg-yellow-500',
-      'silver': 'bg-gray-400'
-    };
-    return colorMap[color.toLowerCase()] || 'bg-gray-400';
-  };
 
   // Get unique values for filters
   const uniqueCategories = useMemo(() => {
@@ -71,11 +50,7 @@ export default function AllShoesPage() {
     return [...new Set(shoes.map((shoe) => shoe.category))];
   }, [shoes]);
 
-  const uniqueColors = useMemo(() => {
-    if (!shoes) return [];
-    const allColors = shoes.flatMap((shoe) => shoe.colors);
-    return [...new Set(allColors)];
-  }, [shoes]);
+
 
   // Filter and sort shoes
   const filteredShoes = useMemo(() => {
@@ -135,6 +110,7 @@ export default function AllShoesPage() {
 
 
 
+
   return (
     <div className="p-6 text-sm">
       {/* Header */}
@@ -183,13 +159,23 @@ export default function AllShoesPage() {
         <div className="bg-white p-6 border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Value</p>
+              <p className="text-sm font-medium text-gray-600">Total Inventory Value</p>
               <p className="text-2xl font-semibold text-gray-900">
-                <span className="text-sm">RWF</span> {shoes?.reduce((total: number, shoe) => total + parseFloat(shoe.price_retail), 0).toString() || '0'}
+                {shoes?.reduce((total, shoe) => {
+                  const price = parseFloat(shoe.price_retail) || 0;
+                  // Safely access stockRemaining with a fallback to 0 if it doesn't exist
+                  const stock = 'stockRemaining' in shoe ? parseInt(shoe.stockRemaining as string, 10) || 0 : 0;
+                  return total + (price * stock);
+                }, 0).toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'RWF',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0
+                })}
               </p>
             </div>
-            <div className="w-10 h-10 bg-cyan-50 text-cyan-500 rounded-full flex items-center justify-center">
-              <DollarSign strokeWidth={1.5} size={16} />
+            <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center">
+              <DollarSign size={16} />
             </div>
           </div>
         </div>
@@ -241,18 +227,6 @@ export default function AllShoesPage() {
               <option value="">All Categories</option>
               {uniqueCategories.map((category) => (
                 <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-
-            {/* Color Filter */}
-            <select
-              value={selectedColor}
-              onChange={(e) => setSelectedColor(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:border focus:border-orange-500"
-            >
-              <option value="">All Colors</option>
-              {uniqueColors.map((color) => (
-                <option key={color} value={color}>{color}</option>
               ))}
             </select>
 
@@ -316,7 +290,7 @@ export default function AllShoesPage() {
       {/* Shoes Grid */}
       {isFetching ? (
         <div className="flex flex-col items-center justify-center mt-20">
-          <Spinner className="w-full h-48" />
+          <Spinner className="w-full h-48 text-orange-500" />
           <p className="text-gray-600 mt-4">Loading shoes...</p>
         </div>
       ) : filteredShoes && filteredShoes.length > 0 ? (
@@ -342,15 +316,10 @@ export default function AllShoesPage() {
                   </div>
                 )}
 
-                {/* Category Badge */}
-                <div className="absolute top-3 left-3">
-                  <span className="px-2 py-1 bg-[#CA425A] text-white text-xs font-medium rounded-full">
-                    {shoe.category}
-                  </span>
-                </div>
+                
 
                 {/* Action Buttons */}
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute top-3 right-3">
                   <div className="flex gap-2">
                     <Link
                       href={`/dashboards/seller/all-shoes/${(shoe as Shoe).shoe_id || index}`}
@@ -358,15 +327,6 @@ export default function AllShoesPage() {
                     >
                       <Eye className="w-4 h-4 text-gray-600" />
                     </Link>
-                    <button
-                      onClick={() => {
-                        setSelectedShoe(shoe as Shoe); // Set the clicked shoe
-                        setIsRecordingSales(true);
-                      }}
-                      className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors duration-200"
-                    >
-                      <Edit className="w-4 h-4 text-gray-600" />
-                    </button>
                     <button className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors duration-200">
                       <Trash2 className="w-4 h-4 text-red-600" />
                     </button>
@@ -378,37 +338,19 @@ export default function AllShoesPage() {
               <div className="p-4">
                 <div className="mb-3">
                   <h3 className="font-semibold text-gray-900 text-md mb-1">
-                    {shoe.brand} {shoe.model_name}
+                    {shoe.brand}
                   </h3>
+                  <p className="text-xs text-gray-500">Remaining Stock: <span className="font-semibold">{'stockRemaining' in shoe ? (shoe as Shoe).stockRemaining : 0} Pairs</span></p>
                 </div>
-
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-orange-500 bg-orange-50 px-4 font-semibold py-1 rounded-full text-xs">
-                    {shoe.price_retail}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {formatDate((shoe as Shoe).createdAt || '')}
-                  </span>
-                </div>
-
-                {/* Colors */}
-                <div className="mb-3">
-                  <p className="text-xs font-medium text-gray-700 mb-2">Colors</p>
-                  <div className="flex flex-wrap gap-2 items-center">
-                    {shoe.colors.slice(0, 6).map((color, index) => (
-                      <div
-                        key={index}
-                        className={`w-2 h-2 rounded-full ${getColorClass(color)}`}
-                        title={color}
-                      />
-                    ))}
-                    {shoe.colors.length > 6 && (
-                      <span className="text-xs text-gray-500 ml-1">
-                        +{shoe.colors.length - 6}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                <button
+                  onClick={() => {
+                    setSelectedShoe(shoe as Shoe); // Set the clicked shoe
+                    setIsRecordingSales(true);
+                  }}
+                  className="cursor-pointer w-full bg-orange-500 text-white py-2 rounded-md text-xs hover:bg-orange-600 transition-colors duration-200 font-medium flex items-center justify-center gap-2"
+                >
+                  Record Sales
+                </button>
               </div>
             </div>
           ))}
@@ -434,7 +376,8 @@ export default function AllShoesPage() {
 
       {isRecordingSales && selectedShoe && (
         <RecordSalesModal
-          setIsRecordingSales={setIsRecordingSales}
+          isOpen={isRecordingSales}
+          onClose={() => setIsRecordingSales(false)}
           shoe={selectedShoe}
         />
       )}
@@ -442,84 +385,3 @@ export default function AllShoesPage() {
   );
 }
 
-export const RecordSalesModal = ({ setIsRecordingSales, shoe }: { setIsRecordingSales: (isRecordingSales: boolean) => void } & { shoe: Shoe }) => {
-  const { register, handleSubmit, errors, isSubmitting, onSubmit } = useRecordSales({
-    shoe_id: shoe.shoe_id || '',
-    quantity_sold: 0,
-    sold_for: 0,
-    notes: ''
-  }, () => {
-    // Close modal on successful sale recording
-    setIsRecordingSales(false);
-  });
-
-  return (
-    <div className="fixed inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center z-50">
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-xl border border-gray-200 p-6 w-full max-w-md space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <span className="p-2 bg-orange-500/5 text-orange-500 rounded-full"><Eye strokeWidth={1.5} size={16} /></span>
-          Record Sales
-        </h2>
-        <h1 className="text-gray-900 flex items-center gap-2 my-5">
-          Shoe Name: <span className="font-semibold bg-orange-500/5 text-orange-500 rounded-full px-4 py-1 h-8 flex items-center justify-center capitalize">
-            {shoe.brand} {shoe.model_name}
-          </span>
-        </h1>
-        <div className="space-y-3">
-          <span className="text-sm text-gray-500">Shoe ID</span>
-          <input
-            type="text"
-            className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none"
-            {...register('shoe_id')}
-            readOnly
-          />
-          {errors.shoe_id && <p className="text-red-500 text-xs">{errors.shoe_id.message}</p>}
-        </div>
-        <div className="space-y-3">
-          <span className="text-sm text-gray-500">Quantity Sold</span>
-          <input
-            type="number"
-            className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none"
-            {...register('quantity_sold', { valueAsNumber: true })}
-          />
-          {errors.quantity_sold && <p className="text-red-500 text-xs">{errors.quantity_sold.message}</p>}
-        </div>
-        <div className="space-y-3">
-          <span className="text-sm text-gray-500">Sold For (RWF)</span>
-          <input
-            type="number"
-            className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none"
-            {...register('sold_for', { valueAsNumber: true })}
-          />
-          {errors.sold_for && <p className="text-red-500 text-xs">{errors.sold_for.message}</p>}
-        </div>
-        <div className="space-y-3">
-          <span className="text-sm text-gray-500">Notes</span>
-          <textarea
-            rows={3}
-            className="w-full p-2 rounded-md border border-gray-200 focus:border-1 focus:border-orange-500 focus:outline-none"
-            {...register('notes')}
-          />
-          {errors.notes && <p className="text-red-500 text-xs">{errors.notes.message}</p>}
-        </div>
-        <div className="mt-5 flex items-center justify-end gap-2">
-          <button
-            onClick={() => setIsRecordingSales(false)}
-            className="w-full flex text-black items-center justify-center gap-2 px-4 py-2 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200 transition-colors"
-          >
-            <XCircle strokeWidth={1.5} size={16} />
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full flex items-center justify-center whitespace-nowrap gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-md cursor-pointer hover:from-orange-600 hover:to-red-600 transition-colors"
-          >
-            {isSubmitting ? <Spinner /> : <CheckCircle strokeWidth={1.5} size={16} />}
-            Submit Sales
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}

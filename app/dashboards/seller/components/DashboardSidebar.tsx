@@ -3,7 +3,7 @@
 import { useSellerProfile } from "@/app/components/hooks/useSellerProfile";
 import { TriangleLeftIcon, PersonIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@radix-ui/themes";
-import { Calendar, Calendar1, LayoutDashboard, ShoppingCart, Store, User } from "lucide-react";
+import { Calendar, LayoutDashboard, ShoppingCart, Store, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -31,12 +31,6 @@ export default function DashboardSidebar() {
       href: "/dashboards/seller/monthly-sales",
       icon: <Calendar strokeWidth={1.5} size={16} />,
       label: "Monthly Sales",
-    },
-
-    {
-      href: "/dashboards/seller/annual-sales",
-      icon: <Calendar1 strokeWidth={1.5} size={16} />,
-      label: "Annual Sales",
     },
     {
       href: "/dashboards/seller/profile",
