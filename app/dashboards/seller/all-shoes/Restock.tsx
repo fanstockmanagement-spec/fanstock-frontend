@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, Package, X, XCircle } from "lucide-react";
 import { Shoe } from "./page";
 import useRestock, { RestockFormData } from "@/app/components/hooks/useRestock";
+import { useAuth } from "@/context/AuthContext";
 
 type ItemField = 'size' | 'quantity' | 'restock_price';
 
@@ -21,12 +22,14 @@ export const RestockModal = ({
 
     const { methods, onSubmit, isLoading: isRestocking, handleSubmit, setValue } = useRestock();
     const { register } = methods;
-    
-    // Set the shoe_id in the form on mount
+    const { user, loading } = useAuth();
+
     useEffect(() => {
-        setValue('shoe_id', shoe.shoe_id);
-        setValue('user_id', 1); // Replace with actual user ID from auth context
-    }, [shoe.shoe_id, setValue]);
+        if (shoe.shoe_id && user?.id) {
+            setValue('shoe_id', shoe.shoe_id);
+            setValue('user_id', user.id);
+        }
+    }, [shoe.shoe_id, setValue, user?.id]);
 
     const handleItemChange = (index: number, field: ItemField, value: string | number) => {
         const newItems = [...restockItems];
@@ -39,15 +42,13 @@ export const RestockModal = ({
 
         setRestockItems(newItems);
 
-        // Update the form state for the restock hook
         setValue(`items_restocked.${index}.${field}`, newValue as any);
     };
 
     const addRestockItem = () => {
         const newItems = [...restockItems, { size: '', quantity: 1, restock_price: 0 }];
         setRestockItems(newItems);
-        
-        // Update the form state
+
         setValue('items_restocked', newItems);
     };
 
@@ -55,22 +56,26 @@ export const RestockModal = ({
         if (restockItems.length > 1) {
             const newItems = restockItems.filter((_, i) => i !== index);
             setRestockItems(newItems);
-            
-            // Update the form state
+
             setValue('items_restocked', newItems);
         }
     };
 
     const handleFormSubmit = async (data: RestockFormData) => {
-        // Ensure we have the latest restockItems data
+        if (!shoe.shoe_id) {
+            console.error('Shoe ID is required');
+            return;
+        }
+
         const formData = {
             ...data,
             items_restocked: restockItems,
-            shoe_id: shoe.shoe_id
+            shoe_id: shoe.shoe_id,
+            user_id: user?.id ? user.id : 0
         };
-        
+
         const result = await onSubmit(formData);
-        if (result.success) {
+        if (result?.success) {
             onClose();
         }
     };
@@ -113,13 +118,13 @@ export const RestockModal = ({
                     </div>
                 </div>
 
-                <input 
-                    type="hidden" 
-                    {...register('shoe_id')} 
+                <input
+                    type="hidden"
+                    {...register('shoe_id')}
                 />
-                <input 
-                    type="hidden" 
-                    {...register('user_id')} 
+                <input
+                    type="hidden"
+                    {...register('user_id')}
                 />
 
                 {/* Restock Items Section */}

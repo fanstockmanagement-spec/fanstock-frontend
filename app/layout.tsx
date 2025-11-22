@@ -4,6 +4,7 @@ import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "@/context/AuthContext";
 
 const quicksand = Quicksand({
   variable: "--font-quicksand",
@@ -34,7 +35,9 @@ export default function RootLayout({
             }}
           />
           <div className="font-sans">
-            {children}
+            <AuthProvider>
+              {children}
+            </AuthProvider>
           </div>
         </Theme>
       </body>
