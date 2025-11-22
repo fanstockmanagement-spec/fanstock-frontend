@@ -13,45 +13,20 @@ export const RestockModal = ({
     onClose: () => void;
     shoe: Shoe;
 }) => {
-    const { methods, onSubmit, isLoading: isRestocking } = useRestock();
-    const { register, handleSubmit, setValue, watch } = methods;
-    const [restockItems, setRestockItems] = useState<RestockFormData['items_restocked']>([{
-        size: '',
-        quantity: 1,
-        restock_price: 0
-    }]);
+    const [restockItems, setRestockItems] = useState<Array<{
+        size: string;
+        quantity: number;
+        restock_price: number;
+    }>>([{ size: '', quantity: 1, restock_price: 0 }]);
 
+    const { methods, onSubmit, isLoading: isRestocking, handleSubmit, setValue } = useRestock();
+    const { register } = methods;
+    
+    // Set the shoe_id in the form on mount
     useEffect(() => {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            try {
-                const user = JSON.parse(userData);
-                if (user?.id) {
-                    setValue('user_id', Number(user.id));
-                }
-            } catch (error) {
-                console.error('Failed to parse user data from localStorage', error);
-            }
-        }
-    }, [setValue]);
-
-    // Watch the items_restocked field
-    const watchedItems = watch('items_restocked', restockItems);
-
-    // Update local state when form values change
-    useEffect(() => {
-        if (watchedItems && watchedItems.length > 0) {
-            setRestockItems(watchedItems);
-        }
-    }, [watchedItems]);
-
-    useEffect(() => {
-        if (shoe.shoe_id) {
-            setValue('shoe_id', shoe.shoe_id);
-        }
-        setValue('items_restocked', restockItems);
-    }, [shoe.shoe_id, setValue, restockItems]);
-
+        setValue('shoe_id', shoe.shoe_id);
+        setValue('user_id', 1); // Replace with actual user ID from auth context
+    }, [shoe.shoe_id, setValue]);
 
     const handleItemChange = (index: number, field: ItemField, value: string | number) => {
         const newItems = [...restockItems];
@@ -63,12 +38,16 @@ export const RestockModal = ({
         };
 
         setRestockItems(newItems);
-        setValue('items_restocked', newItems);
+
+        // Update the form state for the restock hook
+        setValue(`items_restocked.${index}.${field}`, newValue as any);
     };
 
     const addRestockItem = () => {
         const newItems = [...restockItems, { size: '', quantity: 1, restock_price: 0 }];
         setRestockItems(newItems);
+        
+        // Update the form state
         setValue('items_restocked', newItems);
     };
 
@@ -76,33 +55,29 @@ export const RestockModal = ({
         if (restockItems.length > 1) {
             const newItems = restockItems.filter((_, i) => i !== index);
             setRestockItems(newItems);
+            
+            // Update the form state
             setValue('items_restocked', newItems);
         }
     };
 
-    const handleFormSubmit = async (formData: RestockFormData) => {
-        if (!shoe.shoe_id) {
-            console.error('Shoe ID is required');
-            return;
-        }
-
-        const result = await onSubmit({
-            ...formData,
+    const handleFormSubmit = async (data: RestockFormData) => {
+        // Ensure we have the latest restockItems data
+        const formData = {
+            ...data,
             items_restocked: restockItems,
             shoe_id: shoe.shoe_id
-        });
-
-        if (result?.success) {
+        };
+        
+        const result = await onSubmit(formData);
+        if (result.success) {
             onClose();
         }
     };
 
     const availableSizes = shoe.size_inventory || [];
     const totalItems = restockItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-    const totalCost = restockItems.reduce(
-        (sum, item) => sum + ((item.quantity || 0) * (item.restock_price || 0)),
-        0
-    );
+    const totalCost = restockItems.reduce((sum, item) => sum + ((item.quantity || 0) * (item.restock_price || 0)), 0);
 
     return (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center z-50 p-4 text-xs">
@@ -138,13 +113,13 @@ export const RestockModal = ({
                     </div>
                 </div>
 
-                <input
-                    type="hidden"
-                    {...register('shoe_id')}
+                <input 
+                    type="hidden" 
+                    {...register('shoe_id')} 
                 />
-                <input
-                    type="hidden"
-                    {...register('user_id')}
+                <input 
+                    type="hidden" 
+                    {...register('user_id')} 
                 />
 
                 {/* Restock Items Section */}
