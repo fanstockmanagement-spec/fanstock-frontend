@@ -277,8 +277,6 @@ export const RestockModal = ({ onClose, shoe }: RestockModalProps) => {
                     <label className="block text-sm font-medium mb-2">Price per Item (RWF) *</label>
                     <input
                       type="number"
-                      min="0"
-                      step="100"
                       value={item.restock_price}
                       onChange={(e) => updateItem(index, 'restock_price', parseFloat(e.target.value) || 0)}
                       className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
