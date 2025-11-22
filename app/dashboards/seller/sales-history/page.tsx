@@ -2,7 +2,6 @@
 
 import useSalesHistory, { SalesHistory } from '@/app/components/hooks/useSalesHistory';
 
-import { getApiUrl, API_ENDPOINTS } from '@/utils/env';
 import { Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useMemo } from 'react';
@@ -170,7 +169,7 @@ export default function SellersTable() {
                     {/* Results Count */}
                     {searchTerm && (
                         <div className="text-xs text-gray-500">
-                            Showing {filteredSales.length} {filteredSales.length === 1 ? 'sale' : 'sales'} for "{searchTerm}"
+                            Showing {filteredSales.length} {filteredSales.length === 1 ? 'sale' : 'sales'} for &quot;{searchTerm}&quot;
                         </div>
                     )}
                     {!searchTerm && filteredSales.length > 0 && (

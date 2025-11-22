@@ -31,6 +31,7 @@ export const API_ENDPOINTS = {
     UPDATE: (id: string) => `/shoes/${id}`,
     DELETE: (id: string) => `/shoes/${id}`,
     RECORD_SALES: '/record-sales',
+    RESTOCK: (shoeId: string) => `/restock/${shoeId}`,
   },
   SALES_HISTORY: {
     LIST: '/sales-history',

@@ -21,7 +21,7 @@ export const RecordSalesModal = ({
         sold_for: number;
     }>>([{ size: '', quantity: 1, sold_for: 0 }]); // Start with one empty item
 
-    const { register, handleSubmit, isSubmitting, onSubmit, setValue } = useRecordSales({
+    const { register, handleSubmit, onSubmit, setValue, isRecordingSales } = useRecordSales({
         shoe_id: shoe.shoe_id || '',
         items_sold: itemsSold,
     }, () => {
@@ -231,17 +231,17 @@ export const RecordSalesModal = ({
                         type="button"
                         onClick={onClose}
                         className="px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
-                        disabled={isSubmitting}
+                        disabled={isRecordingSales}
                     >
                         Cancel
                     </button>
 
                     <button
                         type="submit"
-                        disabled={isSubmitting || itemsSold.length === 0 || itemsSold.every(item => !item.size || item.quantity < 1 || item.sold_for < 1)}
+                        disabled={isRecordingSales || itemsSold.length === 0 || itemsSold.every(item => !item.size || item.quantity < 1 || item.sold_for < 1)}
                         className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
                     >
-                        {isSubmitting ? (
+                        {isRecordingSales ? (
                             <>
                                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                 Recording...
