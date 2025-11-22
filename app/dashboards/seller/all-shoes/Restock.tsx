@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Package, X, XCircle } from "lucide-react";
 import { Shoe } from "./page";
-import useRestock from "@/app/components/hooks/useRestock";
+import useRestock, { RestockFormData } from "@/app/components/hooks/useRestock";
 
 type ItemField = 'size' | 'quantity' | 'restock_price';
 
@@ -13,18 +13,45 @@ export const RestockModal = ({
     onClose: () => void;
     shoe: Shoe;
 }) => {
-    const [restockItems, setRestockItems] = useState<Array<{
-        size: string;
-        quantity: number;
-        restock_price: number;
-    }>>([{ size: '', quantity: 1, restock_price: 0 }]);
+    const { methods, onSubmit, isLoading: isRestocking } = useRestock();
+    const { register, handleSubmit, setValue, watch } = methods;
+    const [restockItems, setRestockItems] = useState<RestockFormData['items_restocked']>([{
+        size: '',
+        quantity: 1,
+        restock_price: 0
+    }]);
 
-    const { methods, onSubmit, isLoading: isRestocking, handleSubmit, setValue } = useRestock();
-    const { register, setValue: formSetValue } = methods;
-    
-    // Set the shoe_id in the form
-    const shoeId = shoe.shoe_id;
-    formSetValue('shoe_id', shoeId);
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                if (user?.id) {
+                    setValue('user_id', Number(user.id));
+                }
+            } catch (error) {
+                console.error('Failed to parse user data from localStorage', error);
+            }
+        }
+    }, [setValue]);
+
+    // Watch the items_restocked field
+    const watchedItems = watch('items_restocked', restockItems);
+
+    // Update local state when form values change
+    useEffect(() => {
+        if (watchedItems && watchedItems.length > 0) {
+            setRestockItems(watchedItems);
+        }
+    }, [watchedItems]);
+
+    useEffect(() => {
+        if (shoe.shoe_id) {
+            setValue('shoe_id', shoe.shoe_id);
+        }
+        setValue('items_restocked', restockItems);
+    }, [shoe.shoe_id, setValue, restockItems]);
+
 
     const handleItemChange = (index: number, field: ItemField, value: string | number) => {
         const newItems = [...restockItems];
@@ -36,16 +63,12 @@ export const RestockModal = ({
         };
 
         setRestockItems(newItems);
-
-        // Update the form state for the restock hook
-        setValue(`items_restocked.${index}.${field}` as const, newValue);
+        setValue('items_restocked', newItems);
     };
 
     const addRestockItem = () => {
         const newItems = [...restockItems, { size: '', quantity: 1, restock_price: 0 }];
         setRestockItems(newItems);
-        
-        // Also update the form state
         setValue('items_restocked', newItems);
     };
 
@@ -53,29 +76,33 @@ export const RestockModal = ({
         if (restockItems.length > 1) {
             const newItems = restockItems.filter((_, i) => i !== index);
             setRestockItems(newItems);
-            
-            // Also update the form state
             setValue('items_restocked', newItems);
         }
     };
 
-    const handleFormSubmit = async (data: any) => {
-        // Ensure we have the latest restockItems data
-        const formData = {
-            ...data,
+    const handleFormSubmit = async (formData: RestockFormData) => {
+        if (!shoe.shoe_id) {
+            console.error('Shoe ID is required');
+            return;
+        }
+
+        const result = await onSubmit({
+            ...formData,
             items_restocked: restockItems,
-            shoe_id: shoeId
-        };
-        
-        const result = await onSubmit(formData);
-        if (result.success) {
+            shoe_id: shoe.shoe_id
+        });
+
+        if (result?.success) {
             onClose();
         }
     };
 
     const availableSizes = shoe.size_inventory || [];
     const totalItems = restockItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-    const totalCost = restockItems.reduce((sum, item) => sum + ((item.quantity || 0) * (item.restock_price || 0)), 0);
+    const totalCost = restockItems.reduce(
+        (sum, item) => sum + ((item.quantity || 0) * (item.restock_price || 0)),
+        0
+    );
 
     return (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center z-50 p-4 text-xs">
@@ -111,16 +138,13 @@ export const RestockModal = ({
                     </div>
                 </div>
 
-                <input 
-                    type="hidden" 
-                    {...register('shoe_id')} 
-                    value={shoeId}
+                <input
+                    type="hidden"
+                    {...register('shoe_id')}
                 />
-                <input 
-                    type="hidden" 
-                    {...register('user_id')} 
-                    // You'll need to get the user_id from your auth context or props
-                    value={1} // Replace with actual user ID
+                <input
+                    type="hidden"
+                    {...register('user_id')}
                 />
 
                 {/* Restock Items Section */}
@@ -244,17 +268,6 @@ export const RestockModal = ({
                         </div>
                     </div>
                 )}
-
-                {/* Notes Section */}
-                <div className="space-y-2 mb-6">
-                    <label className="font-medium text-gray-700">Restock Notes (Optional)</label>
-                    <textarea
-                        {...register('notes')}
-                        className="w-full p-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-colors resize-none"
-                        placeholder="Add any notes about this restock (e.g., supplier, batch number, etc.)"
-                        rows={3}
-                    />
-                </div>
 
                 {/* Action Buttons */}
                 <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-200">

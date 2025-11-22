@@ -12,17 +12,16 @@ interface RestockItem {
   restock_price: number;
 }
 
-interface RestockFormData {
+export interface RestockFormData {
   shoe_id: string;
   user_id: number;
   items_restocked: RestockItem[];
-  notes?: string;
 }
 
 interface RestockResponse {
   success: boolean;
   message: string;
-  data?: string;
+  data?: unknown;
   error?: string;
 }
 
@@ -46,8 +45,8 @@ const restockSchema = yup.object().shape({
           .min(0, 'Price cannot be negative'),
       })
     )
-    .min(1, 'At least one item is required'),
-  notes: yup.string().optional(),
+    .min(1, 'At least one item is required')
+    .required('At least one item is required'),
 });
 
 export default function useRestock() {
@@ -57,6 +56,8 @@ export default function useRestock() {
   const methods = useForm<RestockFormData>({
     resolver: yupResolver(restockSchema),
     defaultValues: {
+      shoe_id: '',
+      user_id: 1,
       items_restocked: [{ size: '', quantity: 1, restock_price: 0 }],
     },
   });
@@ -78,7 +79,6 @@ export default function useRestock() {
               quantity,
             }))
           ),
-          notes: data.notes,
         },
         {
           headers: {
