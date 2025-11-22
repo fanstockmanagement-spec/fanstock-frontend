@@ -85,12 +85,9 @@ export default function useRestock() {
 
       toast.success('Inventory restocked successfully!');
       return { success: true, data: response.data };
-      window.location.reload();
-    } catch (error: any) {
-      console.error('Restock error:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to restock inventory';
-      toast.error(errorMessage);
-      return { success: false, error: errorMessage };
+    } catch (error: unknown) {
+      toast.error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to restock inventory');
+      return { success: false, error: (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to restock inventory' };
     } finally {
       setIsLoading(false);
     }

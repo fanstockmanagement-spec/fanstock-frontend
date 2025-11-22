@@ -10,12 +10,12 @@ import { RecordSalesModal } from "./RecordSales";
 import { RestockModal } from "./Restock";
 
 interface SizeInventory {
-    size: string;
-    quantity: number;
+  size: string;
+  quantity: number;
 }
 
 export interface Shoe {
-  shoe_id?: string;
+  shoe_id: string;
   brand: string;
   model_name: string;
   category: string;
@@ -247,7 +247,7 @@ export default function AllShoesPage() {
                   </div>
                 )}
 
-                
+
 
                 {/* Action Buttons */}
                 <div className="absolute top-3 right-3">
@@ -275,23 +275,23 @@ export default function AllShoesPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                  onClick={() => {
-                    setSelectedShoe(shoe as Shoe); // Set the clicked shoe
-                    setIsRecordingSales(true);
-                  }}
-                  className="cursor-pointer w-full bg-orange-500 text-white py-2 rounded-md text-xs hover:bg-orange-600 transition-colors duration-200 font-medium flex items-center justify-center gap-2"
-                >
-                  Record Sales
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedShoe(shoe as Shoe); // Set the clicked shoe
-                    setIsRestocking(true);
-                  }}
-                  className="cursor-pointer w-full bg-gray-100 text-black py-2 rounded-md text-xs hover:bg-orange-500 hover:text-white transition-colors duration-200 font-medium flex items-center justify-center gap-2"
-                >
-                  Restock
-                </button>
+                    onClick={() => {
+                      setSelectedShoe(shoe as Shoe); // Set the clicked shoe
+                      setIsRecordingSales(true);
+                    }}
+                    className="cursor-pointer w-full bg-orange-500 text-white py-2 rounded-md text-xs hover:bg-orange-600 transition-colors duration-200 font-medium flex items-center justify-center gap-2"
+                  >
+                    Record Sales
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedShoe(shoe as Shoe); // Set the clicked shoe
+                      setIsRestocking(true);
+                    }}
+                    className="cursor-pointer w-full bg-gray-100 text-black py-2 rounded-md text-xs hover:bg-orange-500 hover:text-white transition-colors duration-200 font-medium flex items-center justify-center gap-2"
+                  >
+                    Restock
+                  </button>
                 </div>
               </div>
             </div>
@@ -327,9 +327,13 @@ export default function AllShoesPage() {
         <RestockModal
           isOpen={isRestocking}
           onClose={() => setIsRestocking(false)}
-          shoe={selectedShoe}
+          shoe={{
+            ...selectedShoe,
+            size_inventory: selectedShoe.size_inventory || []  // Provide default empty array if undefined
+          }}
         />
       )}
+
     </div>
   );
 }
