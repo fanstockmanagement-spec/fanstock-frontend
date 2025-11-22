@@ -4,41 +4,26 @@ import router from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-export interface SalesHistory {
-    id: number;
-    sale_id: string | null;
-    shoe_id: string;
-    user_id: number;
-    quantity_sold: number;
-    sold_for: number;
-    unit_price: string;
-    total_amount: string;
-    sale_date: string;
-    shoe_brand: string;
-    shoe_model: string;
-    shoe_category: string;
-    notes: string;
-    createdAt: string;
-    updatedAt: string;
-    shoe: {
-        shoe_id: string;
-        brand: string;
-        model_name: string;
-        image_urls: string[];
-    },
-    financial_details: {
-        retail_price: number;
-        actual_selling_price: number;
-        cost_price: number;
-        profit_per_unit: number;
-        total_revenue: number;
-        total_profit: number;
-        profit_margin: number;
-        markup_from_retail: number;
-        markup_percentage: number;
-    }
-   
-};
+export interface SalesHistory         {
+            "sale_id": number,
+            "shoe_id": string,
+            "shoe_brand": string,
+            "shoe_image": string,
+            "items_sold": [
+                {
+                    "size": string,
+                    "quantity": number,
+                    "sold_for": number,
+                    "item_total": number,
+                    "retail_price": number,
+                    "used_retail_price": boolean
+                }
+            ],
+            "total_quantity": number,
+            "total_amount": number,
+            "sale_date": string,
+            "notes": string
+        }
 export default function useSalesHistory() {
     const [salesHistory, setSalesHistory] = useState<SalesHistory[]>([]);
     const [isLoadingSales, setIsLoadingSales] = useState(false);

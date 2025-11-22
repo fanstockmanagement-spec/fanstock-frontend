@@ -2,11 +2,12 @@
 
 import { useShoes } from "@/app/components/hooks/useShoes";
 import { Spinner } from "@radix-ui/themes";
-import { Eye, Trash2, Plus, BoxIcon, DollarSign, Calendar, Search, X } from 'lucide-react';
+import { Eye, Trash2, Plus, Search, X } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import { RecordSalesModal } from "./RecordSales";
+import { RestockModal } from "./Restock";
 
 interface SizeInventory {
     size: string;
@@ -34,6 +35,7 @@ export interface Shoe {
 export default function AllShoesPage() {
   const { shoes, isFetching } = useShoes();
   const [isRecordingSales, setIsRecordingSales] = useState(false);
+  const [isRestocking, setIsRestocking] = useState(false);
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -126,77 +128,6 @@ export default function AllShoesPage() {
           <Plus className="w-5 h-5" />
           Add New Shoe
         </Link>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Shoes</p>
-              <p className="text-2xl font-semibold text-gray-900">{shoes?.length || 0}</p>
-            </div>
-            <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
-              <BoxIcon strokeWidth={1.5} size={16} />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Categories</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {new Set(shoes?.map((shoe) => shoe.category)).size || 0}
-              </p>
-            </div>
-            <div className="w-10 h-10 bg-green-50 text-green-500 rounded-full flex items-center justify-center">
-              <BoxIcon strokeWidth={1.5} size={16} />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Inventory Value</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {shoes?.reduce((total, shoe) => {
-                  const price = parseFloat(shoe.price_retail) || 0;
-                  // Safely access stockRemaining with a fallback to 0 if it doesn't exist
-                  const stock = 'stockRemaining' in shoe ? parseInt(shoe.stockRemaining as string, 10) || 0 : 0;
-                  return total + (price * stock);
-                }, 0).toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'RWF',
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0
-                })}
-              </p>
-            </div>
-            <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center">
-              <DollarSign size={16} />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">This Month</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {shoes?.filter((shoe) => {
-                  const shoeDate = new Date((shoe as Shoe).createdAt || '');
-                  const now = new Date();
-                  return shoeDate.getMonth() === now.getMonth() && shoeDate.getFullYear() === now.getFullYear();
-                }).length || 0}
-              </p>
-            </div>
-            <div className="w-10 h-10 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center">
-              <Calendar strokeWidth={1.5} size={16} />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Filters */}
@@ -342,7 +273,8 @@ export default function AllShoesPage() {
                   </h3>
                   <p className="text-xs text-gray-500">Remaining Stock: <span className="font-semibold">{'stockRemaining' in shoe ? (shoe as Shoe).stockRemaining : 0} Pairs</span></p>
                 </div>
-                <button
+                <div className="flex items-center gap-2">
+                  <button
                   onClick={() => {
                     setSelectedShoe(shoe as Shoe); // Set the clicked shoe
                     setIsRecordingSales(true);
@@ -351,6 +283,16 @@ export default function AllShoesPage() {
                 >
                   Record Sales
                 </button>
+                <button
+                  onClick={() => {
+                    setSelectedShoe(shoe as Shoe); // Set the clicked shoe
+                    setIsRestocking(true);
+                  }}
+                  className="cursor-pointer w-full bg-gray-100 text-black py-2 rounded-md text-xs hover:bg-orange-500 hover:text-white transition-colors duration-200 font-medium flex items-center justify-center gap-2"
+                >
+                  Restock
+                </button>
+                </div>
               </div>
             </div>
           ))}
@@ -378,6 +320,13 @@ export default function AllShoesPage() {
         <RecordSalesModal
           isOpen={isRecordingSales}
           onClose={() => setIsRecordingSales(false)}
+          shoe={selectedShoe}
+        />
+      )}
+      {isRestocking && selectedShoe && (
+        <RestockModal
+          isOpen={isRestocking}
+          onClose={() => setIsRestocking(false)}
           shoe={selectedShoe}
         />
       )}
