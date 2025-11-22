@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, Package, X, XCircle } from "lucide-react";
 import { Shoe } from "./page";
 import useRestock, { RestockFormData } from "@/app/components/hooks/useRestock";
+import { useAuth } from "@/context/AuthContext";
 
 type ItemField = 'size' | 'quantity' | 'restock_price';
 
@@ -13,45 +14,22 @@ export const RestockModal = ({
     onClose: () => void;
     shoe: Shoe;
 }) => {
-    const { methods, onSubmit, isLoading: isRestocking } = useRestock();
-    const { register, handleSubmit, setValue, watch } = methods;
-    const [restockItems, setRestockItems] = useState<RestockFormData['items_restocked']>([{
-        size: '',
-        quantity: 1,
-        restock_price: 0
-    }]);
+    const [restockItems, setRestockItems] = useState<Array<{
+        size: string;
+        quantity: number;
+        restock_price: number;
+    }>>([{ size: '', quantity: 1, restock_price: 0 }]);
+
+    const { methods, onSubmit, isLoading: isRestocking, handleSubmit, setValue } = useRestock();
+    const { register } = methods;
+    const { user } = useAuth();
 
     useEffect(() => {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            try {
-                const user = JSON.parse(userData);
-                if (user?.id) {
-                    setValue('user_id', Number(user.id));
-                }
-            } catch (error) {
-                console.error('Failed to parse user data from localStorage', error);
-            }
-        }
-    }, [setValue]);
-
-    // Watch the items_restocked field
-    const watchedItems = watch('items_restocked', restockItems);
-
-    // Update local state when form values change
-    useEffect(() => {
-        if (watchedItems && watchedItems.length > 0) {
-            setRestockItems(watchedItems);
-        }
-    }, [watchedItems]);
-
-    useEffect(() => {
-        if (shoe.shoe_id) {
+        if (shoe.shoe_id && user?.id) {
             setValue('shoe_id', shoe.shoe_id);
+            setValue('user_id', user.id);
         }
-        setValue('items_restocked', restockItems);
-    }, [shoe.shoe_id, setValue, restockItems]);
-
+    }, [shoe.shoe_id, setValue, user?.id]);
 
     const handleItemChange = (index: number, field: ItemField, value: string | number) => {
         const newItems = [...restockItems];
@@ -63,12 +41,14 @@ export const RestockModal = ({
         };
 
         setRestockItems(newItems);
-        setValue('items_restocked', newItems);
+
+        setValue(`items_restocked.${index}.${field}`, newValue as string | number);
     };
 
     const addRestockItem = () => {
         const newItems = [...restockItems, { size: '', quantity: 1, restock_price: 0 }];
         setRestockItems(newItems);
+
         setValue('items_restocked', newItems);
     };
 
@@ -76,22 +56,25 @@ export const RestockModal = ({
         if (restockItems.length > 1) {
             const newItems = restockItems.filter((_, i) => i !== index);
             setRestockItems(newItems);
+
             setValue('items_restocked', newItems);
         }
     };
 
-    const handleFormSubmit = async (formData: RestockFormData) => {
+    const handleFormSubmit = async (data: RestockFormData) => {
         if (!shoe.shoe_id) {
             console.error('Shoe ID is required');
             return;
         }
 
-        const result = await onSubmit({
-            ...formData,
+        const formData = {
+            ...data,
             items_restocked: restockItems,
-            shoe_id: shoe.shoe_id
-        });
+            shoe_id: shoe.shoe_id,
+            user_id: user?.id ? user.id : 0
+        };
 
+        const result = await onSubmit(formData);
         if (result?.success) {
             onClose();
         }
@@ -99,10 +82,7 @@ export const RestockModal = ({
 
     const availableSizes = shoe.size_inventory || [];
     const totalItems = restockItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-    const totalCost = restockItems.reduce(
-        (sum, item) => sum + ((item.quantity || 0) * (item.restock_price || 0)),
-        0
-    );
+    const totalCost = restockItems.reduce((sum, item) => sum + ((item.quantity || 0) * (item.restock_price || 0)), 0);
 
     return (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center z-50 p-4 text-xs">
