@@ -22,7 +22,7 @@ export const RestockModal = ({
 
     const { methods, onSubmit, isLoading: isRestocking, handleSubmit, setValue } = useRestock();
     const { register } = methods;
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
 
     useEffect(() => {
         if (shoe.shoe_id && user?.id) {
@@ -42,7 +42,7 @@ export const RestockModal = ({
 
         setRestockItems(newItems);
 
-        setValue(`items_restocked.${index}.${field}`, newValue as any);
+        setValue(`items_restocked.${index}.${field}`, newValue as string | number);
     };
 
     const addRestockItem = () => {
