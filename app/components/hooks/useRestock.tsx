@@ -1,12 +1,10 @@
-import { API_ENDPOINTS, getApiUrl } from '@/utils/env';
-import axios from 'axios';
 import { useState } from 'react';
-import { toast } from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { API_ENDPOINTS, getApiUrl } from '@/utils/env';
 
-interface RestockItem {
+export interface RestockItem {
   size: string;
   quantity: number;
   restock_price: number;
@@ -14,94 +12,82 @@ interface RestockItem {
 
 export interface RestockFormData {
   shoe_id: string;
-  user_id: number;
-  items_restocked: RestockItem[];
+  user_id: string;
+  newStock: RestockItem[]; // Changed from items_restocked to newStock
 }
-
-interface RestockResponse {
-  success: boolean;
-  message: string;
-  data?: unknown;
-  error?: string;
-}
-
-// Validation schema
-const restockSchema = yup.object().shape({
-  shoe_id: yup.string().required('Shoe ID is required'),
-  user_id: yup.number().required('User ID is required'),
-  items_restocked: yup
-    .array()
-    .of(
-      yup.object().shape({
-        size: yup.string().required('Size is required'),
-        quantity: yup
-          .number()
-          .required('Quantity is required')
-          .min(1, 'Quantity must be at least 1')
-          .integer('Quantity must be a whole number'),
-        restock_price: yup
-          .number()
-          .required('Price is required')
-          .min(0, 'Price cannot be negative'),
-      })
-    )
-    .min(1, 'At least one item is required')
-    .required('At least one item is required'),
-});
 
 export default function useRestock() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  // Get user ID from localStorage
+  const getUserId = (): string => {
+    if (typeof window === 'undefined') return '';
+    
+    try {
+      // Try to get from user object in localStorage
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        return user.id || user.userId || user._id || '';
+      }
+      
+      // Try to get from auth token or other storage key
+      const token = localStorage.getItem('token');
+      if (token) {
+        // If you store user ID in a separate key
+        const userId = localStorage.getItem('userId');
+        return userId || '';
+      }
+      
+      return '';
+    } catch (error) {
+      console.error('Error getting user ID from localStorage:', error);
+      return '';
+    }
+  };
 
   const methods = useForm<RestockFormData>({
-    resolver: yupResolver(restockSchema),
     defaultValues: {
       shoe_id: '',
-      user_id: 1,
-      items_restocked: [{ size: '', quantity: 1, restock_price: 0 }],
-    },
+      user_id: getUserId(),
+      newStock: [{ size: '', quantity: 1, restock_price: 0 }] // Updated to newStock
+    }
   });
 
-  const { handleSubmit, reset, setValue } = methods;
-
-  const onSubmit = async (data: RestockFormData): Promise<RestockResponse> => {
+  const onSubmit = async (data: RestockFormData) => {
     setIsLoading(true);
-    setError(null);
-
+    
     try {
+      // Ensure we have the latest user ID from localStorage
+      const currentUserId = getUserId();
+      if (!currentUserId) {
+        toast.error('User not authenticated. Please log in again.');
+        return { success: false, error: 'User not authenticated' };
+      }
+
+      const formData = {
+        ...data,
+        user_id: currentUserId
+      };
+
+      console.log('📦 PAYLOAD BEING SENT:', JSON.stringify(formData, null, 2));
+      console.log('🔗 API ENDPOINT:', getApiUrl(API_ENDPOINTS.SHOES.RESTOCK(formData.shoe_id)));
+      
       const response = await axios.post(
-        getApiUrl(API_ENDPOINTS.SHOES.RESTOCK(data.shoe_id)),
-        {
-          user_id: data.user_id,
-          newStock: JSON.stringify(
-            data.items_restocked.map(({ size, quantity }) => ({
-              size,
-              quantity,
-            }))
-          ),
-        },
+        getApiUrl(API_ENDPOINTS.SHOES.RESTOCK(formData.shoe_id)), 
+        formData, 
         {
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          }
         }
       );
 
-      const responseData = response.data;
-
-      if (response.status !== 200) {
-        throw new Error(responseData.error || 'Failed to restock item');
-      }
-
-      toast.success('Stock updated successfully');
-      reset();
-      return { success: true, message: 'Stock updated successfully', data: responseData };
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred while restocking';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      return { success: false, message: errorMessage, error: errorMessage };
+      toast.success('Inventory restocked successfully!');
+      return { success: true, data: response.data };
+    } catch (error: unknown) {
+      toast.error((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to restock inventory');
+      return { success: false, error: (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to restock inventory' };
     } finally {
       setIsLoading(false);
     }
@@ -109,11 +95,11 @@ export default function useRestock() {
 
   return {
     methods,
-    handleSubmit,
     onSubmit,
     isLoading,
-    error,
-    reset,
-    setValue,
+    handleSubmit: methods.handleSubmit,
+    setValue: methods.setValue,
+    register: methods.register,
+    getUserId
   };
 }
