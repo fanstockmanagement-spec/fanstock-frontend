@@ -67,15 +67,15 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const addColor = (color: string) => {
-    if (color.trim() && !formData.colors.includes(color.trim())) {
-      setFormData(prev => ({ ...prev, colors: [...prev.colors, color.trim()] }));
-    }
-  };
+  // const addColor = (color: string) => {
+  //   if (color.trim() && !formData.colors.includes(color.trim())) {
+  //     setFormData(prev => ({ ...prev, colors: [...prev.colors, color.trim()] }));
+  //   }
+  // };
 
-  const removeColor = (index: number) => {
-    setFormData(prev => ({ ...prev, colors: prev.colors.filter((_, i) => i !== index) }));
-  };
+  // const removeColor = (index: number) => {
+  //   setFormData(prev => ({ ...prev, colors: prev.colors.filter((_, i) => i !== index) }));
+  // };
 
   const addSize = (size: string) => {
     if (size.trim() && !formData.sizes.includes(size.trim())) {

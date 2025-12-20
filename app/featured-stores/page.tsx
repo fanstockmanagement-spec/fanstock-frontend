@@ -68,19 +68,32 @@ export default function FeatureStores() {
     const [showFilters, setShowFilters] = useState(false);
     const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-    // Helper to enrich shoe data with derived fields
-    const enrichShoe = (shoe: any): Shoe => {
+    // Helper to enrich shoe data with derived fields (no `any` usage)
+    const enrichShoe = (shoe: Partial<Shoe> & { size_inventory?: SizeInventory[] }): Shoe => {
         const sizes = shoe.size_inventory?.map((si: SizeInventory) => si.size) ?? [];
         const prices = shoe.size_inventory?.map((si: SizeInventory) => si.price) ?? [0];
         const minPrice = Math.min(...prices);
+
+        // derive stockRemaining from size_inventory quantities if missing
+        const computedStock = shoe.stockRemaining ?? (shoe.size_inventory ? shoe.size_inventory.reduce((acc, si) => acc + (si.quantity ?? 0), 0) : 0);
+
+        const owner: Shoe['owner'] = shoe.owner ?? { id: 0, name: 'Unknown', email: '', phoneNumber: '' };
+
         return {
-            ...shoe,
-            model_name: shoe.model_name || shoe.brand,
-            category: shoe.category || 'Shoes',
-            colors: shoe.colors || sizes,
+            shoe_id: shoe.shoe_id ?? '',
+            brand: shoe.brand ?? 'Unknown',
+            model_name: shoe.model_name ?? shoe.brand ?? 'Unknown',
+            category: shoe.category ?? 'Shoes',
+            stockRemaining: computedStock,
+            colors: shoe.colors ?? sizes,
             sizes: sizes,
-            price_retail: minPrice || 0,
-            description: shoe.description || 'Premium shoe collection from our seller',
+            price_retail: Number.isFinite(minPrice) ? minPrice : 0,
+            description: shoe.description ?? '',
+            image_urls: shoe.image_urls ?? [],
+            size_inventory: shoe.size_inventory ?? [],
+            owner,
+            rating: shoe.rating,
+            isFavorite: shoe.isFavorite,
         };
     };
  
