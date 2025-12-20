@@ -9,10 +9,12 @@ import { toast } from "react-hot-toast";
 import { z } from "zod";
 
 const validationSchema = z.object({
+    quantity: z.coerce.number().min(0, 'Quantity must be 0 or greater'),
     price: z.coerce.number().min(0, 'Price must be greater than 0'),
 })
 
 export interface UpdateShoeSizeFormData {
+    quantity: number;
     price: number;
 }
 
@@ -27,6 +29,7 @@ export const useUpdateShoeSize = () => {
     } = useForm<UpdateShoeSizeFormData>({
         resolver: zodResolver(validationSchema) as Resolver<UpdateShoeSizeFormData>,
         defaultValues: {
+            quantity: 0,
             price: 0,
         }
     })

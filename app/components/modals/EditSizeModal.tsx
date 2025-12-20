@@ -25,6 +25,7 @@ export default function EditSizeModal({ isOpen, onClose, shoeId, sizeData, onSuc
     useEffect(() => {
         if (isOpen && sizeData) {
             reset({
+                quantity: sizeData.quantity,
                 price: sizeData.price,
             });
         }
@@ -55,20 +56,27 @@ export default function EditSizeModal({ isOpen, onClose, shoeId, sizeData, onSuc
                     {/* Header */}
                     <div className="flex flex-col justify-center items-center gap-1 py-6 bg-white border-b border-gray-200">
                         <h1 className="text-2xl font-semibold text-gray-900">Edit Size {sizeData.size}</h1>
-                        <p className="text-gray-500">Update price for this size</p>
+                        <p className="text-gray-500">Update quantity and price for this size</p>
                     </div>
 
                     {/* Content */}
                     <div className="p-6">
                         <div className="space-y-6">
-                            {/* Display Current Quantity (Read-only) */}
+                            {/* Quantity Field */}
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-700">
-                                    Current Quantity (Read-only)
+                                    Quantity *
                                 </label>
-                                <div className="w-full px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-600">
-                                    {sizeData.quantity} pairs
-                                </div>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    placeholder="0"
+                                    {...register('quantity')}
+                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 bg-white"
+                                />
+                                {errors.quantity && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>
+                                )}
                             </div>
 
                             {/* Price Field */}
