@@ -267,7 +267,7 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                         />
                       </div>
                       
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">Category *</label>
                         <select 
                           value={formData.category}
@@ -279,7 +279,7 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                             <option key={opt} value={opt}>{opt}</option>
                           )}
                         </select>
-                      </div>
+                      </div> */}
                       
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">Retail Price (RWF) *</label>
@@ -294,7 +294,7 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                       </div>
                     </div>
                     
-                    <div className="mt-6 space-y-2">
+                    {/* <div className="mt-6 space-y-2">
                       <label className="block text-sm font-medium text-gray-700">Description *</label>
                       <textarea 
                         placeholder="Describe the shoes..." 
@@ -303,7 +303,7 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                         onChange={(e) => handleInputChange('description', e.target.value)}
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 bg-white resize-none" 
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Colors and Sizes */}
@@ -311,7 +311,7 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                     <h2 className="text-lg font-semibold mb-4 text-gray-900">Product Variants</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Colors */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">Available Colors</label>
                         <div className="flex gap-2">
                           <input 
@@ -355,7 +355,7 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                             </span>
                           ))}
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Sizes */}
                       <div className="space-y-2">
@@ -532,7 +532,7 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                     </div>
                   </div>
 
-                  <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
+                  {/* <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
                     <h2 className="text-lg font-semibold mb-4 text-gray-900">Stock to Add</h2>
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-700">Additional Stock Quantity *</label>
@@ -545,7 +545,7 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
                       />
                       <p className="text-xs text-gray-500">This will be added to the existing stock</p>
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
                     <h2 className="text-lg font-semibold mb-4 text-gray-900">Available Options (Read-only)</h2>
