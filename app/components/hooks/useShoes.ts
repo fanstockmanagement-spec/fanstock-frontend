@@ -76,7 +76,7 @@ export const useShoes = () => {
     } finally {
         setIsLoading(false);
     }
-   }
+   };
 
    const getShoes = async () => {
     try {
@@ -106,7 +106,9 @@ export const useShoes = () => {
     } finally {
         setIsFetching(false);
     }
-   }
+   };
+
+   
 
 
 
