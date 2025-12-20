@@ -28,7 +28,8 @@ export const API_ENDPOINTS = {
   SHOES: {
     LIST_USER_SHOES: '/user-shoes',
     CREATE: '/create-shoe-stock',
-    UPDATE: (id: string) => `/shoes/${id}`,
+    UPDATE: (id: string) => `/update-shoe/${id}`,
+    UPDATE_BY_SIZE: (shoeId: string, size: string) => `/update-shoe-by-size/${shoeId}/${size}`,
     DELETE: (id: string) => `/shoes/${id}`,
     RECORD_SALES: '/record-sales',
     RESTOCK: (shoeId: string) => `/restock/${shoeId}`,

@@ -11,6 +11,7 @@ import { TriangleLeftIcon } from '@radix-ui/react-icons';
 import { Spinner } from '@radix-ui/themes';
 import Image from 'next/image';
 import UpdateShoeForm from '../update-shoe/page';
+import EditSizeModal from '@/app/components/modals/EditSizeModal';
 
 interface SizeInventoryItem {
     size: string;
@@ -37,7 +38,9 @@ export default function SingleShoePage() {
     const router = useRouter();
     const [shoe, setShoe] = useState<Shoe | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditSizeModalOpen, setIsEditSizeModalOpen] = useState(false);
+    const [selectedSize, setSelectedSize] = useState<SizeInventoryItem | null>(null);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     useEffect(() => {
@@ -95,6 +98,31 @@ export default function SingleShoePage() {
         return shoe.size_inventory.reduce((total, item) => total + calculateTotalCostForSize(item), 0);
     };
 
+    // Handle edit size
+    const handleEditSize = (item: SizeInventoryItem) => {
+        setSelectedSize(item);
+        setIsEditSizeModalOpen(true);
+    };
+
+    // Refresh shoe data after size update
+    const handleSizeUpdateSuccess = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            const response = await axios.get(getApiUrl(API_ENDPOINTS.SHOES.LIST_USER_SHOES), {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const foundShoe = response.data.data.find((s: Shoe) => s.shoe_id === params.id);
+            if (foundShoe) {
+                setShoe(foundShoe);
+            }
+        } catch (error) {
+            console.error('Error refreshing shoe data:', error);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex flex-col gap-3 items-center justify-center min-h-screen">
@@ -138,13 +166,16 @@ export default function SingleShoePage() {
                             Back to All Shoes
                         </Link>
 
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
-                        >
-                            <Edit className="w-4 h-4" />
-                            Edit Product
-                        </button>
+                        <div className='flex items-center gap-2'>
+
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="flex items-center gap-2 px-4 py-2 text-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
+                            >
+                                <Edit className="w-4 h-4" />
+                                Edit Product
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -226,7 +257,7 @@ export default function SingleShoePage() {
                                         <button
                                             key={index}
                                             onClick={() => setSelectedImageIndex(index + 1)}
-className={`aspect-square bg-gray-100 rounded-lg border overflow-hidden transition-colors ${selectedImageIndex === index + 1 ? 'border-orange-500 ring-2 ring-orange-200' : 'border-gray-200 hover:border-orange-300'}`}
+                                            className={`aspect-square bg-gray-100 rounded-lg border overflow-hidden transition-colors ${selectedImageIndex === index + 1 ? 'border-orange-500 ring-2 ring-orange-200' : 'border-gray-200 hover:border-orange-300'}`}
                                         >
                                             <Image
                                                 src={imageUrl}
@@ -288,6 +319,9 @@ className={`aspect-square bg-gray-100 rounded-lg border overflow-hidden transiti
                                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
                                                 Total Value
                                             </th>
+                                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                                                Action
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
@@ -313,14 +347,23 @@ className={`aspect-square bg-gray-100 rounded-lg border overflow-hidden transiti
                                                         {calculateTotalCostForSize(item).toLocaleString()} Rwf
                                                     </span>
                                                 </td>
+                                                <td className="px-6 py-4">
+                                                    <button
+                                                        onClick={() => handleEditSize(item)}
+                                                        className="flex items-center gap-2 px-4 py-2 text-orange-500 border border-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
+                                                    >
+                                                        <Edit className="w-4 h-4" />
+                                                        Edit Size
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
 
                                     {/* Table Footer */}
-                                    <tfoot className="bg-gray-50 border-t border-gray-200">
+                                    <tfoot className="bg-gray-50 border-t border-gray-200 w-full">
                                         <tr>
-                                            <td className="px-6 py-4 text-sm font-semibold text-gray-900" colSpan={3}>
+                                            <td className="px-6 py-4 text-sm font-semibold text-gray-900" colSpan={4}>
                                                 Total Inventory Value
                                             </td>
                                             <td className="px-6 py-4">
@@ -330,7 +373,7 @@ className={`aspect-square bg-gray-100 rounded-lg border overflow-hidden transiti
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td className="px-6 py-4 text-sm font-semibold text-gray-900" colSpan={3}>
+                                            <td className="px-6 py-4 text-sm font-semibold text-gray-900" colSpan={4}>
                                                 Total Available Pairs
                                             </td>
                                             <td className="px-6 py-4 text-center">
@@ -387,6 +430,15 @@ className={`aspect-square bg-gray-100 rounded-lg border overflow-hidden transiti
                     colors: [],
                     sizes: shoe.size_inventory?.map(item => item.size) || []
                 }}
+            />
+
+            {/* Edit Size Modal */}
+            <EditSizeModal
+                isOpen={isEditSizeModalOpen}
+                onClose={() => setIsEditSizeModalOpen(false)}
+                shoeId={shoe.shoe_id}
+                sizeData={selectedSize}
+                onSuccess={handleSizeUpdateSuccess}
             />
         </div>
     );
