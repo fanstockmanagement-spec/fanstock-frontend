@@ -125,6 +125,12 @@ export default function UpdateShoeForm({ isOpen, onClose, shoeId, initialData }:
       formDataToSend.append('imageUrls', image);
     });
 
+    // Add existing images that should be kept (not marked for deletion)
+    const imagesToKeep = existingImages.filter((_, index) => !imagesToDelete.includes(index));
+    if (imagesToKeep.length > 0) {
+      formDataToSend.append('existingImages', JSON.stringify(imagesToKeep));
+    }
+
     // Add images to delete
     if (imagesToDelete.length > 0) {
       formDataToSend.append('imagesToDelete', JSON.stringify(imagesToDelete));
