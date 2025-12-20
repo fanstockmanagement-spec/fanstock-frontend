@@ -7,17 +7,24 @@ import Link from 'next/link';
 import { Phone, Filter, Search, Store, ShoppingBag } from 'lucide-react';
 import axios from 'axios';
 
+interface SizeInventory {
+    size: string;
+    price: number;
+    quantity: number;
+}
+
 interface Shoe {
     shoe_id: string;
     brand: string;
-    model_name: string;
-    category: string;
+    model_name?: string;
+    category?: string;
     stockRemaining: number;
-    colors: string[];
+    colors?: string[];
     sizes: string[];
-    price_retail: string;
-    description: string;
+    price_retail: number;
+    description?: string;
     image_urls: string[];
+    size_inventory?: SizeInventory[];
     owner: {
         id: number;
         name: string;
@@ -61,6 +68,35 @@ export default function FeatureStores() {
     const [showFilters, setShowFilters] = useState(false);
     const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
+    // Helper to enrich shoe data with derived fields (no `any` usage)
+    const enrichShoe = (shoe: Partial<Shoe> & { size_inventory?: SizeInventory[] }): Shoe => {
+        const sizes = shoe.size_inventory?.map((si: SizeInventory) => si.size) ?? [];
+        const prices = shoe.size_inventory?.map((si: SizeInventory) => si.price) ?? [0];
+        const minPrice = Math.min(...prices);
+
+        // derive stockRemaining from size_inventory quantities if missing
+        const computedStock = shoe.stockRemaining ?? (shoe.size_inventory ? shoe.size_inventory.reduce((acc, si) => acc + (si.quantity ?? 0), 0) : 0);
+
+        const owner: Shoe['owner'] = shoe.owner ?? { id: 0, name: 'Unknown', email: '', phoneNumber: '' };
+
+        return {
+            shoe_id: shoe.shoe_id ?? '',
+            brand: shoe.brand ?? 'Unknown',
+            model_name: shoe.model_name ?? shoe.brand ?? 'Unknown',
+            category: shoe.category ?? 'Shoes',
+            stockRemaining: computedStock,
+            colors: shoe.colors ?? sizes,
+            sizes: sizes,
+            price_retail: Number.isFinite(minPrice) ? minPrice : 0,
+            description: shoe.description ?? '',
+            image_urls: shoe.image_urls ?? [],
+            size_inventory: shoe.size_inventory ?? [],
+            owner,
+            rating: shoe.rating,
+            isFavorite: shoe.isFavorite,
+        };
+    };
+ 
     // Fetch data
     useEffect(() => {
         const fetchData = async () => {
@@ -68,7 +104,8 @@ export default function FeatureStores() {
                 setLoading(true);
                 setError(null);
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/featured-shoes`);
-                const fetchedShoes = response.data.data || [];
+                const fetchedShoes = (response?.data?.data ?? response?.data ?? [])
+                    .map(enrichShoe);
                 setShoes(fetchedShoes);
             } catch (err: unknown) {
                 setError((err as { message?: string })?.message || 'Failed to fetch shoes');
@@ -80,7 +117,8 @@ export default function FeatureStores() {
 
         fetchData();
     }, []);
-
+   
+       console.log("The fetched shoes are " , shoes)
     // Group shoes by store
     const storeProfiles = useMemo(() => {
         const storeMap = new Map<string, StoreProfile>();
@@ -112,15 +150,15 @@ export default function FeatureStores() {
                 store.owner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 store.shoes.some(shoe =>
                     shoe.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    shoe.model_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    shoe.category.toLowerCase().includes(searchQuery.toLowerCase())
+                    (shoe.model_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (shoe.category || '').toLowerCase().includes(searchQuery.toLowerCase())
                 );
 
             // Filter by brand and category
             const hasMatchingShoes = store.shoes.some(shoe => {
                 const matchesBrand = selectedBrand === 'all' || shoe.brand === selectedBrand;
-                const matchesCategory = selectedCategory === 'all' || shoe.category === selectedCategory;
-                const price = parseFloat(shoe.price_retail);
+                const matchesCategory = selectedCategory === 'all' || (shoe.category || 'Shoes') === selectedCategory;
+                const price = typeof shoe.price_retail === 'number' ? shoe.price_retail : 0;
                 const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
 
                 return matchesBrand && matchesCategory && matchesPrice;
@@ -130,6 +168,7 @@ export default function FeatureStores() {
         });
     }, [storeProfiles, searchQuery, selectedBrand, selectedCategory, priceRange]);
 
+    console.log("The filtered stores are " , filteredStores)
     // Get brands and categories for filters
     const brands = useMemo(() => {
         const uniqueBrands = [...new Set(shoes.map(shoe => shoe.brand))];
@@ -473,9 +512,9 @@ export default function FeatureStores() {
                                                     />
 
                                                     {/* Price Badge */}
-                                                    <div className="absolute flex flex-row items-center bottom-2 left-2 right-2 px-2 py-1 bg-white/95 backdrop-blur-sm rounded text-xs font text-gray-900">
-                                                        RWF {parseInt(shoe.price_retail).toLocaleString()}
-                                                    </div>
+                                                    {/* <div className="absolute flex flex-row items-center bottom-2 left-2 right-2 px-2 py-1 bg-white/95 backdrop-blur-sm rounded text-xs font text-gray-900">
+                                                        RWF {(typeof shoe.price_retail === 'number' ? shoe.price_retail : 0).toLocaleString()}
+                                                    </div> */}
                                                 </div>
                                             ))}
                                         </div>
@@ -602,9 +641,9 @@ export default function FeatureStores() {
                                             />
                                         </div>
                                         <div className="p-4">
-                                            <h4 className="font-bold text-gray-900 mb-2 line-clamp-2">{shoe.model_name}</h4>
+                                            <h4 className="font-bold text-gray-900 mb-2 line-clamp-2">{shoe.model_name || shoe.brand}</h4>
                                             <p className="text-sm text-gray-500">{shoe.brand}</p>
-                                            <p className="text-lg font-semibold text-gray-900"><span className="text-gray-500 text-sm">RWF </span>{parseInt(shoe.price_retail).toLocaleString()}</p>
+                                            {/* <p className="text-lg font-semibold text-gray-900"><span className="text-gray-500 text-sm">RWF </span>{(typeof shoe.price_retail === 'number' ? shoe.price_retail : 0).toLocaleString()}</p> */}
                                         </div>
                                     </div>
                                 ))}
@@ -698,47 +737,79 @@ export default function FeatureStores() {
                                             {selectedShoe.model_name}
                                         </h2>
 
-                                        <div className="text-2xl font-semibold text-gray-900 mb-4">
-                                            RWF {parseInt(selectedShoe.price_retail).toLocaleString()}
-                                        </div>
+                                        {/* <div className="text-2xl font-semibold text-gray-900 mb-4">
+                                            RWF {(typeof selectedShoe.price_retail === 'number' ? selectedShoe.price_retail : 0).toLocaleString()}
+                                        </div> */}
                                     </div>
 
                                     {/* Description */}
-                                    <div className="mb-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-                                        <p className="text-gray-600 leading-relaxed">{selectedShoe.description}</p>
-                                    </div>
-
-                                    {/* Colors */}
-                                    <div className="mb-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Available Colors</h3>
-                                        <div className="flex flex-wrap gap-3">
-                                            {selectedShoe.colors.map((color, idx) => (
-                                                <span key={idx} className="px-4 py-2 bg-gray-100 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-orange-100 hover:border-orange-300 transition-colors">
-                                                    {color}
-                                                </span>
-                                            ))}
+                                    {selectedShoe.description && (
+                                        <div className="mb-6">
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
+                                            <p className="text-gray-600 leading-relaxed">{selectedShoe.description}</p>
                                         </div>
-                                    </div>
+                                    )}
 
-                                    {/* Sizes */}
-                                    <div className="mb-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Available Sizes</h3>
-                                        <div className="flex flex-wrap gap-3">
-                                            {selectedShoe.sizes.map((size, idx) => (
-                                                <span key={idx} className="w-12 h-12 bg-gray-100 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium flex items-center justify-center hover:bg-orange-100 hover:border-orange-300 transition-colors cursor-pointer">
-                                                    {size}
-                                                </span>
-                                            ))}
+                                    {/* Colors / Options */}
+                                    {selectedShoe.colors && selectedShoe.colors.length > 0 && (
+                                        <div className="mb-6">
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Available Options</h3>
+                                            <div className="flex flex-wrap gap-3">
+                                                {selectedShoe.colors.map((color, idx) => (
+                                                    <span key={idx} className="px-4 py-2 bg-gray-100 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-orange-100 hover:border-orange-300 transition-colors">
+                                                        {color}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
+
+                                    {/* Sizes with Prices */}
+                                    {selectedShoe.size_inventory && selectedShoe.size_inventory.length > 0 && (
+                                        <div className="mb-6">
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Size & Price Options</h3>
+                                            <div className="space-y-3">
+                                                {selectedShoe.size_inventory.map((item, idx) => (
+                                                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-300 transition-colors cursor-pointer">
+                                                        <div className="flex items-center gap-4">
+                                                            <span className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg font-semibold text-gray-700">
+                                                                {item.size}
+                                                            </span>
+                                                            <span className="text-sm text-gray-600">
+                                                                {item.quantity} available
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-lg font-bold text-orange-600">
+                                                            RWF {item.price.toLocaleString()}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Fallback Sizes */}
+                                    {(!selectedShoe.size_inventory || selectedShoe.size_inventory.length === 0) && selectedShoe.sizes && selectedShoe.sizes.length > 0 && (
+                                        <div className="mb-6">
+
+
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Available Sizes</h3>
+                                            <div className="flex flex-wrap gap-3">
+                                                {selectedShoe.sizes.map((size, idx) => (
+                                                    <span key={idx} className="w-12 h-12 bg-gray-100 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium flex items-center justify-center hover:bg-orange-100 hover:border-orange-300 transition-colors cursor-pointer">
+                                                        {size}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* Stock Info */}
                                     <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl">
                                         <div className="flex items-center gap-3">
                                             <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
                                             <p className="text-gray-700 font-medium">
-                                                <span className="font-bold text-orange-600">{selectedShoe.stockRemaining} pairs</span> currently available
+                                                {/* <span className="font-bold text-orange-600">{selectedShoe.stockRemaining} pairs</span> currently available */}
                                             </p>
                                         </div>
                                         {selectedShoe.stockRemaining < 10 && (
