@@ -78,7 +78,7 @@ export default function ResetPasswordPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="min-h-screen  flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="flex justify-center">
                     <div className="p-3 bg-orange-100 rounded-full">
@@ -93,8 +93,8 @@ export default function ResetPasswordPage() {
                 </p>
             </div>
 
-            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div className="px-4 md:px-0 mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="bg-white shadow-xl p-8 text-sm rounded-lg w-full">
                     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                         {/* New Password */}
                         <div>
@@ -187,7 +187,7 @@ export default function ResetPasswordPage() {
                                 href="/login"
                                 className="text-sm text-orange-600 hover:text-orange-500"
                             >
-                                ← Back to Login
+                               
                             </Link>
                         </div>
                     </form>
