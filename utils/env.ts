@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
     LOGOUT: '/logout',
     REFRESH: '/refresh',
     FORGOT_PASSWORD: '/forgot-password',
+    RESET_PASSWORD:'/reset-password'
   },
   USER: {
     CREATE: '/create-user',
