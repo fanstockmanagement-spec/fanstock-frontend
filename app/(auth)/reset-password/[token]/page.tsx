@@ -67,7 +67,7 @@ export default function ResetPasswordPage() {
                 toast.success('Password reset successfully! Redirecting to login...');
                 reset();
                 setTimeout(() => {
-                    router.push('/login');
+                    router.push('/sign-in');
                 }, 2000);
             }
         } catch (error) {
